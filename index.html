@@ -500,3 +500,139 @@
     </script>
 </body>
 </html>
+<!-- ... existing code ... -->
+            <!-- GRAFICO ANUAL (NUEVO) -->
+            <div class="glass-card p-6 mt-6 mb-8">
+                <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                    <i data-lucide="calendar" class="text-white w-5 h-5"></i>
+                    Evolución Histórica (Comparativa por Años)
+                </h3>
+                <div class="h-80 relative"><canvas id="chartAnual"></canvas></div>
+            </div>
+        </section>
+
+        <!-- VISTA: AUSENTISMO -->
+        <section id="view-ausentismo" class="hidden">
+            <div id="loader-ausentismo" class="text-center py-12 hidden">
+                <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-emerald-500 mx-auto mb-4"></i>
+                <p class="text-slate-400">Consultando registros de personal...</p>
+            </div>
+
+            <div id="content-ausentismo" class="hidden">
+                <!-- KPIs de Ausentismo -->
+                <div id="kpi-ausentismo" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- Se llenan vía JS -->
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="glass-card p-6">
+                        <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                            <i data-lucide="trending-up" class="text-indigo-400 w-5 h-5"></i>
+                            Evolución de Inasistencias (Semestral)
+                        </h3>
+                        <div class="h-64 relative"><canvas id="chartAusentismoMeses"></canvas></div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                            <i data-lucide="bar-chart-horizontal" class="text-rose-400 w-5 h-5"></i>
+                            Top 5: Mayor Ausentismo
+                        </h3>
+                        <div class="h-64 relative"><canvas id="chartAusentismoAgentes"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Tabla Nominal -->
+                <div class="glass-card p-6 overflow-hidden">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                        <i data-lucide="table" class="text-slate-400 w-5 h-5"></i>
+                        Registro Nominal de Agentes
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-slate-400">
+                            <thead class="text-xs uppercase bg-slate-800/50 text-slate-300">
+                                <tr>
+                                    <th class="px-4 py-3 rounded-tl-lg">AGENTE</th>
+                                    <th class="px-4 py-3 text-center">JUL</th>
+                                    <th class="px-4 py-3 text-center">AGO</th>
+                                    <th class="px-4 py-3 text-center">SEP</th>
+                                    <th class="px-4 py-3 text-center">OCT</th>
+                                    <th class="px-4 py-3 text-center">NOV</th>
+                                    <th class="px-4 py-3 text-center">DIC</th>
+                                    <th class="px-4 py-3 text-center rounded-tr-lg">TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-ausentismo-body">
+                                <!-- Se llena vía JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA: IRAB 2026 -->
+        <section id="view-irab" class="hidden">
+            <div class="glass-card p-12 text-center mt-10 border border-emerald-500/30">
+                <div class="w-20 h-20 mx-auto bg-emerald-500/20 rounded-full flex items-center justify-center mb-6">
+                    <i data-lucide="activity" class="text-emerald-400 w-10 h-10"></i>
+                </div>
+                <h2 class="text-2xl text-white font-bold mb-4">Módulo IRAB 2026</h2>
+                <p class="text-slate-400 mb-8 max-w-2xl mx-auto">
+                    La interfaz de Infecciones Respiratorias Agudas Bajas está lista para ser conectada. 
+                    Para activar este módulo, necesitamos enlazar la base de datos correspondiente.
+                </p>
+                <div class="inline-flex items-center gap-2 bg-slate-800/50 text-emerald-400 px-6 py-3 rounded-lg border border-slate-700">
+                    <i data-lucide="link" class="w-5 h-5"></i>
+                    <span>Esperando enlace de Google Drive...</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- LOGICA JAVASCRIPT -->
+    <script>
+        // LA URL DE TU BASE DE DATOS
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
+        const GOOGLE_SCRIPT_URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycby7p-9DyGW-L7pqqE263rppn4bftnzn_XAReSY_tibQte0Be9ddEl2_2aLIcmDKYrQI0A/exec';
+        
+        let allData = [];
+        let ausentismoData = [];
+        let charts = {}; // Para guardar y destruir gráficos previos
+
+        // Configuración visual de los 11 KPIs
+<!-- ... existing code ... -->
+```
+
+Y por último, hacemos que el botón de "Ausentismo" dispare la función de carga:
+
+```html:Dashboard_Pro_Completo:index.html
+<!-- ... existing code ... -->
+        // Cambiar entre pantallas
+        function switchView(viewId) {
+            // Ocultar todas las secciones
+            document.getElementById('view-territorio').classList.add('hidden');
+            document.getElementById('view-ausentismo').classList.add('hidden');
+            document.getElementById('view-irab').classList.add('hidden');
+            
+            // Quitar clase active de los botones
+            document.getElementById('btn-territorio').classList.remove('active');
+            document.getElementById('btn-ausentismo').classList.remove('active');
+            document.getElementById('btn-irab').classList.remove('active');
+
+            // Mostrar la seleccionada
+            document.getElementById(`view-${viewId}`).classList.remove('hidden');
+            document.getElementById(`btn-${viewId}`).classList.add('active');
+
+            // Cargar datos de ausentismo al entrar a la vista (si no se cargaron ya)
+            if (viewId === 'ausentismo' && ausentismoData.length === 0) {
+                fetchAusentismoData();
+            }
+        }
+
+        async function fetchData() {
+<!-- ... existing code ... -->
+```
+
+¡Listo! Haz "Commit changes" con estas modificaciones. Al refrescar tu página, haz clic en la pestaña "AUSENTISMO". Debería aparecer una pequeña ruleta de carga ("Consultando registros de personal...") y luego **se desplegarán automáticamente tus indicadores, el ranking y la tabla que me mostraste en la imagen**.
+
+¡Cuéntame qué tal se ve!
