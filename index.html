@@ -16,9 +16,11 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0B1121;
+            background-color: #0B1121; /* Fondo oscuro muy elegante */
             color: #94A3B8;
         }
+        
+        /* Efecto cristal para las tarjetas */
         .glass-card {
             background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
             backdrop-filter: blur(10px);
@@ -27,15 +29,20 @@
             border-radius: 16px;
             transition: transform 0.3s ease, border-color 0.3s ease;
         }
+        
         .glass-card:hover {
             transform: translateY(-2px);
-            border-color: rgba(16, 185, 129, 0.3);
+            border-color: rgba(16, 185, 129, 0.3); /* Verde esmeralda al pasar el mouse */
         }
+
+        /* Estilo para los menús laterales activos */
         .nav-item.active {
             background: rgba(16, 185, 129, 0.1);
             color: #10B981;
             border-left: 4px solid #10B981;
         }
+        
+        /* Selectores personalizados */
         select {
             appearance: none;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -43,6 +50,8 @@
             background-position: right 1rem center;
             background-size: 1em;
         }
+        
+        /* Scrollbar oscuro */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0B1121; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
@@ -81,7 +90,7 @@
         
         <!-- Header Principal -->
         <header class="mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">SUBSECRETARÍA DE RECURSOS Y LOGÍSTICA</h1>
+            <h1 class="text-3xl font-bold text-white mb-2">SUBSECRETARIA DE RECURSOS Y LOGISTICA</h1>
             <p class="text-slate-400">Centro de control y visualización de datos operativos</p>
         </header>
 
@@ -121,8 +130,11 @@
 
         <!-- VISTA: TERRITORIO -->
         <section id="view-territorio" class="hidden">
-            <!-- GRILLA DE KPIs -->
-            <div id="kpi-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"></div>
+            
+            <!-- GRILLA DE KPIs (10 Tarjetas con imágenes/íconos) -->
+            <div id="kpi-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                <!-- Se inyectarán dinámicamente desde JS -->
+            </div>
 
             <!-- MATRIZ DE GRÁFICOS PRO -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -159,7 +171,7 @@
                 </div>
             </div>
 
-            <!-- GRAFICO ANUAL -->
+            <!-- GRAFICO ANUAL (NUEVO) -->
             <div class="glass-card p-6 mt-6 mb-8">
                 <h3 class="text-white font-medium mb-4 flex items-center gap-2">
                     <i data-lucide="calendar" class="text-white w-5 h-5"></i>
@@ -174,7 +186,7 @@
             <div class="glass-card p-16 text-center">
                 <i data-lucide="hard-hat" class="w-16 h-16 text-slate-500 mx-auto mb-4"></i>
                 <h2 class="text-2xl font-bold text-white mb-2">Módulo Ausentismo</h2>
-                <p class="text-slate-400 max-w-md mx-auto">Esta sección de gestión de recursos humanos está configurada y lista.</p>
+                <p class="text-slate-400 max-w-md mx-auto">Esta sección de gestión de recursos humanos está configurada y lista para recibir datos en la próxima fase.</p>
             </div>
         </section>
 
@@ -183,18 +195,22 @@
             <div class="glass-card p-16 text-center">
                 <i data-lucide="shield-alert" class="w-16 h-16 text-slate-500 mx-auto mb-4"></i>
                 <h2 class="text-2xl font-bold text-white mb-2">Monitor IRAB 2026</h2>
-                <p class="text-slate-400 max-w-md mx-auto">Panel de monitoreo epidemiológico invernal.</p>
+                <p class="text-slate-400 max-w-md mx-auto">Panel de monitoreo epidemiológico invernal configurado. Pendiente vinculación de métricas de pediatría.</p>
             </div>
         </section>
+
     </main>
 
     <!-- LOGICA JAVASCRIPT -->
     <script>
+        // LA URL DE TU BASE DE DATOS
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
         
         let allData = [];
-        let charts = {};
+        let charts = {}; // Para guardar y destruir gráficos previos
 
+        // Configuración visual de los 11 KPIs
+        // Configuración visual de los KPIs
         const kpiConfig = [
             { id: 'MANZ', title: 'MANZANAS', icon: 'map', color: 'text-indigo-400' },
             { id: 'CAL (APLIC)', title: 'CALENDARIO', icon: 'syringe', color: 'text-emerald-400' },
@@ -208,22 +224,21 @@
             { id: 'VACUNACION DENGUE', title: 'VAC. DENGUE', icon: 'shield', color: 'text-lime-400' }
         ];
 
+        // Cambiar entre pantallas
         function switchView(viewId) {
+            // Ocultar todas las secciones
             document.getElementById('view-territorio').classList.add('hidden');
             document.getElementById('view-ausentismo').classList.add('hidden');
             document.getElementById('view-irab').classList.add('hidden');
             
+            // Quitar clase active de los botones
             document.getElementById('btn-territorio').classList.remove('active');
             document.getElementById('btn-ausentismo').classList.remove('active');
             document.getElementById('btn-irab').classList.remove('active');
 
+            // Mostrar la seleccionada
             document.getElementById(`view-${viewId}`).classList.remove('hidden');
             document.getElementById(`btn-${viewId}`).classList.add('active');
-
-            // Si cambiamos a territorio, forzamos redibujado de gráficos por seguridad
-            if(viewId === 'territorio' && allData.length > 0) {
-                setTimeout(() => processData(), 50);
-            }
         }
 
         async function fetchData() {
@@ -231,6 +246,8 @@
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 const rawData = await response.json();
                 
+                // Normalizar datos (quitar espacios en blanco de los títulos de columnas)
+                // Esto SOLUCIONA el problema de los filtros
                 allData = rawData.map(row => {
                     let cleanRow = {};
                     for(let key in row) {
@@ -240,7 +257,7 @@
                 });
 
                 document.getElementById('loader').classList.add('hidden');
-                switchView('territorio');
+                switchView('territorio'); // Mostrar panel por defecto
                 
                 initFilters();
                 processData();
@@ -250,7 +267,9 @@
             }
         }
 
+        // Llenar los filtros (Dropdowns) dinámicamente
         function initFilters() {
+            // Claves exactas que vamos a buscar en el Excel
             const filterMap = {
                 'anio': 'AÑO',
                 'operativo': 'OPERATIVO tipo',
@@ -261,12 +280,14 @@
             for (const [elementId, dataKey] of Object.entries(filterMap)) {
                 const selectElement = document.getElementById(`filter-${elementId}`);
                 
+                // Extraer valores únicos, limpiar mayúsculas y ordenar
                 const uniqueValues = [...new Set(allData.map(item => {
                     return item[dataKey] ? String(item[dataKey]).trim().toUpperCase() : null;
                 }))].filter(val => val && val !== 'NULL' && val !== '');
 
                 uniqueValues.sort();
                 
+                // Crear las opciones HTML
                 uniqueValues.forEach(value => {
                     const option = document.createElement('option');
                     option.value = value;
@@ -277,17 +298,21 @@
         }
 
         function processData() {
+            // Leer selecciones
             const selectedAnio = document.getElementById('filter-anio').value;
             const selectedOperativo = document.getElementById('filter-operativo').value;
             const selectedLocalidad = document.getElementById('filter-localidad').value;
             const selectedBarrio = document.getElementById('filter-barrio').value;
 
+            // Sumar las 11 métricas
             let sums = {};
             kpiConfig.forEach(kpi => { sums[kpi.id] = 0; });
 
+            // Objeto para agrupar por año (ignora el filtro de año actual para mostrar evolución)
             let yearlyData = {};
 
             allData.forEach(row => {
+                // Filtros para la vista general
                 const matchAnio = selectedAnio === 'TODOS' || String(row['AÑO']).trim().toUpperCase() === selectedAnio;
                 const matchOperativo = selectedOperativo === 'TODOS' || String(row['OPERATIVO tipo']).trim().toUpperCase() === selectedOperativo;
                 const matchLocalidad = selectedLocalidad === 'TODOS' || String(row['LOCALIDAD']).trim().toUpperCase() === selectedLocalidad;
@@ -302,6 +327,7 @@
                     });
                 }
 
+                // Lógica para el gráfico comparativo anual (solo aplica filtros de operativo, localidad y barrio)
                 if (matchOperativo && matchLocalidad && matchBarrio) {
                     let anioStr = String(row['AÑO']).trim().toUpperCase();
                     if (anioStr && anioStr !== 'UNDEFINED' && anioStr !== 'NULL' && anioStr !== '') {
@@ -324,6 +350,7 @@
             if(!container) return;
             container.innerHTML = '';
             
+            // Renderiza cada tarjeta leyendo tu configuración
             kpiConfig.forEach(kpi => {
                 const value = sums[kpi.id] || 0;
                 container.innerHTML += `
@@ -335,6 +362,7 @@
                 `;
             });
             
+            // Vuelve a cargar los iconos para los nuevos elementos
             if(window.lucide) {
                 window.lucide.createIcons();
             }
@@ -344,10 +372,12 @@
             Chart.defaults.color = '#94A3B8';
             Chart.defaults.font.family = 'Inter';
 
+            // Destruir gráficos previos si existen
             Object.keys(charts).forEach(key => {
                 if(charts[key]) charts[key].destroy();
             });
 
+            // 1. Gráfico: Pers Vac vs Aplicaciones Calendario + COVID
             const ctxVac = document.getElementById('chartVacunacion').getContext('2d');
             charts.vacunacion = new Chart(ctxVac, {
                 type: 'bar',
@@ -363,6 +393,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
+            // 2. Gráfico: Atenciones vs AUH
             const ctxAsis = document.getElementById('chartAsistencia').getContext('2d');
             charts.asistencia = new Chart(ctxAsis, {
                 type: 'pie',
@@ -378,6 +409,7 @@
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
+            // 3. Gráfico: Empadronamiento vs Inscripciones Telemedicina
             const ctxTramites = document.getElementById('chartTramites').getContext('2d');
             charts.tramites = new Chart(ctxTramites, {
                 type: 'doughnut',
@@ -392,10 +424,11 @@
                 options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
             });
 
+            // 4. Gráfico Territorial (Radar/Bar) - Se mantiene para Manzanas y Derivaciones
             const ctxTerri = document.getElementById('chartTerritorio').getContext('2d');
             charts.territorio = new Chart(ctxTerri, {
                 type: 'bar',
-                indexAxis: 'y',
+                indexAxis: 'y', // Barra horizontal
                 data: {
                     labels: ['Manzanas Abordadas', 'Derivaciones Realizadas'],
                     datasets: [{
@@ -408,6 +441,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
+            // 5. NUEVO: Gráfico Evolución por Año
             const sortedYears = Object.keys(yearlyData).sort();
             const aniosVacunas = sortedYears.map(year => yearlyData[year].vacunas);
             const aniosAtenciones = sortedYears.map(year => yearlyData[year].atenciones);
@@ -449,7 +483,9 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
-                    plugins: { tooltip: { mode: 'index', intersect: false } },
+                    plugins: {
+                        tooltip: { mode: 'index', intersect: false }
+                    },
                     scales: {
                         y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
                         x: { grid: { display: false } }
@@ -458,6 +494,7 @@
             });
         }
 
+        // Iniciar
         lucide.createIcons();
         fetchData();
     </script>
