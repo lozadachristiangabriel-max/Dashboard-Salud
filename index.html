@@ -3,65 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salud Panel Pro</title>
+    <title>Dashboard Profesional - Salud</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Inter', system-ui, sans-serif; }
-        .bg-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-200 min-h-screen flex">
 
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 p-6 hidden md:flex flex-col">
-        <h2 class="text-emerald-400 font-bold mb-8 tracking-widest text-sm uppercase">Salud Panel</h2>
-        <nav class="space-y-4">
-            <button onclick="showSection('view-kpi')" class="w-full text-left p-3 rounded-lg bg-slate-800 flex items-center gap-3"><i data-lucide="layout-dashboard"></i> Vista General</button>
-            <button onclick="showSection('view-table')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 flex items-center gap-3"><i data-lucide="table"></i> Registros</button>
+    <aside class="w-72 bg-slate-900 border-r border-slate-800 p-6 flex flex-col fixed h-full z-10">
+        <h2 class="text-emerald-400 font-bold mb-8 tracking-widest text-xs uppercase flex items-center gap-2">
+            <i data-lucide="shield-check"></i> Subsecretaría de Recursos
+        </h2>
+        <nav class="space-y-2 flex-1">
+            <button onclick="showSection('view-territorio')" class="w-full text-left p-4 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center gap-3 border border-emerald-500/20">
+                <i data-lucide="map-pin"></i> TERRITORIO
+            </button>
+            <button onclick="showSection('view-ausentismo')" class="w-full text-left p-4 rounded-xl hover:bg-slate-800 flex items-center gap-3 transition">
+                <i data-lucide="user-minus"></i> AUSENTISMO
+            </button>
+            <button onclick="showSection('view-irab')" class="w-full text-left p-4 rounded-xl hover:bg-slate-800 flex items-center gap-3 transition">
+                <i data-lucide="thermometer"></i> IRAB 2026
+            </button>
         </nav>
     </aside>
 
-    <main class="flex-1 p-8 overflow-y-auto">
-        
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <select id="filter-AÑO" class="bg-slate-900 border border-slate-700 p-2 rounded-lg" onchange="processData()"><option value="TODOS">Año: Todos</option></select>
-            <select id="filter-TIPO" class="bg-slate-900 border border-slate-700 p-2 rounded-lg" onchange="processData()"><option value="TODOS">Tipo: Todos</option></select>
-            <select id="filter-LOCALIDAD" class="bg-slate-900 border border-slate-700 p-2 rounded-lg" onchange="processData()"><option value="TODOS">Localidad: Todas</option></select>
-            <select id="filter-BARRIO" class="bg-slate-900 border border-slate-700 p-2 rounded-lg" onchange="processData()"><option value="TODOS">Barrio: Todos</option></select>
+    <main class="ml-72 flex-1 p-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-white">SUBSECRETARIA DE RECURSOS Y LOGISTICA</h1>
+            <p class="text-slate-400">Centro de control y visualización de datos operativos</p>
+        </header>
+
+        <!-- Filtros Globales -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-slate-900 p-4 rounded-2xl border border-slate-800">
+            <select id="filter-AÑO" class="bg-slate-950 border border-slate-700 p-2 rounded-lg text-sm" onchange="processData()"><option value="TODOS">Año: Todos</option></select>
+            <select id="filter-OPERATIVO" class="bg-slate-950 border border-slate-700 p-2 rounded-lg text-sm" onchange="processData()"><option value="TODOS">Tipo: Todos</option></select>
+            <select id="filter-LOCALIDAD" class="bg-slate-950 border border-slate-700 p-2 rounded-lg text-sm" onchange="processData()"><option value="TODOS">Localidad: Todas</option></select>
+            <select id="filter-BARRIO" class="bg-slate-950 border border-slate-700 p-2 rounded-lg text-sm" onchange="processData()"><option value="TODOS">Barrio: Todos</option></select>
         </div>
 
-        <section id="view-kpi" class="space-y-6">
-            <div id="kpi-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <!-- KPIs injected here -->
+        <!-- Section: TERRITORIO -->
+        <section id="view-territorio" class="space-y-6">
+            <div id="kpi-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- KPIs dynamically injected -->
             </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
-                    <h3 class="text-sm font-semibold mb-4">Comparativa de Indicadores</h3>
-                    <canvas id="barChart" height="250"></canvas>
-                </div>
-                <div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
-                    <h3 class="text-sm font-semibold mb-4">Distribución General</h3>
-                    <canvas id="pieChart" height="250"></canvas>
-                </div>
+                <div class="glass p-6 rounded-2xl"><h3 class="text-lg font-semibold mb-6">Comparativa de Métricas</h3><canvas id="barChart" height="200"></canvas></div>
+                <div class="glass p-6 rounded-2xl"><h3 class="text-lg font-semibold mb-6">Distribución de Operativos</h3><canvas id="pieChart" height="200"></canvas></div>
             </div>
         </section>
 
-        <section id="view-table" class="hidden">
-            <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="bg-slate-800/50 text-slate-400" id="tableHead"></thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
+        <!-- Section: AUSENTISMO (Placeholder) -->
+        <section id="view-ausentismo" class="hidden glass p-12 text-center rounded-2xl">
+            <i data-lucide="construction" class="mx-auto w-12 h-12 text-slate-600 mb-4"></i>
+            <h2 class="text-xl font-bold">Módulo Ausentismo</h2>
+            <p class="text-slate-500">Sección en desarrollo para gestión de recursos humanos.</p>
+        </section>
+
+        <!-- Section: IRAB 2026 (Placeholder) -->
+        <section id="view-irab" class="hidden glass p-12 text-center rounded-2xl">
+            <i data-lucide="shield-alert" class="mx-auto w-12 h-12 text-slate-600 mb-4"></i>
+            <h2 class="text-xl font-bold">Módulo IRAB 2026</h2>
+            <p class="text-slate-500">Monitoreo epidemiológico invierno 2026.</p>
         </section>
     </main>
 
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
         let allData = [];
-        let charts = {};
+        let activeChartBar, activeChartPie;
 
         async function fetchData() {
             try {
@@ -69,71 +83,77 @@
                 allData = await res.json();
                 initFilters();
                 processData();
-            } catch (e) { console.error('Error cargando:', e); }
+            } catch (e) { console.error('Error:', e); }
         }
 
         function initFilters() {
-            const filters = ['AÑO', 'OPERATIVO tipo', 'LOCALIDAD', 'BARRIO'];
-            filters.forEach(f => {
-                const select = document.getElementById(`filter-${f.split(' ')[0]}`);
-                const options = [...new Set(allData.map(r => r[f]))].filter(Boolean);
-                options.forEach(o => select.innerHTML += `<option value="${o}">${o}</option>`);
+            const filters = { 'AÑO': 'AÑO', 'OPERATIVO': 'OPERATIVO tipo', 'LOCALIDAD': 'LOCALIDAD', 'BARRIO': 'BARRIO' };
+            Object.entries(filters).forEach(([id, key]) => {
+                const select = document.getElementById(`filter-${id}`);
+                const options = [...new Set(allData.map(r => r[key]))].filter(Boolean);
+                options.sort().forEach(o => select.innerHTML += `<option value="${o}">${o}</option>`);
             });
         }
 
         function processData() {
             const filters = {
                 'AÑO': document.getElementById('filter-AÑO').value,
-                'OPERATIVO tipo': document.getElementById('filter-TIPO').value,
+                'OPERATIVO': document.getElementById('filter-OPERATIVO').value,
                 'LOCALIDAD': document.getElementById('filter-LOCALIDAD').value,
                 'BARRIO': document.getElementById('filter-BARRIO').value
             };
 
             const filtered = allData.filter(r => {
                 return (filters['AÑO'] === 'TODOS' || r['AÑO'] == filters['AÑO']) &&
-                       (filters['OPERATIVO tipo'] === 'TODOS' || r['OPERATIVO tipo'] === filters['OPERATIVO tipo']) &&
+                       (filters['OPERATIVO'] === 'TODOS' || r['OPERATIVO tipo'] === filters['OPERATIVO']) &&
                        (filters['LOCALIDAD'] === 'TODOS' || r['LOCALIDAD'] === filters['LOCALIDAD']) &&
                        (filters['BARRIO'] === 'TODOS' || r['BARRIO'] === filters['BARRIO']);
             });
 
-            const metrics = ['MANZ', 'CAL (APLIC)', 'PERS', 'ATENCIONES', 'DERIVACIONES', 'COVID', 'AUH', 'INSCRIPCIONES', 'TELEMEDICINA', 'EMPADRONAMIENTO', 'VACUNACION DENGUE'];
+            // Map de las métricas que solicitaste
+            const metrics = {
+                'MANZ': 'MANZ', 'CAL': 'CAL (APLIC)', 'PERS': 'PERS VAC', 
+                'ATENC': 'ATENCIONES', 'DERIV': 'DERIVACIONES', 'COVID': 'COVID', 
+                'AUH': 'AUH', 'INSCR': 'INSCRIPCIONES', 'TELE': 'TELEMEDICINA', 
+                'EMPA': 'EMPADRONAMIENTO', 'DENGUE': 'VACUNACION DENGUE'
+            };
+
             const sums = {};
-            metrics.forEach(m => sums[m] = filtered.reduce((acc, r) => acc + (Number(r[m] || 0)), 0));
+            Object.keys(metrics).forEach(m => sums[m] = filtered.reduce((acc, r) => acc + (Number(r[metrics[m]] || 0)), 0));
 
             renderKPIs(sums);
             renderCharts(sums);
-            renderTable(filtered);
         }
 
         function renderKPIs(sums) {
             const grid = document.getElementById('kpi-grid');
             grid.innerHTML = Object.entries(sums).map(([key, val]) => `
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                    <p class="text-[10px] text-slate-500 uppercase tracking-wider">${key}</p>
-                    <p class="text-xl font-bold text-emerald-400">${val.toLocaleString()}</p>
+                <div class="glass p-5 rounded-2xl border border-slate-800">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">${key}</p>
+                    <p class="text-2xl font-bold text-emerald-400">${val.toLocaleString()}</p>
                 </div>
             `).join('');
         }
 
         function renderCharts(sums) {
-            Object.values(charts).forEach(c => c.destroy());
-            const ctxBar = document.getElementById('barChart').getContext('2d');
-            charts['barChart'] = new Chart(ctxBar, {
-                type: 'bar',
-                data: { labels: Object.keys(sums), datasets: [{ label: 'Total', data: Object.values(sums), backgroundColor: '#34d399' }] }
-            });
-            const ctxPie = document.getElementById('pieChart').getContext('2d');
-            charts['pieChart'] = new Chart(ctxPie, {
-                type: 'pie',
-                data: { labels: Object.keys(sums), datasets: [{ data: Object.values(sums), backgroundColor: ['#34d399', '#fbbf24', '#f87171', '#60a5fa', '#a78bfa', '#f472b6', '#22d3ee', '#fb923c', '#e879f9', '#4ade80', '#2dd4bf'] }] }
-            });
-        }
+            if(activeChartBar) activeChartBar.destroy();
+            if(activeChartPie) activeChartPie.destroy();
 
-        function renderTable(data) {
-            if(data.length === 0) return;
-            const keys = Object.keys(data[0]);
-            document.getElementById('tableHead').innerHTML = `<tr>${keys.map(k => `<th class="p-3">${k}</th>`).join('')}</tr>`;
-            document.getElementById('tableBody').innerHTML = data.map(r => `<tr>${keys.map(k => `<td class="p-3 border-t border-slate-800">${r[k] || 0}</td>`).join('')}</tr>`).join('');
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            activeChartBar = new Chart(ctxBar, {
+                type: 'bar',
+                data: { 
+                    labels: Object.keys(sums), 
+                    datasets: [{ label: 'Total', data: Object.values(sums), backgroundColor: '#10b981' }] 
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            activeChartPie = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: { labels: Object.keys(sums), datasets: [{ data: Object.values(sums), backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#6366f1', '#14b8a6', '#f43f5e'] }] }
+            });
         }
 
         function showSection(id) {
