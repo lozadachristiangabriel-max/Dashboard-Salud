@@ -131,8 +131,8 @@
         <!-- VISTA: TERRITORIO -->
         <section id="view-territorio" class="hidden">
             
-            <!-- GRILLA DE KPIs (11 Tarjetas con imágenes/íconos) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4 mb-8">
+            <!-- GRILLA DE KPIs (10 Tarjetas con imágenes/íconos) -->
+            <div id="kpi-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                 <!-- Se inyectarán dinámicamente desde JS -->
             </div>
 
@@ -346,6 +346,28 @@
         }
 
         function renderKPIs(sums) {
+            const container = document.getElementById('kpi-container');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            // Renderiza cada tarjeta leyendo tu configuración
+            kpiConfig.forEach(kpi => {
+                const value = sums[kpi.id] || 0;
+                container.innerHTML += `
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="${kpi.icon}" class="${kpi.color} w-8 h-8 mb-3"></i>
+                        <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">${kpi.title}</h4>
+                        <span class="text-2xl font-bold text-white">${value.toLocaleString('es-AR')}</span>
+                    </div>
+                `;
+            });
+            
+            // Vuelve a cargar los iconos para los nuevos elementos
+            if(window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
         function renderCharts(sums, yearlyData) {
             Chart.defaults.color = '#94A3B8';
             Chart.defaults.font.family = 'Inter';
