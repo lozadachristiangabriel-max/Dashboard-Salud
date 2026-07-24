@@ -141,23 +141,23 @@
                 <div class="glass-card p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2">
                         <i data-lucide="bar-chart-2" class="text-emerald-400 w-5 h-5"></i>
-                        Indicadores de Vacunación (CAL, PERS, DENGUE)
+                        Comparativa: Pers. Vacunadas vs Calendario y COVID
                     </h3>
                     <div class="h-64 relative"><canvas id="chartVacunacion"></canvas></div>
                 </div>
                 
                 <div class="glass-card p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2">
-                        <i data-lucide="pie-chart" class="text-blue-400 w-5 h-5"></i>
-                        Distribución de Asistencia (COVID, Telemed, Atenc.)
+                        <i data-lucide="pie-chart" class="text-yellow-400 w-5 h-5"></i>
+                        Proporción: Atenciones vs AUH
                     </h3>
                     <div class="h-64 relative"><canvas id="chartAsistencia"></canvas></div>
                 </div>
 
                 <div class="glass-card p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2">
-                        <i data-lucide="target" class="text-orange-400 w-5 h-5"></i>
-                        Trámites y Gestión (AUH, Inscripciones, Empad.)
+                        <i data-lucide="laptop" class="text-cyan-400 w-5 h-5"></i>
+                        Gestión Digital: Empadronamiento vs Telemedicina
                     </h3>
                     <div class="h-64 relative"><canvas id="chartTramites"></canvas></div>
                 </div>
@@ -169,6 +169,15 @@
                     </h3>
                     <div class="h-64 relative"><canvas id="chartTerritorio"></canvas></div>
                 </div>
+            </div>
+
+            <!-- GRAFICO ANUAL (NUEVO) -->
+            <div class="glass-card p-6 mt-6 mb-8">
+                <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                    <i data-lucide="calendar" class="text-white w-5 h-5"></i>
+                    Evolución Histórica (Comparativa por Años)
+                </h3>
+                <div class="h-80 relative"><canvas id="chartAnual"></canvas></div>
             </div>
         </section>
 
@@ -201,6 +210,7 @@
         let charts = {}; // Para guardar y destruir gráficos previos
 
         // Configuración visual de los 11 KPIs
+        // Configuración visual de los KPIs
         const kpiConfig = [
             { id: 'MANZ', title: 'MANZANAS', icon: 'map', color: 'text-indigo-400' },
             { id: 'CAL (APLIC)', title: 'CALENDARIO', icon: 'syringe', color: 'text-emerald-400' },
@@ -209,9 +219,8 @@
             { id: 'DERIVACIONES', title: 'DERIVACIONES', icon: 'ambulance', color: 'text-rose-400' },
             { id: 'COVID', title: 'COVID', icon: 'biohazard', color: 'text-red-500' },
             { id: 'AUH', title: 'LIBRETAS AUH', icon: 'file-text', color: 'text-orange-400' },
-            { id: 'INSCRIPCIONES', title: 'INSCRIPCIONES', icon: 'clipboard-list', color: 'text-yellow-400' },
-            { id: 'TELEMEDICINA', title: 'TELEMEDICINA', icon: 'phone-call', color: 'text-cyan-400' },
-            { id: 'EMPADRONAMIENTO', title: 'EMPADRON. HSI', icon: 'file-signature', color: 'text-fuchsia-400' },
+            { id: 'INSCRIPCIONES TELEMEDICINA', title: 'INSC. TELEMED.', icon: 'headset', color: 'text-cyan-400' },
+            { id: 'EMPADRONAMIENTO', title: 'EMPADRONAMIENTO', icon: 'file-signature', color: 'text-fuchsia-400' },
             { id: 'VACUNACION DENGUE', title: 'VAC. DENGUE', icon: 'shield', color: 'text-lime-400' }
         ];
 
@@ -295,63 +304,49 @@
             const selectedLocalidad = document.getElementById('filter-localidad').value;
             const selectedBarrio = document.getElementById('filter-barrio').value;
 
-            // Filtrar los datos maestros
-            const filteredData = allData.filter(row => {
+            // Sumar las 11 métricas
+            let sums = {};
+            kpiConfig.forEach(kpi => { sums[kpi.id] = 0; });
+
+            // Objeto para agrupar por año (ignora el filtro de año actual para mostrar evolución)
+            let yearlyData = {};
+
+            allData.forEach(row => {
+                // Filtros para la vista general
                 const matchAnio = selectedAnio === 'TODOS' || String(row['AÑO']).trim().toUpperCase() === selectedAnio;
                 const matchOperativo = selectedOperativo === 'TODOS' || String(row['OPERATIVO tipo']).trim().toUpperCase() === selectedOperativo;
                 const matchLocalidad = selectedLocalidad === 'TODOS' || String(row['LOCALIDAD']).trim().toUpperCase() === selectedLocalidad;
                 const matchBarrio = selectedBarrio === 'TODOS' || String(row['BARRIO']).trim().toUpperCase() === selectedBarrio;
                 
-                return matchAnio && matchOperativo && matchLocalidad && matchBarrio;
-            });
+                if (matchAnio && matchOperativo && matchLocalidad && matchBarrio) {
+                    kpiConfig.forEach(kpi => {
+                        let value = parseFloat(row[kpi.id]);
+                        if (!isNaN(value)) {
+                            sums[kpi.id] += value;
+                        }
+                    });
+                }
 
-            // Sumar las 11 métricas
-            let sums = {};
-            kpiConfig.forEach(kpi => { sums[kpi.id] = 0; });
-
-            filteredData.forEach(row => {
-                kpiConfig.forEach(kpi => {
-                    let value = parseFloat(row[kpi.id]);
-                    if (!isNaN(value)) {
-                        sums[kpi.id] += value;
+                // Lógica para el gráfico comparativo anual (solo aplica filtros de operativo, localidad y barrio)
+                if (matchOperativo && matchLocalidad && matchBarrio) {
+                    let anioStr = String(row['AÑO']).trim().toUpperCase();
+                    if (anioStr && anioStr !== 'UNDEFINED' && anioStr !== 'NULL' && anioStr !== '') {
+                        if (!yearlyData[anioStr]) {
+                            yearlyData[anioStr] = { vacunas: 0, atenciones: 0, tramites: 0 };
+                        }
+                        yearlyData[anioStr].vacunas += (parseFloat(row['PERS VAC']) || 0) + (parseFloat(row['CAL (APLIC)']) || 0) + (parseFloat(row['COVID']) || 0);
+                        yearlyData[anioStr].atenciones += (parseFloat(row['ATENCIONES']) || 0) + (parseFloat(row['AUH']) || 0);
+                        yearlyData[anioStr].tramites += (parseFloat(row['EMPADRONAMIENTO']) || 0) + (parseFloat(row['INSCRIPCIONES TELEMEDICINA']) || 0);
                     }
-                });
+                }
             });
 
             renderKPIs(sums);
-            renderCharts(sums);
+            renderCharts(sums, yearlyData);
         }
 
         function renderKPIs(sums) {
-            const grid = document.querySelector('#view-territorio .grid');
-            grid.innerHTML = ''; // Limpiar grilla
-
-            kpiConfig.forEach((kpi, index) => {
-                // Hacer que la primera tarjeta (MANZANAS) ocupe más espacio si es necesario
-                const colSpan = index === 0 ? "col-span-2 xl:col-span-2" : "col-span-1";
-                
-                const value = sums[kpi.id].toLocaleString('es-AR');
-                
-                grid.innerHTML += `
-                    <div class="glass-card p-4 relative overflow-hidden group ${colSpan}">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <p class="text-[10px] uppercase tracking-wider text-slate-400 font-medium mb-1">${kpi.title}</p>
-                                <h4 class="text-3xl font-bold text-white group-hover:${kpi.color.split(' ')[0]} transition-colors">${value}</h4>
-                            </div>
-                            <div class="p-2 rounded-lg bg-slate-800/50 ${kpi.color} border border-slate-700/50">
-                                <i data-lucide="${kpi.icon}" class="w-5 h-5"></i>
-                            </div>
-                        </div>
-                        <!-- Efecto de brillo de fondo decorativo -->
-                        <div class="absolute -bottom-4 -right-4 w-16 h-16 ${kpi.color} opacity-10 blur-2xl rounded-full"></div>
-                    </div>
-                `;
-            });
-            lucide.createIcons();
-        }
-
-        function renderCharts(sums) {
+        function renderCharts(sums, yearlyData) {
             Chart.defaults.color = '#94A3B8';
             Chart.defaults.font.family = 'Inter';
 
@@ -360,55 +355,54 @@
                 if(charts[key]) charts[key].destroy();
             });
 
-            // 1. Gráfico de Vacunación (Bar)
+            // 1. Gráfico: Pers Vac vs Aplicaciones Calendario + COVID
             const ctxVac = document.getElementById('chartVacunacion').getContext('2d');
             charts.vacunacion = new Chart(ctxVac, {
                 type: 'bar',
                 data: {
-                    labels: ['Calendario', 'Pers. Vacunadas', 'Dengue'],
+                    labels: ['Pers. Vacunadas', 'Aplic. Calendario', 'Test/Vac COVID'],
                     datasets: [{
-                        label: 'Total Aplicaciones',
-                        data: [sums['CAL (APLIC)'], sums['PERS VAC'], sums['VACUNACION DENGUE']],
-                        backgroundColor: ['#10B981', '#059669', '#84CC16'],
+                        label: 'Totales',
+                        data: [sums['PERS VAC'], sums['CAL (APLIC)'], sums['COVID']],
+                        backgroundColor: ['#10B981', '#3B82F6', '#EF4444'],
                         borderRadius: 6
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
-            // 2. Gráfico de Asistencia (Doughnut)
+            // 2. Gráfico: Atenciones vs AUH
             const ctxAsis = document.getElementById('chartAsistencia').getContext('2d');
             charts.asistencia = new Chart(ctxAsis, {
-                type: 'doughnut',
+                type: 'pie',
                 data: {
-                    labels: ['COVID', 'Telemedicina', 'Atenciones'],
+                    labels: ['Atenciones Médicas', 'Libretas AUH'],
                     datasets: [{
-                        data: [sums['COVID'], sums['TELEMEDICINA'], sums['ATENCIONES']],
-                        backgroundColor: ['#EF4444', '#06B6D4', '#3B82F6'],
+                        data: [sums['ATENCIONES'], sums['AUH']],
+                        backgroundColor: ['#F59E0B', '#8B5CF6'],
                         borderWidth: 0,
                         hoverOffset: 4
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
+                options: { responsive: true, maintainAspectRatio: false }
             });
 
-            // 3. Gráfico de Trámites (Polar Area)
+            // 3. Gráfico: Empadronamiento vs Inscripciones Telemedicina
             const ctxTramites = document.getElementById('chartTramites').getContext('2d');
             charts.tramites = new Chart(ctxTramites, {
-                type: 'polarArea',
+                type: 'doughnut',
                 data: {
-                    labels: ['Libretas AUH', 'Inscripciones', 'Empadronamiento'],
+                    labels: ['Empadronamiento', 'Inscripciones Telemedicina'],
                     datasets: [{
-                        data: [sums['AUH'], sums['INSCRIPCIONES'], sums['EMPADRONAMIENTO']],
-                        backgroundColor: ['rgba(251, 146, 60, 0.7)', 'rgba(250, 204, 21, 0.7)', 'rgba(232, 121, 249, 0.7)'],
-                        borderWidth: 1,
-                        borderColor: '#1E293B'
+                        data: [sums['EMPADRONAMIENTO'], sums['INSCRIPCIONES TELEMEDICINA']],
+                        backgroundColor: ['#EC4899', '#06B6D4'],
+                        borderWidth: 0
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { r: { display: false } } }
+                options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
             });
 
-            // 4. Gráfico Territorial (Radar)
+            // 4. Gráfico Territorial (Radar/Bar) - Se mantiene para Manzanas y Derivaciones
             const ctxTerri = document.getElementById('chartTerritorio').getContext('2d');
             charts.territorio = new Chart(ctxTerri, {
                 type: 'bar',
@@ -423,6 +417,58 @@
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 5. NUEVO: Gráfico Evolución por Año
+            const sortedYears = Object.keys(yearlyData).sort();
+            const aniosVacunas = sortedYears.map(year => yearlyData[year].vacunas);
+            const aniosAtenciones = sortedYears.map(year => yearlyData[year].atenciones);
+            const aniosTramites = sortedYears.map(year => yearlyData[year].tramites);
+
+            const ctxAnual = document.getElementById('chartAnual').getContext('2d');
+            charts.anual = new Chart(ctxAnual, {
+                type: 'line',
+                data: {
+                    labels: sortedYears,
+                    datasets: [
+                        {
+                            label: 'Vacunación/COVID',
+                            data: aniosVacunas,
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Atenciones/AUH',
+                            data: aniosAtenciones,
+                            borderColor: '#F59E0B',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Trámites Digitales',
+                            data: aniosTramites,
+                            borderColor: '#06B6D4',
+                            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
             });
         }
 
