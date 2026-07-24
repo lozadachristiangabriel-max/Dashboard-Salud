@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Operativos Sanitarios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .nav-active { border-right: 2px solid #10b981; background: #1e293b; color: #34d399; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen flex">
+
+    <!-- Barra Lateral -->
+    <aside id="sidebar" class="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col h-screen sticky top-0">
+        <div class="p-6 border-b border-slate-800">
+            <h2 class="text-emerald-400 font-bold tracking-widest text-sm uppercase">Salud Panel</h2>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="showSection('view-kpi', this)" class="w-full text-left p-3 rounded-lg flex items-center gap-3 text-sm hover:bg-slate-800 nav-active">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Vista General
+            </button>
+            <button onclick="showSection('view-table', this)" class="w-full text-left p-3 rounded-lg flex items-center gap-3 text-sm hover:bg-slate-800">
+                <i data-lucide="table" class="w-4 h-4"></i> Registros
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 p-8 overflow-y-auto">
+        
+        <!-- Vista 1: KPIs -->
+        <section id="view-kpi" class="content-section space-y-6">
+            <h1 class="text-2xl font-bold text-white">Vista General</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                    <p class="text-slate-500 text-xs uppercase mb-1">TOTAL CAL</p>
+                    <p id="kpi-cal" class="text-3xl font-bold text-indigo-400">0</p>
+                </div>
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                    <p class="text-slate-500 text-xs uppercase mb-1">ATENCIONES</p>
+                    <p id="kpi-atenciones" class="text-3xl font-bold text-emerald-400">0</p>
+                </div>
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                    <p class="text-slate-500 text-xs uppercase mb-1">AUH</p>
+                    <p id="kpi-auh" class="text-3xl font-bold text-amber-400">0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vista 2: Tabla -->
+        <section id="view-table" class="content-section hidden">
+            <h1 class="text-2xl font-bold text-white mb-6">Listado de Operativos</h1>
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-800/50 text-slate-400">
+                        <tr>
+                            <th class="p-4">Localidad</th>
+                            <th class="p-4">Tipo</th>
+                            <th class="p-4 text-right">CAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-800">
+                        <tr><td colspan="3" class="p-4 text-center">Conectando con la nube...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
+
+        // Lógica de navegación
+        function showSection(id, btn) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active'));
+            btn.classList.add('nav-active');
+        }
+
+        async function fetchGoogleData() {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, { mode: 'no-cors' }); 
+                // Nota: Google Apps Script retorna a veces bloqueado por CORS, si falla intentamos fetch normal
+                const res = await fetch(GOOGLE_SCRIPT_URL);
+                const data = await res.json();
+                renderData(data);
+            } catch (err) {
+                console.error("Error al conectar:", err);
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="3" class="p-4 text-center text-red-400">Error de conexión. Verifica la implementación de Apps Script.</td></tr>';
+            }
+        }
+
+        function renderData(data) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ''; 
+            
+            let totalCal = 0;
+            let totalAuh = 0;
+
+            data.forEach(row => {
+                // Ajusta estos nombres segun tus columnas de Excel
+                const calValue = Number(row['CAL (APLIC)'] || 0);
+                const auhValue = Number(row['AUH'] || 0);
+
+                totalCal += calValue;
+                totalAuh += auhValue;
+                
+                tableBody.innerHTML += `
+                    <tr>
+                        <td class="p-4">${row.LOCALIDAD || '-'}</td>
+                        <td class="p-4">${row.TIPO || '-'}</td>
+                        <td class="p-4 text-right">${calValue}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('kpi-cal').innerText = totalCal;
+            document.getElementById('kpi-auh').innerText = totalAuh;
+        }
+
+        lucide.createIcons();
+        fetchGoogleData();
+    </script>
+</body>
+</html>
