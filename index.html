@@ -6,15 +6,19 @@
     <title>Monitor de Operativos Sanitarios</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; }
         .nav-active { border-right: 2px solid #10b981; background: #1e293b; color: #34d399; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-200 min-h-screen flex">
 
-    <!-- Barra Lateral -->
-    <aside id="sidebar" class="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col h-screen sticky top-0">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col h-screen sticky top-0">
         <div class="p-6 border-b border-slate-800">
             <h2 class="text-emerald-400 font-bold tracking-widest text-sm uppercase">Salud Panel</h2>
         </div>
@@ -28,98 +32,125 @@
         </nav>
     </aside>
 
-    <!-- Contenido Principal -->
     <main class="flex-1 p-8 overflow-y-auto">
-        
-        <!-- Vista 1: KPIs -->
         <section id="view-kpi" class="content-section space-y-6">
-            <h1 class="text-2xl font-bold text-white">Vista General</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-white">Vista General</h1>
+                <select id="filterSelect" onchange="processData()" class="bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-4 py-2 outline-none">
+                    <option value="TODOS">Todos los tipos</option>
+                </select>
+            </div>
+
+            <!-- KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800"><p class="text-slate-500 text-xs uppercase mb-1">TOTAL CAL</p><p id="kpi-cal" class="text-3xl font-bold text-indigo-400">0</p></div>
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800"><p class="text-slate-500 text-xs uppercase mb-1">COVID</p><p id="kpi-covid" class="text-3xl font-bold text-rose-400">0</p></div>
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800"><p class="text-slate-500 text-xs uppercase mb-1">TELEMEDICINA</p><p id="kpi-tele" class="text-3xl font-bold text-emerald-400">0</p></div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-                    <p class="text-slate-500 text-xs uppercase mb-1">TOTAL CAL</p>
-                    <p id="kpi-cal" class="text-3xl font-bold text-indigo-400">0</p>
+                    <h3 class="text-sm font-semibold mb-4">Comparativa Indicadores</h3>
+                    <canvas id="barChart" height="200"></canvas>
                 </div>
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-                    <p class="text-slate-500 text-xs uppercase mb-1">ATENCIONES</p>
-                    <p id="kpi-atenciones" class="text-3xl font-bold text-emerald-400">0</p>
-                </div>
-                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-                    <p class="text-slate-500 text-xs uppercase mb-1">AUH</p>
-                    <p id="kpi-auh" class="text-3xl font-bold text-amber-400">0</p>
+                    <h3 class="text-sm font-semibold mb-4">Distribución por Tipo</h3>
+                    <canvas id="pieChart" height="200"></canvas>
                 </div>
             </div>
         </section>
 
-        <!-- Vista 2: Tabla -->
         <section id="view-table" class="content-section hidden">
             <h1 class="text-2xl font-bold text-white mb-6">Listado de Operativos</h1>
             <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
-                <table class="w-full text-sm text-left">
-                    <thead class="bg-slate-800/50 text-slate-400">
-                        <tr>
-                            <th class="p-4">Localidad</th>
-                            <th class="p-4">Tipo</th>
-                            <th class="p-4 text-right">CAL</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-800">
-                        <tr><td colspan="3" class="p-4 text-center">Conectando con la nube...</td></tr>
-                    </tbody>
-                </table>
+                <table class="w-full text-sm text-left"><thead class="bg-slate-800/50 text-slate-400"><tr id="tableHead"></tr></thead><tbody id="tableBody"></tbody></table>
             </div>
         </section>
     </main>
 
     <script>
+        // PEGA AQUÍ TU URL (MANTENLA ENTRE COMILLAS)
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
-
-        // Lógica de navegación
-        function showSection(id, btn) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active'));
-            btn.classList.add('nav-active');
-        }
+        let allData = [];
+        let barChart, pieChart;
 
         async function fetchGoogleData() {
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, { mode: 'no-cors' }); 
-                // Nota: Google Apps Script retorna a veces bloqueado por CORS, si falla intentamos fetch normal
                 const res = await fetch(GOOGLE_SCRIPT_URL);
-                const data = await res.json();
-                renderData(data);
-            } catch (err) {
-                console.error("Error al conectar:", err);
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="3" class="p-4 text-center text-red-400">Error de conexión. Verifica la implementación de Apps Script.</td></tr>';
-            }
+                allData = await res.json();
+                populateFilters();
+                processData();
+            } catch (err) { document.getElementById('tableBody').innerHTML = 'Error de conexión.'; }
         }
 
-        function renderData(data) {
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = ''; 
+        function populateFilters() {
+            const select = document.getElementById('filterSelect');
+            const types = [...new Set(allData.map(r => r['TIPO OPERATIVO']))];
+            types.forEach(t => {
+                if(t) select.innerHTML += `<option value="${t}">${t}</option>`;
+            });
+        }
+
+        function processData() {
+            const filter = document.getElementById('filterSelect').value;
+            const filtered = filter === "TODOS" ? allData : allData.filter(r => r['TIPO OPERATIVO'] === filter);
             
-            let totalCal = 0;
-            let totalAuh = 0;
-
-            data.forEach(row => {
-                // Ajusta estos nombres segun tus columnas de Excel
-                const calValue = Number(row['CAL (APLIC)'] || 0);
-                const auhValue = Number(row['AUH'] || 0);
-
-                totalCal += calValue;
-                totalAuh += auhValue;
-                
-                tableBody.innerHTML += `
-                    <tr>
-                        <td class="p-4">${row.LOCALIDAD || '-'}</td>
-                        <td class="p-4">${row.TIPO || '-'}</td>
-                        <td class="p-4 text-right">${calValue}</td>
-                    </tr>
-                `;
+            // Cálculos
+            const sums = { cal: 0, covid: 0, tele: 0, pers: 0, hsi: 0 };
+            filtered.forEach(r => {
+                sums.cal += Number(r['CAL (APLIC)'] || 0);
+                sums.covid += Number(r['COVID'] || 0);
+                sums.tele += Number(r['TELEMEDICINA'] || 0);
+                sums.pers += Number(r['PERS VAC'] || 0);
+                sums.hsi += Number(r['EMPADRONAMIENTO HSI'] || 0);
             });
 
-            document.getElementById('kpi-cal').innerText = totalCal;
-            document.getElementById('kpi-auh').innerText = totalAuh;
+            document.getElementById('kpi-cal').innerText = sums.cal;
+            document.getElementById('kpi-covid').innerText = sums.covid;
+            document.getElementById('kpi-tele').innerText = sums.tele;
+
+            updateCharts(sums);
+            renderTable(filtered);
+        }
+
+        function updateCharts(sums) {
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+
+            if(barChart) barChart.destroy();
+            if(pieChart) pieChart.destroy();
+
+            barChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['CAL', 'COVID', 'Telemedicina', 'Pers. Vac', 'HSI'],
+                    datasets: [{ label: 'Total', data: [sums.cal, sums.covid, sums.tele, sums.pers, sums.hsi], backgroundColor: ['#6366f1', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'] }]
+                }
+            });
+
+            pieChart = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['CAL', 'COVID', 'Telemedicina'],
+                    datasets: [{ data: [sums.cal, sums.covid, sums.tele], backgroundColor: ['#6366f1', '#f43f5e', '#10b981'] }]
+                }
+            });
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = data.map(r => `
+                <tr class="border-b border-slate-800">
+                    <td class="p-4">${r['LOCALIDAD'] || '-'}</td>
+                    <td class="p-4">${r['TIPO OPERATIVO'] || '-'}</td>
+                    <td class="p-4 text-right">${r['CAL (APLIC)'] || 0}</td>
+                </tr>`).join('');
+        }
+
+        function showSection(id, btn) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
         }
 
         lucide.createIcons();
