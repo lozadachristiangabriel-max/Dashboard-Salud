@@ -12,13 +12,12 @@
         body { font-family: 'Inter', sans-serif; background-color: #0B1121; color: #e2e8f0; }
         .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; }
         .menu-item.active { background: rgba(16, 185, 129, 0.15); color: #10b981; border-right: 3px solid #10b981; }
-        .spinner { border: 3px solid rgba(16, 185, 129, 0.1); border-top: 3px solid #10b981; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        .loader { border: 3px solid rgba(16, 185, 129, 0.1); border-top: 3px solid #10b981; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
     <aside class="w-64 bg-[#0B1121] border-r border-slate-800 flex flex-col">
         <div class="p-6 text-emerald-500 font-bold tracking-wider text-xs flex items-center gap-2">
             <i data-lucide="activity"></i> SALUD PANEL
@@ -36,7 +35,6 @@
         </nav>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-[#0B1121]">
         <header class="p-8 pb-4">
             <h2 class="text-2xl font-bold text-white mb-1">SUBSECRETARÍA DE RECURSOS Y LOGÍSTICA</h2>
@@ -45,9 +43,10 @@
 
         <!-- View: TERRITORIO -->
         <section id="view-territorio" class="px-8 pb-8 block">
-            <div id="loader-territorio" class="text-center py-20 hidden"><div class="spinner mx-auto"></div></div>
             <div id="content-territorio" class="space-y-6">
-                <div id="kpi-container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+                <div id="kpi-container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div class="loader"></div>
+                </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="glass-card p-6"><canvas id="chart-t1" height="200"></canvas></div>
                     <div class="glass-card p-6"><canvas id="chart-t2" height="200"></canvas></div>
@@ -62,7 +61,7 @@
                     <option value="">Todos los Agentes</option>
                 </select>
                 <select id="filter-mes" class="bg-slate-800 text-white p-2 rounded text-sm border border-slate-700" onchange="renderAusentismo()">
-                    <option value="">Todos los Meses</option>
+                    <option value="TOTAL">Total Semestre</option>
                     <option value="JULIO">Julio</option>
                     <option value="AGOSTO">Agosto</option>
                     <option value="SEPTIEMBRE">Septiembre</option>
@@ -73,22 +72,16 @@
             </div>
             <div id="content-ausentismo" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-card p-6 border-l-4 border-rose-500"><p class="text-slate-400 text-xs">Total Inasistencias</p><p id="aus-total" class="text-2xl font-bold">0</p></div>
+                    <div class="glass-card p-6 border-l-4 border-rose-500"><p class="text-slate-400 text-xs">Inasistencias</p><p id="aus-total" class="text-2xl font-bold">0</p></div>
                     <div class="glass-card p-6 border-l-4 border-emerald-500"><p class="text-slate-400 text-xs">Agentes en Nómina</p><p id="aus-nomina" class="text-2xl font-bold">0</p></div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="glass-card p-6"><canvas id="chart-aus-mensual" height="200"></canvas></div>
-                    <div class="glass-card p-6"><canvas id="chart-aus-agentes" height="200"></canvas></div>
-                </div>
-                <div class="glass-card overflow-hidden">
-                    <table class="w-full text-left text-sm text-slate-300"><thead class="bg-slate-800 text-xs uppercase"><tr><th class="px-6 py-3">Agente</th><th class="px-6 py-3">Total</th></tr></thead><tbody id="tabla-ausentismo"></tbody></table>
-                </div>
+                <div class="glass-card p-6"><canvas id="chart-aus-agentes" height="300"></canvas></div>
             </div>
         </section>
 
         <!-- View: IRAB -->
         <section id="view-irab" class="px-8 pb-8 hidden">
-            <div class="glass-card p-16 text-center border border-emerald-500/20 text-slate-400">Módulo IRAB 2026 - En fase de desarrollo</div>
+            <div class="glass-card p-16 text-center border border-emerald-500/20 text-slate-400">Módulo IRAB 2026 - En desarrollo</div>
         </section>
     </main>
 
@@ -97,11 +90,21 @@
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycby7p-9DyGW-L7pqqE263rppn4bftnzn_XAReSY_tibQte0Be9ddEl2_2aLIcmDKYrQI0A/exec';
         
         let dataGlobalAusentismo = [];
-        let chartInstances = {};
+        let chartAusentismo = null;
 
-        async function fetchData(url) {
-            try { const res = await fetch(url); return await res.json(); } 
-            catch(e) { console.error("Error fetching", e); return []; }
+        async function fetchData(url, name) {
+            console.log(`Intentando cargar: ${name}`);
+            try { 
+                const res = await fetch(url); 
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                console.log(`${name} cargado con éxito:`, data.length, "registros");
+                return data;
+            } 
+            catch(e) { 
+                console.error(`Error en ${name}:`, e); 
+                return []; 
+            }
         }
 
         function switchView(viewId) {
@@ -115,10 +118,15 @@
         }
 
         async function loadAusentismo() {
-            const data = await fetchData(URL_AUSENTISMO);
+            const data = await fetchData(URL_AUSENTISMO, 'Ausentismo');
+            if (data.length === 0) {
+                document.getElementById('content-ausentismo').innerHTML = '<p class="text-red-500 p-4">Error: No se pudieron cargar los datos. Verifica que el script esté publicado.</p>';
+                return;
+            }
             dataGlobalAusentismo = data;
             const select = document.getElementById('filter-agente');
-            [...new Set(data.map(i => i.AGENTE))].forEach(a => select.innerHTML += `<option value="${a}">${a}</option>`);
+            const agentes = [...new Set(data.map(i => i.AGENTE))];
+            agentes.forEach(a => select.innerHTML += `<option value="${a}">${a}</option>`);
             renderAusentismo();
         }
 
@@ -130,32 +138,33 @@
             if(agenteFiltro) data = data.filter(d => d.AGENTE === agenteFiltro);
 
             let total = 0;
-            let tablaHtml = '';
-            
+            let labels = [];
+            let valores = [];
+
             data.forEach(row => {
-                let val = mesFiltro ? (parseInt(row[mesFiltro]) || 0) : (parseInt(row.TOTAL) || 0);
+                let val = parseInt(row[mesFiltro] || row['TOTAL'] || 0);
                 total += val;
-                tablaHtml += `<tr class="border-b border-slate-700/50"><td class="px-6 py-3">${row.AGENTE}</td><td class="px-6 py-3 text-rose-400 font-bold">${val}</td></tr>`;
+                labels.push(row.AGENTE);
+                valores.push(val);
             });
 
             document.getElementById('aus-total').textContent = total;
             document.getElementById('aus-nomina').textContent = data.length;
-            document.getElementById('tabla-ausentismo').innerHTML = tablaHtml;
 
-            // Charting
-            updateAusChart('chart-aus-agentes', data.slice(0,5).map(d => d.AGENTE), data.slice(0,5).map(d => d.TOTAL), 'Top 5 Agentes');
-        }
-
-        function updateAusChart(canvasId, labels, data, label) {
-            if(chartInstances[canvasId]) chartInstances[canvasId].destroy();
-            chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
+            if(chartAusentismo) chartAusentismo.destroy();
+            chartAusentismo = new Chart(document.getElementById('chart-aus-agentes'), {
                 type: 'bar',
-                data: { labels, datasets: [{ label, data, backgroundColor: '#10b981' }] },
+                data: { labels, datasets: [{ label: 'Inasistencias', data: valores, backgroundColor: '#10b981' }] },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        window.onload = () => { lucide.createIcons(); switchView('territorio'); };
+        window.onload = () => { 
+            lucide.createIcons(); 
+            switchView('territorio'); 
+            // Iniciar Territorio silenciosamente
+            fetchData(URL_TERRITORIO, 'Territorio').then(data => console.log('Territorio listo para renderizar'));
+        };
     </script>
 </body>
 </html>
