@@ -166,7 +166,7 @@
 
         <!-- VISTA: AUSENTISMO -->
         <section id="view-ausentismo" class="hidden">
-            <!-- FILTROS AUSENTISMO -->
+            <!-- FILTROS EXCLUSIVOS DE AUSENTISMO -->
             <div class="glass-card p-4 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 ml-1">Filtrar por Agente</label>
@@ -182,7 +182,7 @@
                 </div>
             </div>
 
-            <!-- RESUMEN / GRÁFICOS AUSENTISMO -->
+            <!-- GRÁFICOS DE AUSENTISMO -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <div class="glass-card p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2">
@@ -255,7 +255,6 @@
 
         async function fetchAllData() {
             try {
-                // Carga paralela de ambas planillas
                 const [resTerritorio, resAusentismo] = await Promise.all([
                     fetch(URL_TERRITORIO).then(res => res.json()),
                     fetch(URL_AUSENTISMO).then(res => res.json()).catch(() => [])
@@ -425,7 +424,6 @@
             const selectAgente = document.getElementById('filter-agente');
             const selectMes = document.getElementById('filter-mes');
             
-            // Detectar automáticamente columnas de Agente y Meses en la planilla de Ausentismo
             let agentes = new Set();
             let meses = new Set();
 
@@ -435,14 +433,9 @@
                     if (kUp.includes('AGENTE') || kUp.includes('NOMBRE') || kUp.includes('PERSONAL')) {
                         if (row[key]) agentes.add(String(row[key]).trim().toUpperCase());
                     }
-                    // Detectar posibles meses si están como columnas o campos
-                    if (['ENERO',IZ='FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'].some(m => kUp.includes(m))) {
-                        meses.add(key.trim());
-                    }
                 }
             });
 
-            // Si los meses son filas o columnas estandarizadas
             const mesesEstandar = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
             mesesEstandar.forEach(m => meses.add(m));
 
@@ -467,7 +460,6 @@
             let agentesTotales = {};
 
             ausentismoData.forEach(row => {
-                // Buscar coincidencia de agente en cualquier columna clave
                 let agenteRow = '';
                 for (let k in row) {
                     if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) {
@@ -478,9 +470,7 @@
                 const matchAgente = selAgente === 'TODOS' || agenteRow === selAgente;
 
                 if (matchAgente) {
-                    // Sumar meses
                     Object.keys(mesesTotales).forEach(mes => {
-                        // Buscar si la columna del mes existe en el row
                         let valMes = 0;
                         for (let k in row) {
                             if (k.includes(mes)) valMes = parseFloat(row[k]) || 0;
@@ -490,7 +480,6 @@
                         }
                     });
 
-                    // Agrupar por agente para el Top
                     if (agenteRow) {
                         if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = 0;
                         let sumaFaltasRow = 0;
@@ -523,7 +512,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
-            // Ordenar Top Agentes de mayor a menor y tomar los primeros 5 o 10
             const sortedAgentes = Object.entries(agentesTotales).sort((a,b) => b[1] - a[1]).slice(0, 5);
 
             charts.topAgentes = new Chart(document.getElementById('chartTopAgentes').getContext('2d'), {
