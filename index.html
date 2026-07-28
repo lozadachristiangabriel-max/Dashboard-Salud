@@ -6,7 +6,7 @@
     <title>Subsecretaría de Recursos y Logística</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js para gráficos -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -14,212 +14,134 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0B1121;
-            color: #94A3B8;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #0B1121; color: #94A3B8; }
         .glass-card {
             background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
             border-radius: 16px;
-            transition: transform 0.3s ease, border-color 0.3s ease;
         }
-        .glass-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-        .nav-item.active {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10B981;
-            border-left: 4px solid #10B981;
-        }
+        .nav-item.active { background: rgba(16, 185, 129, 0.1); color: #10B981; border-left: 4px solid #10B981; }
         select {
             appearance: none;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1em;
+            background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em;
         }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0B1121; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
 <body class="flex min-h-screen antialiased">
 
-    <!-- BARRA LATERAL (SIDEBAR) -->
+    <!-- SIDEBAR -->
     <aside class="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col fixed h-full z-20 shadow-2xl">
         <div class="p-6">
             <h2 class="text-[#10B981] font-bold tracking-widest text-sm uppercase flex items-center gap-2">
                 <i data-lucide="activity" class="w-5 h-5"></i> SALUD PANEL
             </h2>
         </div>
-        
         <nav class="flex-1 mt-4 px-3 space-y-1">
-            <button onclick="switchView('territorio')" id="btn-territorio" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 transition-colors text-left border-l-4 border-transparent">
+            <button onclick="switchView('territorio')" id="btn-territorio" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="map" class="w-5 h-5"></i> TERRITORIO
             </button>
-            <button onclick="switchView('ausentismo')" id="btn-ausentismo" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 transition-colors text-left border-l-4 border-transparent">
+            <button onclick="switchView('ausentismo')" id="btn-ausentismo" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="users" class="w-5 h-5"></i> AUSENTISMO
             </button>
-            <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 transition-colors text-left border-l-4 border-transparent">
+            <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="thermometer" class="w-5 h-5"></i> IRAB 2026
             </button>
         </nav>
-
-        <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
-            SS Recursos y Logística
-        </div>
+        <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">SS Recursos y Logística</div>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- MAIN -->
     <main class="ml-64 flex-1 p-8 overflow-x-hidden">
-        
-        <!-- Header Principal -->
         <header class="mb-8">
             <h1 class="text-3xl font-bold text-white mb-2">SUBSECRETARÍA DE RECURSOS Y LOGÍSTICA</h1>
             <p class="text-slate-400">Centro de control y visualización de datos operativos</p>
         </header>
 
-        <!-- Indicador de Carga Global -->
+        <!-- LOADER GENERAL -->
         <div id="loader" class="text-center py-12">
             <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-emerald-500 mx-auto mb-4"></i>
-            <p class="text-slate-400">Sincronizando bases de datos...</p>
+            <p class="text-slate-400">Sincronizando bases de datos (Territorio, Ausentismo e IRAB)...</p>
         </div>
 
-        <!-- VISTA: TERRITORIO -->
+        <!-- VISTA TERRITORIO -->
         <section id="view-territorio" class="hidden">
-            <!-- FILTROS TERRITORIO -->
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 relative z-10">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 ml-1">Año</label>
-                    <select id="filter-anio" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer">
-                        <option value="TODOS">Todos los Años</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 ml-1">Tipo de Operativo</label>
-                    <select id="filter-operativo" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer">
-                        <option value="TODOS">Todos los Tipos</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 ml-1">Localidad</label>
-                    <select id="filter-localidad" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer">
-                        <option value="TODOS">Todas las Localidades</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 ml-1">Barrio</label>
-                    <select id="filter-barrio" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer">
-                        <option value="TODOS">Todos los Barrios</option>
-                    </select>
-                </div>
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Año</label><select id="filter-anio" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select></div>
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Tipo de Operativo</label><select id="filter-operativo" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Tipos</option></select></div>
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Localidad</label><select id="filter-localidad" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todas las Localidades</option></select></div>
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Barrio</label><select id="filter-barrio" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Barrios</option></select></div>
             </div>
-
-            <!-- GRILLA DE KPIs -->
             <div id="kpi-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"></div>
-
-            <!-- MATRIZ DE GRÁFICOS TERRITORIO -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass-card p-6">
-                    <h3 class="text-white font-medium mb-4 flex items-center gap-2">
-                        <i data-lucide="bar-chart-2" class="text-emerald-400 w-5 h-5"></i>
-                        Comparativa: Pers. Vacunadas vs Calendario y COVID
-                    </h3>
-                    <div class="h-64 relative"><canvas id="chartVacunacion"></canvas></div>
-                </div>
-                <div class="glass-card p-6">
-                    <h3 class="text-white font-medium mb-4 flex items-center gap-2">
-                        <i data-lucide="pie-chart" class="text-yellow-400 w-5 h-5"></i>
-                        Proporción: Atenciones vs AUH
-                    </h3>
-                    <div class="h-64 relative"><canvas id="chartAsistencia"></canvas></div>
-                </div>
-                <div class="glass-card p-6">
-                    <h3 class="text-white font-medium mb-4 flex items-center gap-2">
-                        <i data-lucide="laptop" class="text-cyan-400 w-5 h-5"></i>
-                        Gestión Digital: Empadronamiento vs Telemedicina
-                    </h3>
-                    <div class="h-64 relative"><canvas id="chartTramites"></canvas></div>
-                </div>
-                <div class="glass-card p-6">
-                    <h3 class="text-white font-medium mb-4 flex items-center gap-2">
-                        <i data-lucide="radar" class="text-purple-400 w-5 h-5"></i>
-                        Impacto Territorial (Manzanas y Derivaciones)
-                    </h3>
-                    <div class="h-64 relative"><canvas id="chartTerritorio"></canvas></div>
-                </div>
+                <div class="glass-card p-6"><div class="h-64 relative"><canvas id="chartVacunacion"></canvas></div></div>
+                <div class="glass-card p-6"><div class="h-64 relative"><canvas id="chartAsistencia"></canvas></div></div>
+                <div class="glass-card p-6"><div class="h-64 relative"><canvas id="chartTramites"></canvas></div></div>
+                <div class="glass-card p-6"><div class="h-64 relative"><canvas id="chartTerritorio"></canvas></div></div>
             </div>
-            <div class="glass-card p-6 mt-6 mb-8">
-                <h3 class="text-white font-medium mb-4 flex items-center gap-2">
-                    <i data-lucide="calendar" class="text-white w-5 h-5"></i>
-                    Evolución Histórica (Comparativa por Años)
-                </h3>
-                <div class="h-80 relative"><canvas id="chartAnual"></canvas></div>
+            <div class="glass-card p-6 mt-6 mb-8"><div class="h-80 relative"><canvas id="chartAnual"></canvas></div></div>
+        </section>
+
+        <!-- VISTA AUSENTISMO -->
+        <section id="view-ausentismo" class="hidden">
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Agente</label><select id="filter-agente" onchange="processAusentismoData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Agentes</option></select></div>
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label><select id="filter-mes" onchange="processAusentismoData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Meses</option></select></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass-card p-6"><h3 class="text-white font-medium mb-4">Inasistencias por Mes</h3><div class="h-72 relative"><canvas id="chartAusentismoMensual"></canvas></div></div>
+                <div class="glass-card p-6"><h3 class="text-white font-medium mb-4">Top Agentes con más Ausencias</h3><div class="h-72 relative"><canvas id="chartTopAgentes"></canvas></div></div>
             </div>
         </section>
 
-        <!-- VISTA: AUSENTISMO -->
-        <section id="view-ausentismo" class="hidden">
-            <!-- FILTROS EXCLUSIVOS DE AUSENTISMO -->
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 ml-1">Filtrar por Agente</label>
-                    <select id="filter-agente" onchange="processAusentismoData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer">
-                        <option value="TODOS">Todos los Agentes</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1 ml-1">Filtrar por Mes</label>
-                    <select id="filter-mes" onchange="processAusentismoData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer">
-                        <option value="TODOS">Todos los Meses</option>
-                    </select>
+        <!-- VISTA IRAB -->
+        <section id="view-irab" class="hidden">
+            <!-- KPIs de IRAB -->
+            <div id="irab-kpi-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            
+            <!-- Gráficos IRAB -->
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
+                <div class="glass-card p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                        <i data-lucide="trending-up" class="text-cyan-400 w-5 h-5"></i>
+                        Evolución Epidemiológica Semanal (Externados vs Visitas)
+                    </h3>
+                    <div class="h-80 relative"><canvas id="chartIrabEvolucion"></canvas></div>
                 </div>
             </div>
-
-            <!-- GRÁFICOS DE AUSENTISMO -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <div class="glass-card p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2">
-                        <i data-lucide="trending-up" class="text-red-400 w-5 h-5"></i>
-                        Inasistencias por Mes
+                        <i data-lucide="pill" class="text-emerald-400 w-5 h-5"></i>
+                        Entrega de Medicación por Semana
                     </h3>
-                    <div class="h-72 relative"><canvas id="chartAusentismoMensual"></canvas></div>
+                    <div class="h-64 relative"><canvas id="chartIrabMedicacion"></canvas></div>
                 </div>
                 <div class="glass-card p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2">
-                        <i data-lucide="user-x" class="text-orange-400 w-5 h-5"></i>
-                        Top Agentes con más Ausencias
+                        <i data-lucide="calendar-clock" class="text-purple-400 w-5 h-5"></i>
+                        Turnos Programados
                     </h3>
-                    <div class="h-72 relative"><canvas id="chartTopAgentes"></canvas></div>
+                    <div class="h-64 relative"><canvas id="chartIrabTurnos"></canvas></div>
                 </div>
-            </div>
-        </section>
-
-        <!-- VISTA: IRAB 2026 -->
-        <section id="view-irab" class="hidden">
-            <div class="glass-card p-16 text-center">
-                <i data-lucide="shield-alert" class="w-16 h-16 text-slate-500 mx-auto mb-4"></i>
-                <h2 class="text-2xl font-bold text-white mb-2">Monitor IRAB 2026</h2>
-                <p class="text-slate-400 max-w-md mx-auto">Panel de monitoreo epidemiológico invernal configurado.</p>
             </div>
         </section>
     </main>
 
-    <!-- LOGICA JAVASCRIPT -->
+    <!-- LOGICA JAVASCRIPT Y URLs -->
     <script>
         const URL_TERRITORIO = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbw7tP5mgS3cfBpXi3-W_0Pks_tnZ7ncbEstZrF649byWy0YTsdmxLao_stLSK27F7Vblw/exec';
+        const URL_IRAB = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
         
-        let territorioData = [];
-        let ausentismoData = [];
-        let charts = {};
-
+        let territorioData = [], ausentismoData = [], irabData = [], charts = {};
         const kpiConfig = [
             { id: 'MANZ', title: 'MANZANAS', icon: 'map', color: 'text-indigo-400' },
             { id: 'CAL (APLIC)', title: 'CALENDARIO', icon: 'syringe', color: 'text-emerald-400' },
@@ -234,43 +156,30 @@
         ];
 
         function switchView(viewId) {
-            document.getElementById('view-territorio').classList.add('hidden');
-            document.getElementById('view-ausentismo').classList.add('hidden');
-            document.getElementById('view-irab').classList.add('hidden');
-            
-            document.getElementById('btn-territorio').classList.remove('active');
-            document.getElementById('btn-ausentismo').classList.remove('active');
-            document.getElementById('btn-irab').classList.remove('active');
-
+            ['territorio', 'ausentismo', 'irab'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                document.getElementById(`btn-${v}`).classList.remove('active');
+            });
             document.getElementById(`view-${viewId}`).classList.remove('hidden');
             document.getElementById(`btn-${viewId}`).classList.add('active');
 
-            if(viewId === 'territorio' && territorioData.length > 0) {
-                setTimeout(() => processTerritorioData(), 50);
-            }
-            if(viewId === 'ausentismo' && ausentismoData.length > 0) {
-                setTimeout(() => processAusentismoData(), 50);
-            }
+            if(viewId === 'territorio' && territorioData.length) setTimeout(() => processTerritorioData(), 50);
+            if(viewId === 'ausentismo' && ausentismoData.length) setTimeout(() => processAusentismoData(), 50);
+            if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
         }
 
         async function fetchAllData() {
             try {
-                const [resTerritorio, resAusentismo] = await Promise.all([
-                    fetch(URL_TERRITORIO).then(res => res.json()),
-                    fetch(URL_AUSENTISMO).then(res => res.json()).catch(() => [])
+                // Carga de las 3 planillas simultáneamente
+                const [resT, resA, resI] = await Promise.all([
+                    fetch(URL_TERRITORIO).then(r => r.json()).catch(() => []),
+                    fetch(URL_AUSENTISMO).then(r => r.json()).catch(() => []),
+                    fetch(URL_IRAB).then(r => r.json()).catch(() => [])
                 ]);
 
-                territorioData = resTerritorio.map(row => {
-                    let clean = {};
-                    for(let k in row) if(k) clean[k.trim()] = row[k];
-                    return clean;
-                });
-
-                ausentismoData = resAusentismo.map(row => {
-                    let clean = {};
-                    for(let k in row) if(k) clean[k.trim().toUpperCase()] = row[k];
-                    return clean;
-                });
+                territorioData = resT.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
+                ausentismoData = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                irabData = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
 
                 document.getElementById('loader').classList.add('hidden');
                 switchView('territorio');
@@ -279,38 +188,27 @@
                 initAusentismoFilters();
                 processTerritorioData();
                 processAusentismoData();
-            } catch (error) {
-                console.error('Error sincronizando datos:', error);
-                document.getElementById('loader').innerHTML = `<p class="text-red-500">Error al sincronizar bases de datos.</p>`;
+                processIrabData();
+            } catch (e) {
+                console.error(e);
+                document.getElementById('loader').innerHTML = `<p class="text-red-500">Error al sincronizar datos.</p>`;
             }
         }
 
-        // --- TERRITORIO LOGIC ---
+        /* ----- TERRITORIO ----- */
         function initTerritorioFilters() {
             const map = { 'anio': 'AÑO', 'operativo': 'OPERATIVO tipo', 'localidad': 'LOCALIDAD', 'barrio': 'BARRIO' };
             for (const [id, key] of Object.entries(map)) {
                 const select = document.getElementById(`filter-${id}`);
-                const values = [...new Set(territorioData.map(item => item[key] ? String(item[key]).trim().toUpperCase() : null))]
-                    .filter(val => val && val !== 'NULL' && val !== '').sort();
-                
-                values.forEach(val => {
-                    const opt = document.createElement('option');
-                    opt.value = val;
-                    opt.textContent = val;
-                    select.appendChild(opt);
-                });
+                const values = [...new Set(territorioData.map(item => item[key] ? String(item[key]).trim().toUpperCase() : null))].filter(v => v && v !== 'NULL').sort();
+                values.forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; select.appendChild(opt); });
             }
         }
 
         function processTerritorioData() {
-            const sAnio = document.getElementById('filter-anio').value;
-            const sOp = document.getElementById('filter-operativo').value;
-            const sLoc = document.getElementById('filter-localidad').value;
-            const sBar = document.getElementById('filter-barrio').value;
-
-            let sums = {};
-            kpiConfig.forEach(k => { sums[k.id] = 0; });
-            let yearlyData = {};
+            const sAnio = document.getElementById('filter-anio').value, sOp = document.getElementById('filter-operativo').value;
+            const sLoc = document.getElementById('filter-localidad').value, sBar = document.getElementById('filter-barrio').value;
+            let sums = {}; kpiConfig.forEach(k => sums[k.id] = 0); let yearlyData = {};
 
             territorioData.forEach(row => {
                 const matchAnio = sAnio === 'TODOS' || String(row['AÑO']).trim().toUpperCase() === sAnio;
@@ -318,16 +216,10 @@
                 const matchLoc = sLoc === 'TODOS' || String(row['LOCALIDAD']).trim().toUpperCase() === sLoc;
                 const matchBar = sBar === 'TODOS' || String(row['BARRIO']).trim().toUpperCase() === sBar;
                 
-                if (matchAnio && matchOp && matchLoc && matchBar) {
-                    kpiConfig.forEach(k => {
-                        let val = parseFloat(row[k.id]);
-                        if (!isNaN(val)) sums[k.id] += val;
-                    });
-                }
-
+                if (matchAnio && matchOp && matchLoc && matchBar) { kpiConfig.forEach(k => { let v = parseFloat(row[k.id]); if (!isNaN(v)) sums[k.id] += v; }); }
                 if (matchOp && matchLoc && matchBar) {
                     let anioStr = String(row['AÑO']).trim().toUpperCase();
-                    if (anioStr && anioStr !== 'UNDEFINED' && anioStr !== 'NULL' && anioStr !== '') {
+                    if (anioStr && anioStr !== 'UNDEFINED') {
                         if (!yearlyData[anioStr]) yearlyData[anioStr] = { vacunas: 0, atenciones: 0, tramites: 0 };
                         yearlyData[anioStr].vacunas += (parseFloat(row['PERS VAC']) || 0) + (parseFloat(row['CAL (APLIC)']) || 0) + (parseFloat(row['COVID']) || 0);
                         yearlyData[anioStr].atenciones += (parseFloat(row['ATENCIONES']) || 0) + (parseFloat(row['AUH']) || 0);
@@ -335,192 +227,154 @@
                     }
                 }
             });
-
-            renderKPIs(sums);
-            renderTerritorioCharts(sums, yearlyData);
+            renderTerritorioKPIs(sums); renderTerritorioCharts(sums, yearlyData);
         }
 
-        function renderKPIs(sums) {
-            const container = document.getElementById('kpi-container');
-            if(!container) return;
-            container.innerHTML = '';
+        function renderTerritorioKPIs(sums) {
+            const container = document.getElementById('kpi-container'); if(!container) return; container.innerHTML = '';
             kpiConfig.forEach(kpi => {
-                const value = sums[kpi.id] || 0;
                 container.innerHTML += `
                     <div class="glass-card p-4 flex flex-col items-center text-center">
                         <i data-lucide="${kpi.icon}" class="${kpi.color} w-8 h-8 mb-3"></i>
                         <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">${kpi.title}</h4>
-                        <span class="text-2xl font-bold text-white">${value.toLocaleString('es-AR')}</span>
-                    </div>
-                `;
+                        <span class="text-2xl font-bold text-white">${(sums[kpi.id] || 0).toLocaleString('es-AR')}</span>
+                    </div>`;
             });
             if(window.lucide) window.lucide.createIcons();
         }
 
         function renderTerritorioCharts(sums, yearlyData) {
-            Chart.defaults.color = '#94A3B8';
-            Chart.defaults.font.family = 'Inter';
+            if(charts.vacunacion) charts.vacunacion.destroy(); if(charts.asistencia) charts.asistencia.destroy();
+            if(charts.tramites) charts.tramites.destroy(); if(charts.territorio) charts.territorio.destroy(); if(charts.anual) charts.anual.destroy();
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
-            if(charts.vacunacion) charts.vacunacion.destroy();
-            if(charts.asistencia) charts.asistencia.destroy();
-            if(charts.tramites) charts.tramites.destroy();
-            if(charts.territorio) charts.territorio.destroy();
-            if(charts.anual) charts.anual.destroy();
-
-            charts.vacunacion = new Chart(document.getElementById('chartVacunacion').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: ['Pers. Vacunadas', 'Aplic. Calendario', 'Test/Vac COVID'],
-                    datasets: [{ data: [sums['PERS VAC'], sums['CAL (APLIC)'], sums['COVID']], backgroundColor: ['#10B981', '#3B82F6', '#EF4444'], borderRadius: 6 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-
-            charts.asistencia = new Chart(document.getElementById('chartAsistencia').getContext('2d'), {
-                type: 'pie',
-                data: {
-                    labels: ['Atenciones Médicas', 'Libretas AUH'],
-                    datasets: [{ data: [sums['ATENCIONES'], sums['AUH']], backgroundColor: ['#F59E0B', '#8B5CF6'], borderWidth: 0 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-
-            charts.tramites = new Chart(document.getElementById('chartTramites').getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Empadronamiento', 'Inscripciones Telemedicina'],
-                    datasets: [{ data: [sums['EMPADRONAMIENTO'], sums['INSCRIPCIONES TELEMEDICINA']], backgroundColor: ['#EC4899', '#06B6D4'], borderWidth: 0 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
-            });
-
-            charts.territorio = new Chart(document.getElementById('chartTerritorio').getContext('2d'), {
-                type: 'bar',
-                indexAxis: 'y',
-                data: {
-                    labels: ['Manzanas Abordadas', 'Derivaciones Realizadas'],
-                    datasets: [{ data: [sums['MANZ'], sums['DERIVACIONES']], backgroundColor: ['#6366F1', '#F43F5E'], borderRadius: 4 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
+            charts.vacunacion = new Chart(document.getElementById('chartVacunacion').getContext('2d'), { type: 'bar', data: { labels: ['Pers. Vacunadas', 'Calendario', 'COVID'], datasets: [{ data: [sums['PERS VAC'], sums['CAL (APLIC)'], sums['COVID']], backgroundColor: ['#10B981', '#3B82F6', '#EF4444'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            charts.asistencia = new Chart(document.getElementById('chartAsistencia').getContext('2d'), { type: 'pie', data: { labels: ['Atenciones', 'AUH'], datasets: [{ data: [sums['ATENCIONES'], sums['AUH']], backgroundColor: ['#F59E0B', '#8B5CF6'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false } });
+            charts.tramites = new Chart(document.getElementById('chartTramites').getContext('2d'), { type: 'doughnut', data: { labels: ['Empadronamiento', 'Telemedicina'], datasets: [{ data: [sums['EMPADRONAMIENTO'], sums['INSCRIPCIONES TELEMEDICINA']], backgroundColor: ['#EC4899', '#06B6D4'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '60%' } });
+            charts.territorio = new Chart(document.getElementById('chartTerritorio').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: ['Manzanas', 'Derivaciones'], datasets: [{ data: [sums['MANZ'], sums['DERIVACIONES']], backgroundColor: ['#6366F1', '#F43F5E'], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
 
             const sortedYears = Object.keys(yearlyData).sort();
-            charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: sortedYears,
-                    datasets: [
-                        { label: 'Vacunación/COVID', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 },
-                        { label: 'Atenciones/AUH', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 },
-                        { label: 'Trámites Digitales', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
-            });
+            charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), { type: 'line', data: { labels: sortedYears, datasets: [{ label: 'Vacunación', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }, { label: 'Atenciones', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 }, { label: 'Trámites', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
-        // --- AUSENTISMO LOGIC ---
+        /* ----- AUSENTISMO ----- */
         function initAusentismoFilters() {
-            const selectAgente = document.getElementById('filter-agente');
-            const selectMes = document.getElementById('filter-mes');
-            
+            const sAgente = document.getElementById('filter-agente'), sMes = document.getElementById('filter-mes');
             let agentes = new Set();
-            let meses = new Set();
-
-            ausentismoData.forEach(row => {
-                for (let key in row) {
-                    let kUp = key.toUpperCase();
-                    if (kUp.includes('AGENTE') || kUp.includes('NOMBRE') || kUp.includes('PERSONAL')) {
-                        if (row[key]) agentes.add(String(row[key]).trim().toUpperCase());
-                    }
-                }
-            });
-
-            const mesesEstandar = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-            mesesEstandar.forEach(m => meses.add(m));
-
-            [...agentes].sort().forEach(ag => {
-                let opt = document.createElement('option');
-                opt.value = ag; opt.textContent = ag;
-                selectAgente.appendChild(opt);
-            });
-
-            [...meses].forEach(m => {
-                let opt = document.createElement('option');
-                opt.value = m; opt.textContent = m;
-                selectMes.appendChild(opt);
-            });
+            ausentismoData.forEach(row => { for (let k in row) if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) { if (row[k]) agentes.add(String(row[k]).trim().toUpperCase()); } });
+            [...agentes].sort().forEach(ag => { let opt = document.createElement('option'); opt.value = ag; opt.textContent = ag; sAgente.appendChild(opt); });
+            ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].forEach(m => { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; sMes.appendChild(opt); });
         }
 
         function processAusentismoData() {
-            const selAgente = document.getElementById('filter-agente').value;
-            const selMes = document.getElementById('filter-mes').value;
-
-            let mesesTotales = { 'ENERO': 0, 'FEBRERO': 0, 'MARZO': 0, 'ABRIL': 0, 'MAYO': 0, 'JUNIO': 0, 'JULIO': 0, 'AGOSTO': 0, 'SEPTIEMBRE': 0, 'OCTUBRE': 0, 'NOVIEMBRE': 0, 'DICIEMBRE': 0 };
-            let agentesTotales = {};
+            const selAgente = document.getElementById('filter-agente').value, selMes = document.getElementById('filter-mes').value;
+            let mesesTotales = { 'ENERO': 0, 'FEBRERO': 0, 'MARZO': 0, 'ABRIL': 0, 'MAYO': 0, 'JUNIO': 0, 'JULIO': 0, 'AGOSTO': 0, 'SEPTIEMBRE': 0, 'OCTUBRE': 0, 'NOVIEMBRE': 0, 'DICIEMBRE': 0 }, agentesTotales = {};
 
             ausentismoData.forEach(row => {
-                let agenteRow = '';
-                for (let k in row) {
-                    if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) {
-                        agenteRow = String(row[k] || '').trim().toUpperCase();
-                    }
-                }
-
-                const matchAgente = selAgente === 'TODOS' || agenteRow === selAgente;
-
-                if (matchAgente) {
-                    Object.keys(mesesTotales).forEach(mes => {
-                        let valMes = 0;
-                        for (let k in row) {
-                            if (k.includes(mes)) valMes = parseFloat(row[k]) || 0;
-                        }
-                        if (selMes === 'TODOS' || selMes === mes) {
-                            mesesTotales[mes] += valMes;
-                        }
-                    });
-
+                let agenteRow = ''; for (let k in row) if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) agenteRow = String(row[k] || '').trim().toUpperCase();
+                if (selAgente === 'TODOS' || agenteRow === selAgente) {
+                    Object.keys(mesesTotales).forEach(mes => { let valMes = 0; for (let k in row) if (k.includes(mes)) valMes = parseFloat(row[k]) || 0; if (selMes === 'TODOS' || selMes === mes) mesesTotales[mes] += valMes; });
                     if (agenteRow) {
-                        if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = 0;
-                        let sumaFaltasRow = 0;
-                        Object.keys(mesesTotales).forEach(mes => {
-                            for (let k in row) {
-                                if (k.includes(mes)) sumaFaltasRow += parseFloat(row[k]) || 0;
-                            }
-                        });
-                        agentesTotales[agenteRow] += sumaFaltasRow;
+                        if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = 0; let sumaRow = 0;
+                        Object.keys(mesesTotales).forEach(mes => { for (let k in row) if (k.includes(mes)) sumaRow += parseFloat(row[k]) || 0; });
+                        agentesTotales[agenteRow] += sumaRow;
                     }
                 }
             });
-
             renderAusentismoCharts(mesesTotales, agentesTotales);
         }
 
         function renderAusentismoCharts(mesesTotales, agentesTotales) {
-            if(charts.ausentismoMensual) charts.ausentismoMensual.destroy();
-            if(charts.topAgentes) charts.topAgentes.destroy();
+            if(charts.ausentismoMensual) charts.ausentismoMensual.destroy(); if(charts.topAgentes) charts.topAgentes.destroy();
+            charts.ausentismoMensual = new Chart(document.getElementById('chartAusentismoMensual').getContext('2d'), { type: 'bar', data: { labels: Object.keys(mesesTotales), datasets: [{ data: Object.values(mesesTotales), backgroundColor: '#EF4444', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            const sortedAgentes = Object.entries(agentesTotales).sort((a,b) => b[1] - a[1]).slice(0, 5);
+            charts.topAgentes = new Chart(document.getElementById('chartTopAgentes').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: sortedAgentes.map(i => i[0]), datasets: [{ data: sortedAgentes.map(i => i[1]), backgroundColor: '#F59E0B', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        }
 
-            const mesesKeys = Object.keys(mesesTotales);
-            const mesesVals = Object.values(mesesTotales);
+        /* ----- IRAB 2026 ----- */
+        function processIrabData() {
+            if (irabData.length === 0) return;
 
-            charts.ausentismoMensual = new Chart(document.getElementById('chartAusentismoMensual').getContext('2d'), {
-                type: 'bar',
+            let totalExternados = 0, totalVisitas = 0, totalMedicacion = 0, totalReinternacion = 0, totalTurnos = 0;
+            let semanas = [], dataExternados = [], dataVisitas = [], dataMedicacion = [], dataTurnos = [];
+
+            irabData.forEach(row => {
+                let semana = row['SEMANA EPIDEMIOLOGICA'] || 'N/A';
+                let ext = parseFloat(row['NIÑOS/AS EXTERNADOS']) || 0;
+                let vis = parseFloat(row['VISITAS REALIZADAS']) || 0;
+                let med = parseFloat(row['ENTREGA DE MEDICACION']) || 0;
+                let rein = parseFloat(row['REINTERNACION']) || 0;
+                let turn = parseFloat(row['TURNOS PROGRAMADOS']) || 0;
+
+                if(semana !== 'N/A' && !isNaN(parseFloat(semana))) {
+                    semanas.push('Semana ' + semana);
+                    dataExternados.push(ext);
+                    dataVisitas.push(vis);
+                    dataMedicacion.push(med);
+                    dataTurnos.push(turn);
+                }
+
+                totalExternados += ext; totalVisitas += vis; totalMedicacion += med;
+                totalReinternacion += rein; totalTurnos += turn;
+            });
+
+            const kpiContainer = document.getElementById('irab-kpi-container');
+            kpiContainer.innerHTML = `
+                <div class="glass-card p-4 flex flex-col items-center text-center">
+                    <i data-lucide="baby" class="text-blue-400 w-8 h-8 mb-3"></i>
+                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Niños Externados</h4>
+                    <span class="text-2xl font-bold text-white">${totalExternados}</span>
+                </div>
+                <div class="glass-card p-4 flex flex-col items-center text-center">
+                    <i data-lucide="footprints" class="text-emerald-400 w-8 h-8 mb-3"></i>
+                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Visitas Realizadas</h4>
+                    <span class="text-2xl font-bold text-white">${totalVisitas}</span>
+                </div>
+                <div class="glass-card p-4 flex flex-col items-center text-center">
+                    <i data-lucide="pill" class="text-orange-400 w-8 h-8 mb-3"></i>
+                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Entrega Medicación</h4>
+                    <span class="text-2xl font-bold text-white">${totalMedicacion}</span>
+                </div>
+                <div class="glass-card p-4 flex flex-col items-center text-center">
+                    <i data-lucide="alert-triangle" class="text-red-500 w-8 h-8 mb-3"></i>
+                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Reinternaciones</h4>
+                    <span class="text-2xl font-bold text-white">${totalReinternacion}</span>
+                </div>
+                <div class="glass-card p-4 flex flex-col items-center text-center">
+                    <i data-lucide="calendar-check" class="text-purple-400 w-8 h-8 mb-3"></i>
+                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Programados</h4>
+                    <span class="text-2xl font-bold text-white">${totalTurnos}</span>
+                </div>
+            `;
+            if(window.lucide) window.lucide.createIcons();
+
+            if(charts.irabEvolucion) charts.irabEvolucion.destroy();
+            if(charts.irabMedicacion) charts.irabMedicacion.destroy();
+            if(charts.irabTurnos) charts.irabTurnos.destroy();
+
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+
+            charts.irabEvolucion = new Chart(document.getElementById('chartIrabEvolucion').getContext('2d'), {
+                type: 'line',
                 data: {
-                    labels: mesesKeys,
-                    datasets: [{ label: 'Ausencias', data: mesesVals, backgroundColor: '#EF4444', borderRadius: 6 }]
+                    labels: semanas,
+                    datasets: [
+                        { label: 'Niños Externados', data: dataExternados, borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4 },
+                        { label: 'Visitas Realizadas', data: dataVisitas, borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }
+                    ]
                 },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            charts.irabMedicacion = new Chart(document.getElementById('chartIrabMedicacion').getContext('2d'), {
+                type: 'bar',
+                data: { labels: semanas, datasets: [{ label: 'Medicación Entregada', data: dataMedicacion, backgroundColor: '#F59E0B', borderRadius: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
-            const sortedAgentes = Object.entries(agentesTotales).sort((a,b) => b[1] - a[1]).slice(0, 5);
-
-            charts.topAgentes = new Chart(document.getElementById('chartTopAgentes').getContext('2d'), {
+            charts.irabTurnos = new Chart(document.getElementById('chartIrabTurnos').getContext('2d'), {
                 type: 'bar',
-                indexAxis: 'y',
-                data: {
-                    labels: sortedAgentes.map(item => item[0]),
-                    datasets: [{ label: 'Total Inasistencias', data: sortedAgentes.map(item => item[1]), backgroundColor: '#F59E0B', borderRadius: 4 }]
-                },
+                data: { labels: semanas, datasets: [{ label: 'Turnos Programados', data: dataTurnos, backgroundColor: '#A855F7', borderRadius: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
