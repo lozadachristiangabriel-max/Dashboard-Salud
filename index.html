@@ -33,15 +33,33 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
 </head>
-<body class="flex min-h-screen antialiased">
+<body class="flex min-h-screen antialiased flex-col md:flex-row">
 
-    <!-- SIDEBAR -->
-    <aside class="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col fixed h-full z-20 shadow-2xl">
-        <div class="p-6">
+    <!-- BARRA SUPERIOR MÓVIL (Solo visible en celulares) -->
+    <header class="md:hidden bg-[#0F172A] border-b border-slate-800 p-4 flex items-center justify-between sticky top-0 z-30 shadow-lg">
+        <h2 class="text-[#10B981] font-bold tracking-widest text-sm uppercase flex items-center gap-2">
+            <i data-lucide="activity" class="w-5 h-5"></i> SALUD PANEL
+        </h2>
+        <button onclick="toggleMobileMenu()" class="text-slate-300 hover:text-white focus:outline-none p-1">
+            <i data-lucide="menu" class="w-7 h-7" id="menu-icon"></i>
+        </button>
+    </header>
+
+    <!-- FONDO OSCURO PARA EL MENÚ EN CELULAR -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 z-30 hidden md:hidden"></div>
+
+    <!-- SIDEBAR (Barra lateral adaptable) -->
+    <aside id="sidebar" class="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col fixed h-full z-40 shadow-2xl transition-transform duration-300 transform -translate-x-full md:translate-x-0">
+        <div class="p-6 flex items-center justify-between">
             <h2 class="text-[#10B981] font-bold tracking-widest text-sm uppercase flex items-center gap-2">
                 <i data-lucide="activity" class="w-5 h-5"></i> SALUD PANEL
             </h2>
+            <!-- Botón para cerrar en móvil -->
+            <button onclick="toggleMobileMenu()" class="md:hidden text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
         </div>
+        
         <nav class="flex-1 mt-4 px-3 space-y-1">
             <button onclick="switchView('territorio')" id="btn-territorio" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="map" class="w-5 h-5"></i> TERRITORIO
@@ -56,76 +74,76 @@
         <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">SS Recursos y Logística</div>
     </aside>
 
-    <!-- MAIN -->
-    <main class="ml-64 flex-1 p-8 overflow-x-hidden">
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">SUBSECRETARÍA DE RECURSOS Y LOGÍSTICA</h1>
-            <p class="text-slate-400">Centro de control y visualización de datos operativos</p>
+    <!-- MAIN (Contenido principal - Margen automático en PC) -->
+    <main class="md:ml-64 flex-1 p-4 md:p-8 overflow-x-hidden">
+        <header class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">SUBSECRETARÍA DE RECURSOS Y LOGÍSTICA</h1>
+            <p class="text-xs md:text-sm text-slate-400">Centro de control y visualización de datos operativos</p>
         </header>
 
         <!-- LOADER GENERAL -->
         <div id="loader" class="text-center py-12">
             <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-emerald-500 mx-auto mb-4"></i>
-            <p class="text-slate-400">Sincronizando bases de datos (Territorio, Ausentismo e IRAB)...</p>
+            <p class="text-slate-400 text-sm">Sincronizando bases de datos (Territorio, Ausentismo e IRAB)...</p>
         </div>
 
         <!-- VISTA TERRITORIO -->
         <section id="view-territorio" class="hidden">
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Año</label><select id="filter-anio" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select></div>
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Tipo de Operativo</label><select id="filter-operativo" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Tipos</option></select></div>
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Localidad</label><select id="filter-localidad" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todas las Localidades</option></select></div>
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Barrio</label><select id="filter-barrio" onchange="processTerritorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Barrios</option></select></div>
             </div>
-            <div id="kpi-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"></div>
+            <div id="kpi-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4 mb-8"></div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass-card p-6"><div class="h-64 relative"><canvas id="chartVacunacion"></canvas></div></div>
-                <div class="glass-card p-6"><div class="h-64 relative"><canvas id="chartAsistencia"></canvas></div></div>
-                <div class="glass-card p-6"><div class="h-64 relative"><canvas id="chartTramites"></canvas></div></div>
-                <div class="glass-card p-6"><div class="h-64 relative"><canvas id="chartTerritorio"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6"><div class="h-64 relative"><canvas id="chartVacunacion"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6"><div class="h-64 relative"><canvas id="chartAsistencia"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6"><div class="h-64 relative"><canvas id="chartTramites"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6"><div class="h-64 relative"><canvas id="chartTerritorio"></canvas></div></div>
             </div>
-            <div class="glass-card p-6 mt-6 mb-8"><div class="h-80 relative"><canvas id="chartAnual"></canvas></div></div>
+            <div class="glass-card p-4 md:p-6 mt-6 mb-8"><div class="h-72 md:h-80 relative"><canvas id="chartAnual"></canvas></div></div>
         </section>
 
         <!-- VISTA AUSENTISMO -->
         <section id="view-ausentismo" class="hidden">
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Agente</label><select id="filter-agente" onchange="processAusentismoData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Agentes</option></select></div>
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label><select id="filter-mes" onchange="processAusentismoData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Meses</option></select></div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <div class="glass-card p-6"><h3 class="text-white font-medium mb-4">Inasistencias por Mes</h3><div class="h-72 relative"><canvas id="chartAusentismoMensual"></canvas></div></div>
-                <div class="glass-card p-6"><h3 class="text-white font-medium mb-4">Top Agentes con más Ausencias</h3><div class="h-72 relative"><canvas id="chartTopAgentes"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 text-sm md:text-base">Inasistencias por Mes</h3><div class="h-64 md:h-72 relative"><canvas id="chartAusentismoMensual"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 text-sm md:text-base">Top Agentes con más Ausencias</h3><div class="h-64 md:h-72 relative"><canvas id="chartTopAgentes"></canvas></div></div>
             </div>
         </section>
 
         <!-- VISTA IRAB -->
         <section id="view-irab" class="hidden">
             <!-- KPIs de IRAB -->
-            <div id="irab-kpi-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div id="irab-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4 mb-8">
                 <!-- Se llenará dinámicamente -->
             </div>
             
             <!-- Gráficos IRAB -->
-            <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
-                <div class="glass-card p-6">
-                    <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+            <div class="grid grid-cols-1 gap-6 mb-8">
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="trending-up" class="text-cyan-400 w-5 h-5"></i>
                         Evolución Epidemiológica Semanal (Externados vs Visitas)
                     </h3>
-                    <div class="h-80 relative"><canvas id="chartIrabEvolucion"></canvas></div>
+                    <div class="h-72 md:h-80 relative"><canvas id="chartIrabEvolucion"></canvas></div>
                 </div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <div class="glass-card p-6">
-                    <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="pill" class="text-emerald-400 w-5 h-5"></i>
                         Entrega de Medicación por Semana
                     </h3>
                     <div class="h-64 relative"><canvas id="chartIrabMedicacion"></canvas></div>
                 </div>
-                <div class="glass-card p-6">
-                    <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="calendar-clock" class="text-purple-400 w-5 h-5"></i>
                         Turnos Programados
                     </h3>
@@ -155,6 +173,14 @@
             { id: 'VACUNACION DENGUE', title: 'VAC. DENGUE', icon: 'shield', color: 'text-lime-400' }
         ];
 
+        // --- CONTROL DEL MENÚ MÓVIL ---
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
         function switchView(viewId) {
             ['territorio', 'ausentismo', 'irab'].forEach(v => {
                 document.getElementById(`view-${v}`).classList.add('hidden');
@@ -163,6 +189,14 @@
             document.getElementById(`view-${viewId}`).classList.remove('hidden');
             document.getElementById(`btn-${viewId}`).classList.add('active');
 
+            // Cierra el menú en móviles de forma automática al elegir una opción
+            if (window.innerWidth < 768) {
+                const sidebar = document.getElementById('sidebar');
+                if (!sidebar.classList.contains('-translate-x-full')) {
+                    toggleMobileMenu();
+                }
+            }
+
             if(viewId === 'territorio' && territorioData.length) setTimeout(() => processTerritorioData(), 50);
             if(viewId === 'ausentismo' && ausentismoData.length) setTimeout(() => processAusentismoData(), 50);
             if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
@@ -170,7 +204,6 @@
 
         async function fetchAllData() {
             try {
-                // Carga de las 3 planillas simultáneamente
                 const [resT, resA, resI] = await Promise.all([
                     fetch(URL_TERRITORIO).then(r => r.json()).catch(() => []),
                     fetch(URL_AUSENTISMO).then(r => r.json()).catch(() => []),
@@ -234,10 +267,10 @@
             const container = document.getElementById('kpi-container'); if(!container) return; container.innerHTML = '';
             kpiConfig.forEach(kpi => {
                 container.innerHTML += `
-                    <div class="glass-card p-4 flex flex-col items-center text-center">
-                        <i data-lucide="${kpi.icon}" class="${kpi.color} w-8 h-8 mb-3"></i>
-                        <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">${kpi.title}</h4>
-                        <span class="text-2xl font-bold text-white">${(sums[kpi.id] || 0).toLocaleString('es-AR')}</span>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                        <i data-lucide="${kpi.icon}" class="${kpi.color} w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">${kpi.title}</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${(sums[kpi.id] || 0).toLocaleString('es-AR')}</span>
                     </div>`;
             });
             if(window.lucide) window.lucide.createIcons();
@@ -320,30 +353,30 @@
 
             const kpiContainer = document.getElementById('irab-kpi-container');
             kpiContainer.innerHTML = `
-                <div class="glass-card p-4 flex flex-col items-center text-center">
-                    <i data-lucide="baby" class="text-blue-400 w-8 h-8 mb-3"></i>
-                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Niños Externados</h4>
-                    <span class="text-2xl font-bold text-white">${totalExternados}</span>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="baby" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Niños Externados</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalExternados}</span>
                 </div>
-                <div class="glass-card p-4 flex flex-col items-center text-center">
-                    <i data-lucide="footprints" class="text-emerald-400 w-8 h-8 mb-3"></i>
-                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Visitas Realizadas</h4>
-                    <span class="text-2xl font-bold text-white">${totalVisitas}</span>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="footprints" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Visitas Realizadas</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalVisitas}</span>
                 </div>
-                <div class="glass-card p-4 flex flex-col items-center text-center">
-                    <i data-lucide="pill" class="text-orange-400 w-8 h-8 mb-3"></i>
-                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Entrega Medicación</h4>
-                    <span class="text-2xl font-bold text-white">${totalMedicacion}</span>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="pill" class="text-orange-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Entrega Medicación</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalMedicacion}</span>
                 </div>
-                <div class="glass-card p-4 flex flex-col items-center text-center">
-                    <i data-lucide="alert-triangle" class="text-red-500 w-8 h-8 mb-3"></i>
-                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Reinternaciones</h4>
-                    <span class="text-2xl font-bold text-white">${totalReinternacion}</span>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="alert-triangle" class="text-red-500 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Reinternaciones</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalReinternacion}</span>
                 </div>
-                <div class="glass-card p-4 flex flex-col items-center text-center">
-                    <i data-lucide="calendar-check" class="text-purple-400 w-8 h-8 mb-3"></i>
-                    <h4 class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Programados</h4>
-                    <span class="text-2xl font-bold text-white">${totalTurnos}</span>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center sm:col-span-1 md:col-span-1 col-span-2">
+                    <i data-lucide="calendar-check" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Programados</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalTurnos}</span>
                 </div>
             `;
             if(window.lucide) window.lucide.createIcons();
