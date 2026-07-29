@@ -35,7 +35,7 @@
 </head>
 <body class="flex min-h-screen antialiased flex-col md:flex-row">
 
-    <!-- BARRA SUPERIOR MÓVIL (Solo visible en celulares) -->
+    <!-- BARRA SUPERIOR MÓVIL -->
     <header class="md:hidden bg-[#0F172A] border-b border-slate-800 p-4 flex items-center justify-between sticky top-0 z-30 shadow-lg">
         <h2 class="text-[#10B981] font-bold tracking-widest text-sm uppercase flex items-center gap-2">
             <i data-lucide="activity" class="w-5 h-5"></i> SALUD PANEL
@@ -45,16 +45,14 @@
         </button>
     </header>
 
-    <!-- FONDO OSCURO PARA EL MENÚ EN CELULAR -->
     <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 z-30 hidden md:hidden"></div>
 
-    <!-- SIDEBAR (Barra lateral adaptable) -->
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col fixed h-full z-40 shadow-2xl transition-transform duration-300 transform -translate-x-full md:translate-x-0">
         <div class="p-6 flex items-center justify-between">
             <h2 class="text-[#10B981] font-bold tracking-widest text-sm uppercase flex items-center gap-2">
                 <i data-lucide="activity" class="w-5 h-5"></i> SALUD PANEL
             </h2>
-            <!-- Botón para cerrar en móvil -->
             <button onclick="toggleMobileMenu()" class="md:hidden text-slate-400 hover:text-white">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
@@ -74,17 +72,17 @@
         <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">SS Recursos y Logística</div>
     </aside>
 
-    <!-- MAIN (Contenido principal - Margen automático en PC) -->
+    <!-- MAIN -->
     <main class="md:ml-64 flex-1 p-4 md:p-8 overflow-x-hidden">
         <header class="mb-6 md:mb-8">
             <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">SUBSECRETARÍA DE RECURSOS Y LOGÍSTICA</h1>
             <p class="text-xs md:text-sm text-slate-400">Centro de control y visualización de datos operativos</p>
         </header>
 
-        <!-- LOADER GENERAL -->
+        <!-- LOADER -->
         <div id="loader" class="text-center py-12">
             <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-emerald-500 mx-auto mb-4"></i>
-            <p class="text-slate-400 text-sm">Sincronizando bases de datos (Territorio, Ausentismo e IRAB)...</p>
+            <p class="text-slate-400 text-sm">Sincronizando bases de datos...</p>
         </div>
 
         <!-- VISTA TERRITORIO -->
@@ -117,12 +115,20 @@
             </div>
         </section>
 
-        <!-- VISTA IRAB -->
+        <!-- VISTA IRAB 2026 -->
         <section id="view-irab" class="hidden">
-            <!-- KPIs de IRAB -->
-            <div id="irab-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4 mb-8">
-                <!-- Se llenará dinámicamente -->
+            <!-- FILTRO DE SEMANA EPIDEMIOLÓGICA -->
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Semana</label>
+                    <select id="filter-semana-irab" onchange="processIrabData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODAS">Todas las Semanas</option>
+                    </select>
+                </div>
             </div>
+
+            <!-- KPIs de IRAB -->
+            <div id="irab-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4 mb-8"></div>
             
             <!-- Gráficos IRAB -->
             <div class="grid grid-cols-1 gap-6 mb-8">
@@ -134,18 +140,20 @@
                     <div class="h-72 md:h-80 relative"><canvas id="chartIrabEvolucion"></canvas></div>
                 </div>
             </div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Gráfico de Medicaciones Más Consumidas -->
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="pill" class="text-emerald-400 w-5 h-5"></i>
-                        Entrega de Medicación por Semana
+                        Medicación Utilizada (Unidades por Ítem)
                     </h3>
                     <div class="h-64 relative"><canvas id="chartIrabMedicacion"></canvas></div>
                 </div>
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="calendar-clock" class="text-purple-400 w-5 h-5"></i>
-                        Turnos Programados
+                        Turnos Programados por Semana
                     </h3>
                     <div class="h-64 relative"><canvas id="chartIrabTurnos"></canvas></div>
                 </div>
@@ -173,7 +181,6 @@
             { id: 'VACUNACION DENGUE', title: 'VAC. DENGUE', icon: 'shield', color: 'text-lime-400' }
         ];
 
-        // --- CONTROL DEL MENÚ MÓVIL ---
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
@@ -189,7 +196,6 @@
             document.getElementById(`view-${viewId}`).classList.remove('hidden');
             document.getElementById(`btn-${viewId}`).classList.add('active');
 
-            // Cierra el menú en móviles de forma automática al elegir una opción
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
                 if (!sidebar.classList.contains('-translate-x-full')) {
@@ -219,6 +225,7 @@
                 
                 initTerritorioFilters();
                 initAusentismoFilters();
+                initIrabFilters();
                 processTerritorioData();
                 processAusentismoData();
                 processIrabData();
@@ -324,33 +331,70 @@
             charts.topAgentes = new Chart(document.getElementById('chartTopAgentes').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: sortedAgentes.map(i => i[0]), datasets: [{ data: sortedAgentes.map(i => i[1]), backgroundColor: '#F59E0B', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
 
-        /* ----- IRAB 2026 ----- */
+        /* ----- IRAB 2026 CON FILTROS Y MEDICACIONES ----- */
+        function initIrabFilters() {
+            const sSemana = document.getElementById('filter-semana-irab');
+            if (!sSemana) return;
+            let semanas = new Set();
+            irabData.forEach(row => {
+                let sem = row['SEMANA EPIDEMIOLOGICA'] || row['SEMANA'] || '';
+                if (sem && !isNaN(parseFloat(sem))) semanas.add(String(sem).trim());
+            });
+            [...semanas].sort((a,b) => parseFloat(a) - parseFloat(b)).forEach(sem => {
+                let opt = document.createElement('option'); opt.value = sem; opt.textContent = 'Semana ' + sem;
+                sSemana.appendChild(opt);
+            });
+        }
+
         function processIrabData() {
             if (irabData.length === 0) return;
+            const selSemana = document.getElementById('filter-semana-irab').value;
 
             let totalExternados = 0, totalVisitas = 0, totalMedicacion = 0, totalReinternacion = 0, totalTurnos = 0;
-            let semanas = [], dataExternados = [], dataVisitas = [], dataMedicacion = [], dataTurnos = [];
+            let semanas = [], dataExternados = [], dataVisitas = [], dataTurnos = [];
+            
+            // Detectar dinámicamente cualquier columna nueva (medicaciones u otros ítems)
+            let medicacionesTotales = {};
+            const columnasNoMedicamento = [
+                'SEMANA EPIDEMIOLOGICA', 'SEMANA', 'NIÑOS/AS EXTERNADOS', 'VISITAS REALIZADAS',
+                'ENTREGA DE MEDICACION', 'REINTERNACION', 'TURNOS PROGRAMADOS', 'CANTIDAD', 'AÑO', 'ID'
+            ];
 
             irabData.forEach(row => {
-                let semana = row['SEMANA EPIDEMIOLOGICA'] || 'N/A';
-                let ext = parseFloat(row['NIÑOS/AS EXTERNADOS']) || 0;
-                let vis = parseFloat(row['VISITAS REALIZADAS']) || 0;
-                let med = parseFloat(row['ENTREGA DE MEDICACION']) || 0;
-                let rein = parseFloat(row['REINTERNACION']) || 0;
-                let turn = parseFloat(row['TURNOS PROGRAMADOS']) || 0;
+                let semana = String(row['SEMANA EPIDEMIOLOGICA'] || row['SEMANA'] || '').trim();
+                const matchSemana = selSemana === 'TODAS' || semana === selSemana;
 
-                if(semana !== 'N/A' && !isNaN(parseFloat(semana))) {
-                    semanas.push('Semana ' + semana);
-                    dataExternados.push(ext);
-                    dataVisitas.push(vis);
-                    dataMedicacion.push(med);
-                    dataTurnos.push(turn);
+                if (matchSemana) {
+                    let ext = parseFloat(row['NIÑOS/AS EXTERNADOS']) || 0;
+                    let vis = parseFloat(row['VISITAS REALIZADAS']) || 0;
+                    let med = parseFloat(row['ENTREGA DE MEDICACION']) || 0;
+                    let rein = parseFloat(row['REINTERNACION']) || 0;
+                    let turn = parseFloat(row['TURNOS PROGRAMADOS']) || 0;
+
+                    if (semana && !isNaN(parseFloat(semana))) {
+                        semanas.push('Sem. ' + semana);
+                        dataExternados.push(ext);
+                        dataVisitas.push(vis);
+                        dataTurnos.push(turn);
+                    }
+
+                    totalExternados += ext; totalVisitas += vis; totalMedicacion += med;
+                    totalReinternacion += rein; totalTurnos += turn;
+
+                    // Sumar valores de todas las columnas adicionales que agregaste
+                    for (let key in row) {
+                        if (!columnasNoMedicamento.includes(key.toUpperCase())) {
+                            let val = parseFloat(row[key]);
+                            if (!isNaN(val) && val > 0) {
+                                if (!medicacionesTotales[key]) medicacionesTotales[key] = 0;
+                                medicacionesTotales[key] += val;
+                            }
+                        }
+                    }
                 }
-
-                totalExternados += ext; totalVisitas += vis; totalMedicacion += med;
-                totalReinternacion += rein; totalTurnos += turn;
             });
 
+            // 1. Render KPIs
             const kpiContainer = document.getElementById('irab-kpi-container');
             kpiContainer.innerHTML = `
                 <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
@@ -381,12 +425,14 @@
             `;
             if(window.lucide) window.lucide.createIcons();
 
+            // 2. Render Gráficos IRAB
             if(charts.irabEvolucion) charts.irabEvolucion.destroy();
             if(charts.irabMedicacion) charts.irabMedicacion.destroy();
             if(charts.irabTurnos) charts.irabTurnos.destroy();
 
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
+            // Gráfico de Evolución
             charts.irabEvolucion = new Chart(document.getElementById('chartIrabEvolucion').getContext('2d'), {
                 type: 'line',
                 data: {
@@ -399,12 +445,27 @@
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
+            // Gráfico de Medicaciones Más Consumidas (Top 10 ítems autodetectados)
+            const topMedicamentos = Object.entries(medicacionesTotales)
+                .sort((a,b) => b[1] - a[1])
+                .slice(0, 10);
+
             charts.irabMedicacion = new Chart(document.getElementById('chartIrabMedicacion').getContext('2d'), {
                 type: 'bar',
-                data: { labels: semanas, datasets: [{ label: 'Medicación Entregada', data: dataMedicacion, backgroundColor: '#F59E0B', borderRadius: 4 }] },
+                indexAxis: 'y', // Horizontal para leer cómodamente nombres de medicamentos
+                data: {
+                    labels: topMedicamentos.length > 0 ? topMedicamentos.map(m => m[0]) : ['Total General Entregado'],
+                    datasets: [{
+                        label: 'Unidades',
+                        data: topMedicamentos.length > 0 ? topMedicamentos.map(m => m[1]) : [totalMedicacion],
+                        backgroundColor: '#10B981',
+                        borderRadius: 4
+                    }]
+                },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
+            // Gráfico de Turnos Programados
             charts.irabTurnos = new Chart(document.getElementById('chartIrabTurnos').getContext('2d'), {
                 type: 'bar',
                 data: { labels: semanas, datasets: [{ label: 'Turnos Programados', data: dataTurnos, backgroundColor: '#A855F7', borderRadius: 4 }] },
