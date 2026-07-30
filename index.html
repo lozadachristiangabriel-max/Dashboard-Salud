@@ -156,8 +156,24 @@
             </div>
         </section>
 
-        <!-- VISTA LABORATORIO -->
+        <!-- VISTA LABORATORIO (ACTUALIZADA CON FILTRO AÑO Y CAPS) -->
         <section id="view-laboratorio" class="hidden">
+            <!-- Filtros de Año y CAPS -->
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año</label>
+                    <select id="filter-anio-lab" onchange="processLaboratorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los Años</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por CAPS / Centro</label>
+                    <select id="filter-caps-lab" onchange="processLaboratorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los CAPS / Centros</option>
+                    </select>
+                </div>
+            </div>
+
             <!-- KPIs de Laboratorio -->
             <div id="lab-kpi-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8"></div>
             
@@ -183,7 +199,7 @@
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>
-                        Desglose General por Mes / Categoría
+                        Desglose General por Categoría / Centro
                     </h3>
                     <div class="h-80 relative"><canvas id="chartLabDetalle"></canvas></div>
                 </div>
@@ -240,6 +256,21 @@
             if(viewId === 'laboratorio' && laboratorioData.length) setTimeout(() => processLaboratorioData(), 50);
         }
 
+        // --- HELPER SEGURIDAD NUMÉRICA ---
+        function parseNumberSafe(val) {
+            if (val === undefined || val === null || val === '') return 0;
+            if (typeof val === 'number') return isNaN(val) ? 0 : val;
+            let str = String(val).replace(/\s+/g, '').replace(/\$/g, '');
+            // Si tiene comas como decimales y puntos de miles, convertir a formato JS
+            if (str.includes(',') && str.includes('.')) {
+                str = str.replace(/\./g, '').replace(',', '.');
+            } else if (str.includes(',')) {
+                str = str.replace(',', '.');
+            }
+            let num = parseFloat(str);
+            return isNaN(num) ? 0 : num;
+        }
+
         async function fetchAllData() {
             try {
                 const [resT, resA, resI, resL] = await Promise.all([
@@ -260,6 +291,7 @@
                 initTerritorioFilters();
                 initAusentismoFilters();
                 initIrabFilters();
+                initLaboratorioFilters(); // INICIALIZA FILTROS AÑO Y CAPS
                 processTerritorioData();
                 processAusentismoData();
                 processIrabData();
@@ -291,14 +323,14 @@
                 const matchLoc = sLoc === 'TODOS' || String(row['LOCALIDAD']).trim().toUpperCase() === sLoc;
                 const matchBar = sBar === 'TODOS' || String(row['BARRIO']).trim().toUpperCase() === sBar;
                 
-                if (matchAnio && matchOp && matchLoc && matchBar) { kpiConfig.forEach(k => { let v = parseFloat(row[k.id]); if (!isNaN(v)) sums[k.id] += v; }); }
+                if (matchAnio && matchOp && matchLoc && matchBar) { kpiConfig.forEach(k => { let v = parseNumberSafe(row[k.id]); sums[k.id] += v; }); }
                 if (matchOp && matchLoc && matchBar) {
                     let anioStr = String(row['AÑO']).trim().toUpperCase();
                     if (anioStr && anioStr !== 'UNDEFINED') {
                         if (!yearlyData[anioStr]) yearlyData[anioStr] = { vacunas: 0, atenciones: 0, tramites: 0 };
-                        yearlyData[anioStr].vacunas += (parseFloat(row['PERS VAC']) || 0) + (parseFloat(row['CAL (APLIC)']) || 0) + (parseFloat(row['COVID']) || 0);
-                        yearlyData[anioStr].atenciones += (parseFloat(row['ATENCIONES']) || 0) + (parseFloat(row['AUH']) || 0);
-                        yearlyData[anioStr].tramites += (parseFloat(row['EMPADRONAMIENTO']) || 0) + (parseFloat(row['INSCRIPCIONES TELEMEDICINA']) || 0);
+                        yearlyData[anioStr].vacunas += parseNumberSafe(row['PERS VAC']) + parseNumberSafe(row['CAL (APLIC)']) + parseNumberSafe(row['COVID']);
+                        yearlyData[anioStr].atenciones += parseNumberSafe(row['ATENCIONES']) + parseNumberSafe(row['AUH']);
+                        yearlyData[anioStr].tramites += parseNumberSafe(row['EMPADRONAMIENTO']) + parseNumberSafe(row['INSCRIPCIONES TELEMEDICINA']);
                     }
                 }
             });
@@ -348,10 +380,10 @@
             ausentismoData.forEach(row => {
                 let agenteRow = ''; for (let k in row) if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) agenteRow = String(row[k] || '').trim().toUpperCase();
                 if (selAgente === 'TODOS' || agenteRow === selAgente) {
-                    Object.keys(mesesTotales).forEach(mes => { let valMes = 0; for (let k in row) if (k.includes(mes)) valMes = parseFloat(row[k]) || 0; if (selMes === 'TODOS' || selMes === mes) mesesTotales[mes] += valMes; });
+                    Object.keys(mesesTotales).forEach(mes => { let valMes = 0; for (let k in row) if (k.includes(mes)) valMes = parseNumberSafe(row[k]); if (selMes === 'TODOS' || selMes === mes) mesesTotales[mes] += valMes; });
                     if (agenteRow) {
                         if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = 0; let sumaRow = 0;
-                        Object.keys(mesesTotales).forEach(mes => { for (let k in row) if (k.includes(mes)) sumaRow += parseFloat(row[k]) || 0; });
+                        Object.keys(mesesTotales).forEach(mes => { for (let k in row) if (k.includes(mes)) sumaRow += parseNumberSafe(row[k]); });
                         agentesTotales[agenteRow] += sumaRow;
                     }
                 }
@@ -398,11 +430,11 @@
                 const matchSemana = selSemana === 'TODAS' || semana === selSemana;
 
                 if (matchSemana) {
-                    let ext = parseFloat(row['NIÑOS/AS EXTERNADOS']) || 0;
-                    let vis = parseFloat(row['VISITAS REALIZADAS']) || 0;
-                    let med = parseFloat(row['ENTREGA DE MEDICACION']) || 0;
-                    let rein = parseFloat(row['REINTERNACION']) || 0;
-                    let turn = parseFloat(row['TURNOS PROGRAMADOS']) || 0;
+                    let ext = parseNumberSafe(row['NIÑOS/AS EXTERNADOS']);
+                    let vis = parseNumberSafe(row['VISITAS REALIZADAS']);
+                    let med = parseNumberSafe(row['ENTREGA DE MEDICACION']);
+                    let rein = parseNumberSafe(row['REINTERNACION']);
+                    let turn = parseNumberSafe(row['TURNOS PROGRAMADOS']);
 
                     if (semana && !isNaN(parseFloat(semana))) {
                         semanas.push('Sem. ' + semana);
@@ -416,8 +448,8 @@
 
                     for (let key in row) {
                         if (!columnasNoMedicamento.includes(key.toUpperCase())) {
-                            let val = parseFloat(row[key]);
-                            if (!isNaN(val) && val > 0) {
+                            let val = parseNumberSafe(row[key]);
+                            if (val > 0) {
                                 if (!medicacionesTotales[key]) medicacionesTotales[key] = 0;
                                 medicacionesTotales[key] += val;
                             }
@@ -497,37 +529,98 @@
             });
         }
 
-        /* ----- LABORATORIO ----- */
+        /* ----- LABORATORIO CON FILTROS AÑO Y CAPS ----- */
+        function initLaboratorioFilters() {
+            const selectAnio = document.getElementById('filter-anio-lab');
+            const selectCaps = document.getElementById('filter-caps-lab');
+            if (!selectAnio || !selectCaps) return;
+
+            let anios = new Set();
+            let capsSet = new Set();
+
+            laboratorioData.forEach(row => {
+                // Buscar cualquier clave para el año
+                for (let key in row) {
+                    if (key.includes('AÑO') || key.includes('ANIO') || key.includes('YEAR')) {
+                        let val = String(row[key] || '').trim();
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL') anios.add(val);
+                    }
+                    if (key.includes('CAPS') || key.includes('CENTRO') || key.includes('EFECTOR') || key.includes('LUGAR')) {
+                        let val = String(row[key] || '').trim();
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL') capsSet.add(val);
+                    }
+                }
+            });
+
+            [...anios].sort().forEach(anio => {
+                let opt = document.createElement('option'); opt.value = anio; opt.textContent = anio;
+                selectAnio.appendChild(opt);
+            });
+
+            [...capsSet].sort().forEach(c => {
+                let opt = document.createElement('option'); opt.value = c; opt.textContent = c;
+                selectCaps.appendChild(opt);
+            });
+        }
+
         function processLaboratorioData() {
             if (laboratorioData.length === 0) return;
+
+            const sAnio = document.getElementById('filter-anio-lab').value;
+            const sCaps = document.getElementById('filter-caps-lab').value;
 
             let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0;
             let labelsRow = [], dataOtorgados = [], dataPresentes = [], dataAusentes = [];
 
             laboratorioData.forEach((row, i) => {
-                let label = row['MES'] || row['CENTRO'] || row['CAPS'] || row['PERIODO'] || Object.values(row)[0] || (`Registro ${i+1}`);
-                
-                let otorgados = 0, presentes = 0, ausentes = 0;
-                for (let key in row) {
-                    if (key.includes('OTORGADO') || key.includes('TURNOS') || key.includes('TOTAL')) {
-                        let v = parseFloat(row[key]); if (!isNaN(v)) otorgados += v;
-                    }
-                    if (key.includes('PRESENTE') || key.includes('ATENDIDO') || key.includes('REALIZADO')) {
-                        let v = parseFloat(row[key]); if (!isNaN(v)) presentes += v;
-                    }
-                    if (key.includes('AUSENTE') || key.includes('FALTA') || key.includes('INASISTENCIA')) {
-                        let v = parseFloat(row[key]); if (!isNaN(v)) ausentes += v;
+                // Validar filtro Año
+                let matchAnio = true;
+                if (sAnio !== 'TODOS') {
+                    matchAnio = false;
+                    for (let key in row) {
+                        if (key.includes('AÑO') || key.includes('ANIO') || key.includes('YEAR')) {
+                            if (String(row[key]).trim().toUpperCase() === sAnio) matchAnio = true;
+                        }
                     }
                 }
 
-                labelsRow.push(String(label).trim());
-                dataOtorgados.push(otorgados);
-                dataPresentes.push(presentes);
-                dataAusentes.push(ausentes);
+                // Validar filtro CAPS
+                let matchCaps = true;
+                if (sCaps !== 'TODOS') {
+                    matchCaps = false;
+                    for (let key in row) {
+                        if (key.includes('CAPS') || key.includes('CENTRO') || key.includes('EFECTOR') || key.includes('LUGAR')) {
+                            if (String(row[key]).trim().toUpperCase() === sCaps) matchCaps = true;
+                        }
+                    }
+                }
 
-                totalOtorgados += otorgados;
-                totalPresentes += presentes;
-                totalAusentes += ausentes;
+                if (matchAnio && matchCaps) {
+                    // Tomar la etiqueta principal (CAPS si vemos todos, o MES si filtramos por CAPS)
+                    let label = row['CAPS'] || row['CENTRO'] || row['MES'] || row['PERIODO'] || row['EFECTOR'] || Object.values(row)[0] || (`Reg ${i+1}`);
+                    
+                    let otorgados = 0, presentes = 0, ausentes = 0;
+                    for (let key in row) {
+                        if (key.includes('OTORGADO') || key.includes('TURNO') || key.includes('TOTAL')) {
+                            otorgados += parseNumberSafe(row[key]);
+                        }
+                        if (key.includes('PRESENTE') || key.includes('ATENDIDO') || key.includes('REALIZADO')) {
+                            presentes += parseNumberSafe(row[key]);
+                        }
+                        if (key.includes('AUSENTE') || key.includes('FALTA') || key.includes('INASISTENCIA')) {
+                            ausentes += parseNumberSafe(row[key]);
+                        }
+                    }
+
+                    labelsRow.push(String(label).trim());
+                    dataOtorgados.push(otorgados);
+                    dataPresentes.push(presentes);
+                    dataAusentes.push(ausentes);
+
+                    totalOtorgados += otorgados;
+                    totalPresentes += presentes;
+                    totalAusentes += ausentes;
+                }
             });
 
             if (totalOtorgados === 0 && (totalPresentes > 0 || totalAusentes > 0)) {
