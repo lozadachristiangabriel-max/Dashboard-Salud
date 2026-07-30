@@ -68,6 +68,9 @@
             <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="thermometer" class="w-5 h-5"></i> IRAB 2026
             </button>
+            <button onclick="switchView('laboratorio')" id="btn-laboratorio" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                <i data-lucide="flask-conical" class="w-5 h-5"></i> LABORATORIO
+            </button>
         </nav>
         <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">SS Recursos y Logística</div>
     </aside>
@@ -82,7 +85,7 @@
         <!-- LOADER -->
         <div id="loader" class="text-center py-12">
             <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-emerald-500 mx-auto mb-4"></i>
-            <p class="text-slate-400 text-sm">Sincronizando bases de datos...</p>
+            <p class="text-slate-400 text-sm">Sincronizando bases de datos (Territorio, Ausentismo, IRAB y Laboratorio)...</p>
         </div>
 
         <!-- VISTA TERRITORIO -->
@@ -117,7 +120,6 @@
 
         <!-- VISTA IRAB 2026 -->
         <section id="view-irab" class="hidden">
-            <!-- FILTRO DE SEMANA EPIDEMIOLÓGICA -->
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Semana</label>
@@ -126,11 +128,7 @@
                     </select>
                 </div>
             </div>
-
-            <!-- KPIs de IRAB -->
             <div id="irab-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4 mb-8"></div>
-            
-            <!-- Gráficos IRAB -->
             <div class="grid grid-cols-1 gap-6 mb-8">
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
@@ -140,9 +138,7 @@
                     <div class="h-72 md:h-80 relative"><canvas id="chartIrabEvolucion"></canvas></div>
                 </div>
             </div>
-            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <!-- Gráfico de Medicaciones Más Consumidas -->
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="pill" class="text-emerald-400 w-5 h-5"></i>
@@ -159,6 +155,40 @@
                 </div>
             </div>
         </section>
+
+        <!-- VISTA LABORATORIO -->
+        <section id="view-laboratorio" class="hidden">
+            <!-- KPIs de Laboratorio -->
+            <div id="lab-kpi-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8"></div>
+            
+            <!-- Gráficos de Laboratorio -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                        <i data-lucide="bar-chart-3" class="text-emerald-400 w-5 h-5"></i>
+                        Comparativa: Otorgados vs. Presentes vs. Ausentes
+                    </h3>
+                    <div class="h-72 relative"><canvas id="chartLabEvolucion"></canvas></div>
+                </div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                        <i data-lucide="pie-chart" class="text-cyan-400 w-5 h-5"></i>
+                        Proporción de Asistencia (Presentes vs. Ausentes)
+                    </h3>
+                    <div class="h-72 relative"><canvas id="chartLabEstado"></canvas></div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-6 mb-8">
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                        <i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>
+                        Desglose General por Mes / Categoría
+                    </h3>
+                    <div class="h-80 relative"><canvas id="chartLabDetalle"></canvas></div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- LOGICA JAVASCRIPT Y URLs -->
@@ -166,8 +196,9 @@
         const URL_TERRITORIO = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbw7tP5mgS3cfBpXi3-W_0Pks_tnZ7ncbEstZrF649byWy0YTsdmxLao_stLSK27F7Vblw/exec';
         const URL_IRAB = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
+        const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzqohGeUq9VYn5pQlj0MGEKmS7Xnw2bEgrK4OmslwAuobWpzIuRFj7c8xLyFGyUBofG/exec';
         
-        let territorioData = [], ausentismoData = [], irabData = [], charts = {};
+        let territorioData = [], ausentismoData = [], irabData = [], laboratorioData = [], charts = {};
         const kpiConfig = [
             { id: 'MANZ', title: 'MANZANAS', icon: 'map', color: 'text-indigo-400' },
             { id: 'CAL (APLIC)', title: 'CALENDARIO', icon: 'syringe', color: 'text-emerald-400' },
@@ -189,7 +220,7 @@
         }
 
         function switchView(viewId) {
-            ['territorio', 'ausentismo', 'irab'].forEach(v => {
+            ['territorio', 'ausentismo', 'irab', 'laboratorio'].forEach(v => {
                 document.getElementById(`view-${v}`).classList.add('hidden');
                 document.getElementById(`btn-${v}`).classList.remove('active');
             });
@@ -206,19 +237,22 @@
             if(viewId === 'territorio' && territorioData.length) setTimeout(() => processTerritorioData(), 50);
             if(viewId === 'ausentismo' && ausentismoData.length) setTimeout(() => processAusentismoData(), 50);
             if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
+            if(viewId === 'laboratorio' && laboratorioData.length) setTimeout(() => processLaboratorioData(), 50);
         }
 
         async function fetchAllData() {
             try {
-                const [resT, resA, resI] = await Promise.all([
+                const [resT, resA, resI, resL] = await Promise.all([
                     fetch(URL_TERRITORIO).then(r => r.json()).catch(() => []),
                     fetch(URL_AUSENTISMO).then(r => r.json()).catch(() => []),
-                    fetch(URL_IRAB).then(r => r.json()).catch(() => [])
+                    fetch(URL_IRAB).then(r => r.json()).catch(() => []),
+                    fetch(URL_LABORATORIO).then(r => r.json()).catch(() => [])
                 ]);
 
                 territorioData = resT.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
                 ausentismoData = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 irabData = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                laboratorioData = resL.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
 
                 document.getElementById('loader').classList.add('hidden');
                 switchView('territorio');
@@ -229,6 +263,7 @@
                 processTerritorioData();
                 processAusentismoData();
                 processIrabData();
+                processLaboratorioData();
             } catch (e) {
                 console.error(e);
                 document.getElementById('loader').innerHTML = `<p class="text-red-500">Error al sincronizar datos.</p>`;
@@ -331,7 +366,7 @@
             charts.topAgentes = new Chart(document.getElementById('chartTopAgentes').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: sortedAgentes.map(i => i[0]), datasets: [{ data: sortedAgentes.map(i => i[1]), backgroundColor: '#F59E0B', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
 
-        /* ----- IRAB 2026 CON FILTROS Y MEDICACIONES ----- */
+        /* ----- IRAB 2026 ----- */
         function initIrabFilters() {
             const sSemana = document.getElementById('filter-semana-irab');
             if (!sSemana) return;
@@ -352,8 +387,6 @@
 
             let totalExternados = 0, totalVisitas = 0, totalMedicacion = 0, totalReinternacion = 0, totalTurnos = 0;
             let semanas = [], dataExternados = [], dataVisitas = [], dataTurnos = [];
-            
-            // Detectar dinámicamente cualquier columna nueva (medicaciones u otros ítems)
             let medicacionesTotales = {};
             const columnasNoMedicamento = [
                 'SEMANA EPIDEMIOLOGICA', 'SEMANA', 'NIÑOS/AS EXTERNADOS', 'VISITAS REALIZADAS',
@@ -381,7 +414,6 @@
                     totalExternados += ext; totalVisitas += vis; totalMedicacion += med;
                     totalReinternacion += rein; totalTurnos += turn;
 
-                    // Sumar valores de todas las columnas adicionales que agregaste
                     for (let key in row) {
                         if (!columnasNoMedicamento.includes(key.toUpperCase())) {
                             let val = parseFloat(row[key]);
@@ -394,7 +426,6 @@
                 }
             });
 
-            // 1. Render KPIs
             const kpiContainer = document.getElementById('irab-kpi-container');
             kpiContainer.innerHTML = `
                 <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
@@ -425,14 +456,12 @@
             `;
             if(window.lucide) window.lucide.createIcons();
 
-            // 2. Render Gráficos IRAB
             if(charts.irabEvolucion) charts.irabEvolucion.destroy();
             if(charts.irabMedicacion) charts.irabMedicacion.destroy();
             if(charts.irabTurnos) charts.irabTurnos.destroy();
 
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
-            // Gráfico de Evolución
             charts.irabEvolucion = new Chart(document.getElementById('chartIrabEvolucion').getContext('2d'), {
                 type: 'line',
                 data: {
@@ -445,14 +474,10 @@
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
-            // Gráfico de Medicaciones Más Consumidas (Top 10 ítems autodetectados)
-            const topMedicamentos = Object.entries(medicacionesTotales)
-                .sort((a,b) => b[1] - a[1])
-                .slice(0, 10);
-
+            const topMedicamentos = Object.entries(medicacionesTotales).sort((a,b) => b[1] - a[1]).slice(0, 10);
             charts.irabMedicacion = new Chart(document.getElementById('chartIrabMedicacion').getContext('2d'), {
                 type: 'bar',
-                indexAxis: 'y', // Horizontal para leer cómodamente nombres de medicamentos
+                indexAxis: 'y',
                 data: {
                     labels: topMedicamentos.length > 0 ? topMedicamentos.map(m => m[0]) : ['Total General Entregado'],
                     datasets: [{
@@ -465,10 +490,119 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
-            // Gráfico de Turnos Programados
             charts.irabTurnos = new Chart(document.getElementById('chartIrabTurnos').getContext('2d'), {
                 type: 'bar',
                 data: { labels: semanas, datasets: [{ label: 'Turnos Programados', data: dataTurnos, backgroundColor: '#A855F7', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        /* ----- LABORATORIO ----- */
+        function processLaboratorioData() {
+            if (laboratorioData.length === 0) return;
+
+            let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0;
+            let labelsRow = [], dataOtorgados = [], dataPresentes = [], dataAusentes = [];
+
+            laboratorioData.forEach((row, i) => {
+                let label = row['MES'] || row['CENTRO'] || row['CAPS'] || row['PERIODO'] || Object.values(row)[0] || (`Registro ${i+1}`);
+                
+                let otorgados = 0, presentes = 0, ausentes = 0;
+                for (let key in row) {
+                    if (key.includes('OTORGADO') || key.includes('TURNOS') || key.includes('TOTAL')) {
+                        let v = parseFloat(row[key]); if (!isNaN(v)) otorgados += v;
+                    }
+                    if (key.includes('PRESENTE') || key.includes('ATENDIDO') || key.includes('REALIZADO')) {
+                        let v = parseFloat(row[key]); if (!isNaN(v)) presentes += v;
+                    }
+                    if (key.includes('AUSENTE') || key.includes('FALTA') || key.includes('INASISTENCIA')) {
+                        let v = parseFloat(row[key]); if (!isNaN(v)) ausentes += v;
+                    }
+                }
+
+                labelsRow.push(String(label).trim());
+                dataOtorgados.push(otorgados);
+                dataPresentes.push(presentes);
+                dataAusentes.push(ausentes);
+
+                totalOtorgados += otorgados;
+                totalPresentes += presentes;
+                totalAusentes += ausentes;
+            });
+
+            if (totalOtorgados === 0 && (totalPresentes > 0 || totalAusentes > 0)) {
+                totalOtorgados = totalPresentes + totalAusentes;
+            }
+            let efectividad = totalOtorgados > 0 ? ((totalPresentes / totalOtorgados) * 100).toFixed(1) : '0.0';
+
+            const kpiContainer = document.getElementById('lab-kpi-container');
+            kpiContainer.innerHTML = `
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="calendar-check" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Otorgados</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalOtorgados.toLocaleString('es-AR')}</span>
+                </div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="user-check" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Presentes</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalPresentes.toLocaleString('es-AR')}</span>
+                </div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="user-x" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Ausentes</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalAusentes.toLocaleString('es-AR')}</span>
+                </div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="activity" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">% Asistencia</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${efectividad}%</span>
+                </div>
+            `;
+            if(window.lucide) window.lucide.createIcons();
+
+            if(charts.labEvolucion) charts.labEvolucion.destroy();
+            if(charts.labEstado) charts.labEstado.destroy();
+            if(charts.labDetalle) charts.labDetalle.destroy();
+
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+
+            charts.labEvolucion = new Chart(document.getElementById('chartLabEvolucion').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labelsRow,
+                    datasets: [
+                        { label: 'Presentes', data: dataPresentes, backgroundColor: '#10B981', borderRadius: 4 },
+                        { label: 'Ausentes', data: dataAusentes, backgroundColor: '#F43F5E', borderRadius: 4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            charts.labEstado = new Chart(document.getElementById('chartLabEstado').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Presentes', 'Ausentes'],
+                    datasets: [{
+                        data: [totalPresentes, totalAusentes],
+                        backgroundColor: ['#10B981', '#F43F5E'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
+            });
+
+            charts.labDetalle = new Chart(document.getElementById('chartLabDetalle').getContext('2d'), {
+                type: 'bar',
+                indexAxis: 'y',
+                data: {
+                    labels: labelsRow,
+                    datasets: [{
+                        label: 'Total Otorgados/Turnos',
+                        data: dataOtorgados.map((val, idx) => val || (dataPresentes[idx] + dataAusentes[idx])),
+                        backgroundColor: '#6366F1',
+                        borderRadius: 4
+                    }]
+                },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
