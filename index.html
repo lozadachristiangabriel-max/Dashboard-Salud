@@ -156,13 +156,19 @@
             </div>
         </section>
 
-        <!-- VISTA LABORATORIO -->
+        <!-- VISTA LABORATORIO (CON FILTRO DE AÑO, MES Y CAPS) -->
         <section id="view-laboratorio" class="hidden">
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año</label>
                     <select id="filter-anio-lab" onchange="processLaboratorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
                         <option value="TODOS">Todos los Años</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label>
+                    <select id="filter-mes-lab" onchange="processLaboratorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los Meses</option>
                     </select>
                 </div>
                 <div>
@@ -524,13 +530,15 @@
             });
         }
 
-        /* ----- LABORATORIO INTELIGENTE (OTORGADOS, PRESENTES Y AUSENTES) ----- */
+        /* ----- LABORATORIO INTELIGENTE (AÑO, MES Y CAPS) ----- */
         function initLaboratorioFilters() {
             const selectAnio = document.getElementById('filter-anio-lab');
+            const selectMes = document.getElementById('filter-mes-lab');
             const selectCaps = document.getElementById('filter-caps-lab');
-            if (!selectAnio || !selectCaps) return;
+            if (!selectAnio || !selectMes || !selectCaps) return;
 
             let anios = new Set();
+            let meses = new Set();
             let capsSet = new Set();
 
             laboratorioData.forEach(row => {
@@ -539,6 +547,10 @@
                     if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) {
                         let val = String(row[key] || '').trim();
                         if (val && val !== 'UNDEFINED' && val !== 'NULL') anios.add(val);
+                    }
+                    if (k.includes('MES') || k.includes('PERIODO')) {
+                        let val = String(row[key] || '').trim();
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL') meses.add(val);
                     }
                     if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) {
                         let val = String(row[key] || '').trim();
@@ -550,6 +562,21 @@
             [...anios].sort().forEach(anio => {
                 let opt = document.createElement('option'); opt.value = anio; opt.textContent = anio;
                 selectAnio.appendChild(opt);
+            });
+
+            ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].forEach(m => {
+                if ([...meses].map(x => x.toUpperCase()).includes(m)) {
+                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
+                    selectMes.appendChild(opt);
+                }
+            });
+            // Si hay otros meses que no estén en la lista fija, agregarlos
+            [...meses].sort().forEach(m => {
+                let mUp = m.toUpperCase();
+                if (!['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].includes(mUp)) {
+                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
+                    selectMes.appendChild(opt);
+                }
             });
 
             [...capsSet].sort().forEach(c => {
@@ -568,6 +595,7 @@
             }
 
             const sAnio = document.getElementById('filter-anio-lab').value;
+            const sMes = document.getElementById('filter-mes-lab').value;
             const sCaps = document.getElementById('filter-caps-lab').value;
 
             let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0;
@@ -585,6 +613,17 @@
                     }
                 }
 
+                let matchMes = true;
+                if (sMes !== 'TODOS') {
+                    matchMes = false;
+                    for (let key in row) {
+                        let k = key.toUpperCase();
+                        if ((k.includes('MES') || k.includes('PERIODO')) && String(row[key]).trim().toUpperCase() === sMes) {
+                            matchMes = true;
+                        }
+                    }
+                }
+
                 let matchCaps = true;
                 if (sCaps !== 'TODOS') {
                     matchCaps = false;
@@ -596,7 +635,7 @@
                     }
                 }
 
-                if (matchAnio && matchCaps) {
+                if (matchAnio && matchMes && matchCaps) {
                     let label = row['CAPS'] || row['CENTRO'] || row['MES'] || row['EFECTOR'] || Object.values(row)[0] || (`Reg ${i+1}`);
                     
                     let otorgados = 0, presentes = 0, ausentes = 0;
