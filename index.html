@@ -85,7 +85,7 @@
         <!-- LOADER -->
         <div id="loader" class="text-center py-12">
             <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-emerald-500 mx-auto mb-4"></i>
-            <p class="text-slate-400 text-sm">Sincronizando bases de datos (Territorio, Ausentismo, IRAB y Laboratorio)...</p>
+            <p class="text-slate-400 text-sm">Sincronizando bases de datos...</p>
         </div>
 
         <!-- VISTA TERRITORIO -->
@@ -156,9 +156,8 @@
             </div>
         </section>
 
-        <!-- VISTA LABORATORIO (ADAPTADA E INTELIGENTE) -->
+        <!-- VISTA LABORATORIO -->
         <section id="view-laboratorio" class="hidden">
-            <!-- Filtros de Año y CAPS -->
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año</label>
@@ -174,22 +173,20 @@
                 </div>
             </div>
 
-            <!-- KPIs de Laboratorio -->
             <div id="lab-kpi-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8"></div>
             
-            <!-- Gráficos de Laboratorio -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <div class="glass-card p-4 md:p-6">
-                    <h3 id="title-chart-lab-1" class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="bar-chart-3" class="text-emerald-400 w-5 h-5"></i>
-                        Volumen General por CAPS / Centro
+                        Comparativa: Otorgados vs. Presentes vs. Ausentes
                     </h3>
                     <div class="h-72 relative"><canvas id="chartLabEvolucion"></canvas></div>
                 </div>
                 <div class="glass-card p-4 md:p-6">
-                    <h3 id="title-chart-lab-2" class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="pie-chart" class="text-cyan-400 w-5 h-5"></i>
-                        Distribución Porcentual (Top Centros)
+                        Proporción de Asistencia (Presentes vs. Ausentes)
                     </h3>
                     <div class="h-72 relative"><canvas id="chartLabEstado"></canvas></div>
                 </div>
@@ -197,9 +194,9 @@
             
             <div class="grid grid-cols-1 gap-6 mb-8">
                 <div class="glass-card p-4 md:p-6">
-                    <h3 id="title-chart-lab-3" class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>
-                        Ranking Detallado de Mayor a Menor Volumen
+                        Desglose General por CAPS / Mes
                     </h3>
                     <div class="h-80 relative"><canvas id="chartLabDetalle"></canvas></div>
                 </div>
@@ -212,7 +209,7 @@
         const URL_TERRITORIO = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbw7tP5mgS3cfBpXi3-W_0Pks_tnZ7ncbEstZrF649byWy0YTsdmxLao_stLSK27F7Vblw/exec';
         const URL_IRAB = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
-        const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzqohGeUq9VYn5pQlj0MGEKmS7Xnw2bEgrK4OmslwAuobWpzIuRFj7c8xLyFGyUBofG/exec';
+        const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbxYDFexPabCgsPvcaeBufk_YFr1dUMQ5s_Cftfcej4AjxQsqBtkrPI3hmaAmsUF9h8J/exec';
         
         let territorioData = [], ausentismoData = [], irabData = [], laboratorioData = [], charts = {};
         const kpiConfig = [
@@ -527,7 +524,7 @@
             });
         }
 
-        /* ----- LABORATORIO INTELIGENTE (ADAPTADO A HOJA TOTAL O DESGLOSADA) ----- */
+        /* ----- LABORATORIO INTELIGENTE (OTORGADOS, PRESENTES Y AUSENTES) ----- */
         function initLaboratorioFilters() {
             const selectAnio = document.getElementById('filter-anio-lab');
             const selectCaps = document.getElementById('filter-caps-lab');
@@ -537,26 +534,16 @@
             let capsSet = new Set();
 
             laboratorioData.forEach(row => {
-                // Busca columna de año
                 for (let key in row) {
-                    if (key.includes('AÑO') || key.includes('ANIO') || key.includes('YEAR')) {
+                    let k = key.toUpperCase();
+                    if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) {
                         let val = String(row[key] || '').trim();
                         if (val && val !== 'UNDEFINED' && val !== 'NULL') anios.add(val);
                     }
-                }
-                // Busca el nombre del CAPS (en columna CAPS, EFECTOR o la primera columna de texto)
-                let capsVal = '';
-                for (let key in row) {
-                    if (key.includes('CAPS') || key.includes('CENTRO') || key.includes('EFECTOR') || key.includes('ESTABLECIMIENTO')) {
-                        capsVal = String(row[key] || '').trim();
-                        break;
+                    if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) {
+                        let val = String(row[key] || '').trim();
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL') capsSet.add(val);
                     }
-                }
-                if (!capsVal && Object.values(row).length > 0) {
-                    capsVal = String(Object.values(row)[0]).trim();
-                }
-                if (capsVal && capsVal !== 'UNDEFINED' && capsVal !== 'NULL' && !capsVal.includes('TOTAL')) {
-                    capsSet.add(capsVal);
                 }
             });
 
@@ -576,201 +563,128 @@
             if (!kpiContainer) return;
 
             if (laboratorioData.length === 0) {
-                kpiContainer.innerHTML = `<div class="col-span-4 glass-card p-6 text-center text-amber-400 text-sm font-medium">No se recibieron datos de la hoja de Laboratorio. Verifica que la pestaña de Google Sheets se llame exactamente "TOTAL" o que tengas conexión.</div>`;
+                kpiContainer.innerHTML = `<div class="col-span-4 glass-card p-6 text-center text-amber-400 text-sm font-medium">Sincronizando datos de Laboratorio...</div>`;
                 return;
             }
 
             const sAnio = document.getElementById('filter-anio-lab').value;
             const sCaps = document.getElementById('filter-caps-lab').value;
 
-            let hasExplicitAttendance = false;
-            let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0, totalVolumen = 0;
-            let labelsRow = [], dataVolumen = [], dataOtorgados = [], dataPresentes = [], dataAusentes = [];
+            let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0;
+            let labelsRow = [], dataOtorgados = [], dataPresentes = [], dataAusentes = [];
 
             laboratorioData.forEach((row, i) => {
-                // Filtro Año
                 let matchAnio = true;
                 if (sAnio !== 'TODOS') {
                     matchAnio = false;
                     for (let key in row) {
-                        if ((key.includes('AÑO') || key.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) {
+                        let k = key.toUpperCase();
+                        if ((k.includes('AÑO') || k.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) {
                             matchAnio = true;
                         }
                     }
                 }
 
-                // Filtro CAPS
                 let matchCaps = true;
                 if (sCaps !== 'TODOS') {
                     matchCaps = false;
                     for (let key in row) {
-                        if (String(row[key]).trim().toUpperCase() === sCaps) matchCaps = true;
+                        let k = key.toUpperCase();
+                        if ((k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) && String(row[key]).trim().toUpperCase() === sCaps) {
+                            matchCaps = true;
+                        }
                     }
-                    if (!matchCaps && String(Object.values(row)[0]).trim().toUpperCase() === sCaps) matchCaps = true;
                 }
 
                 if (matchAnio && matchCaps) {
-                    // Obtiene la etiqueta principal de la fila
                     let label = row['CAPS'] || row['CENTRO'] || row['MES'] || row['EFECTOR'] || Object.values(row)[0] || (`Reg ${i+1}`);
                     
-                    let otorgados = 0, presentes = 0, ausentes = 0, sumaFila = 0;
+                    let otorgados = 0, presentes = 0, ausentes = 0;
                     for (let key in row) {
                         let k = key.toUpperCase();
                         let val = parseNumberSafe(row[key]);
-                        if (k.includes('OTORGADO') || k.includes('TURNO')) { otorgados += val; hasExplicitAttendance = true; }
-                        if (k.includes('PRESENTE') || k.includes('ATENDIDO')) { presentes += val; hasExplicitAttendance = true; }
-                        if (k.includes('AUSENTE') || k.includes('FALTA')) { ausentes += val; hasExplicitAttendance = true; }
-                        
-                        // Si no es un ID ni un año, suma todo lo numérico al volumen general
-                        if (!k.includes('ID') && !k.includes('AÑO') && !k.includes('YEAR') && val > 0) {
-                            sumaFila += val;
-                        }
+                        if (k.includes('OTORGADO') || k.includes('TURNO')) otorgados += val;
+                        if (k.includes('PRESENTE') || k.includes('ATENDIDO')) presentes += val;
+                        if (k.includes('AUSENTE') || k.includes('FALTA')) ausentes += val;
                     }
 
-                    labelsRow.push(String(label).trim());
-                    dataOtorgados.push(otorgados);
-                    dataPresentes.push(presentes);
-                    dataAusentes.push(ausentes);
-                    dataVolumen.push(sumaFila);
+                    if (otorgados > 0 || presentes > 0 || ausentes > 0) {
+                        labelsRow.push(String(label).trim());
+                        dataOtorgados.push(otorgados);
+                        dataPresentes.push(presentes);
+                        dataAusentes.push(ausentes);
 
-                    totalOtorgados += otorgados;
-                    totalPresentes += presentes;
-                    totalAusentes += ausentes;
-                    totalVolumen += sumaFila;
+                        totalOtorgados += otorgados;
+                        totalPresentes += presentes;
+                        totalAusentes += ausentes;
+                    }
                 }
             });
 
-            // --- RENDER DE TARJETAS KPI ADAPTATIVAS ---
-            if (hasExplicitAttendance && (totalPresentes > 0 || totalAusentes > 0)) {
-                let efectividad = totalOtorgados > 0 ? ((totalPresentes / totalOtorgados) * 100).toFixed(1) : '0.0';
-                kpiContainer.innerHTML = `
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="calendar-check" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Otorgados</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${totalOtorgados.toLocaleString('es-AR')}</span>
-                    </div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="user-check" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Presentes</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${totalPresentes.toLocaleString('es-AR')}</span>
-                    </div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="user-x" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Ausentes</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${totalAusentes.toLocaleString('es-AR')}</span>
-                    </div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="activity" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">% Asistencia</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${efectividad}%</span>
-                    </div>
-                `;
-            } else {
-                // Modo Hoja de Totals (Volumen General Consolidado)
-                let promedio = labelsRow.length > 0 ? Math.round(totalVolumen / labelsRow.length) : 0;
-                let maxIndex = dataVolumen.indexOf(Math.max(...dataVolumen));
-                let topEfector = labelsRow[maxIndex] || 'N/A';
-                
-                kpiContainer.innerHTML = `
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="activity" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Volumen Total</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${totalVolumen.toLocaleString('es-AR')}</span>
-                    </div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="bar-chart-2" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Promedio por Centro</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${promedio.toLocaleString('es-AR')}</span>
-                    </div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="award" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Mayor Volumen</h4>
-                        <span class="text-sm md:text-base font-bold text-white truncate max-w-[140px]" title="${topEfector}">${topEfector}</span>
-                    </div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="building-2" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Registros / Centros</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${labelsRow.length}</span>
-                    </div>
-                `;
+            if (totalOtorgados === 0 && (totalPresentes > 0 || totalAusentes > 0)) {
+                totalOtorgados = totalPresentes + totalAusentes;
             }
+            let efectividad = totalOtorgados > 0 ? ((totalPresentes / totalOtorgados) * 100).toFixed(1) : '0.0';
+
+            kpiContainer.innerHTML = `
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="calendar-check" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Otorgados</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalOtorgados.toLocaleString('es-AR')}</span>
+                </div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="user-check" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Presentes</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalPresentes.toLocaleString('es-AR')}</span>
+                </div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="user-x" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Ausentes</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalAusentes.toLocaleString('es-AR')}</span>
+                </div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="activity" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">% Asistencia</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${efectividad}%</span>
+                </div>
+            `;
             if(window.lucide) window.lucide.createIcons();
 
-            // --- RENDER DE GRÁFICOS ADAPTATIVOS ---
             if(charts.labEvolucion) charts.labEvolucion.destroy();
             if(charts.labEstado) charts.labEstado.destroy();
             if(charts.labDetalle) charts.labDetalle.destroy();
 
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
-            if (hasExplicitAttendance && (totalPresentes > 0 || totalAusentes > 0)) {
-                // Modo Asistencia
-                charts.labEvolucion = new Chart(document.getElementById('chartLabEvolucion').getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: labelsRow,
-                        datasets: [
-                            { label: 'Presentes', data: dataPresentes, backgroundColor: '#10B981', borderRadius: 4 },
-                            { label: 'Ausentes', data: dataAusentes, backgroundColor: '#F43F5E', borderRadius: 4 }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
+            charts.labEvolucion = new Chart(document.getElementById('chartLabEvolucion').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labelsRow,
+                    datasets: [
+                        { label: 'Presentes', data: dataPresentes, backgroundColor: '#10B981', borderRadius: 4 },
+                        { label: 'Ausentes', data: dataAusentes, backgroundColor: '#F43F5E', borderRadius: 4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
 
-                charts.labEstado = new Chart(document.getElementById('chartLabEstado').getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Presentes', 'Ausentes'],
-                        datasets: [{ data: [totalPresentes, totalAusentes], backgroundColor: ['#10B981', '#F43F5E'], borderWidth: 0 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
-                });
+            charts.labEstado = new Chart(document.getElementById('chartLabEstado').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Presentes', 'Ausentes'],
+                    datasets: [{ data: [totalPresentes, totalAusentes], backgroundColor: ['#10B981', '#F43F5E'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
+            });
 
-                charts.labDetalle = new Chart(document.getElementById('chartLabDetalle').getContext('2d'), {
-                    type: 'bar', indexAxis: 'y',
-                    data: {
-                        labels: labelsRow,
-                        datasets: [{ label: 'Turnos Otorgados', data: dataOtorgados, backgroundColor: '#6366F1', borderRadius: 4 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-            } else {
-                // Modo Volumen General (Hoja de Totales por CAPS / Mes)
-                charts.labEvolucion = new Chart(document.getElementById('chartLabEvolucion').getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: labelsRow,
-                        datasets: [{ label: 'Volumen Total', data: dataVolumen, backgroundColor: '#10B981', borderRadius: 6 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-
-                // Top 5 centros en gráfico de torta
-                let topIndices = dataVolumen.map((val, idx) => ({ val, idx })).sort((a,b) => b.val - a.val).slice(0, 5);
-                charts.labEstado = new Chart(document.getElementById('chartLabEstado').getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: topIndices.map(i => labelsRow[i.idx]),
-                        datasets: [{
-                            data: topIndices.map(i => i.val),
-                            backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#A855F7', '#EC4899'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
-                });
-
-                // Ranking ordenado de mayor a menor en barras horizontales
-                let sortedAll = dataVolumen.map((val, idx) => ({ label: labelsRow[idx], val })).sort((a,b) => b.val - a.val);
-                charts.labDetalle = new Chart(document.getElementById('chartLabDetalle').getContext('2d'), {
-                    type: 'bar', indexAxis: 'y',
-                    data: {
-                        labels: sortedAll.map(i => i.label),
-                        datasets: [{ label: 'Volumen', data: sortedAll.map(i => i.val), backgroundColor: '#6366F1', borderRadius: 4 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-            }
+            charts.labDetalle = new Chart(document.getElementById('chartLabDetalle').getContext('2d'), {
+                type: 'bar', indexAxis: 'y',
+                data: {
+                    labels: labelsRow,
+                    datasets: [{ label: 'Turnos Otorgados', data: dataOtorgados, backgroundColor: '#6366F1', borderRadius: 4 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
         }
 
         lucide.createIcons();
