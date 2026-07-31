@@ -159,7 +159,7 @@
             </div>
         </section>
 
-        <!-- VISTA LABORATORIO (CHECKLISTS MULTI-SELECCIÓN CON Z-INDEX CORREGIDO) -->
+        <!-- VISTA LABORATORIO (TOP 10 + LEYENDAS CON MESES) -->
         <section id="view-laboratorio" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40 overflow-visible">
                 
@@ -170,7 +170,6 @@
                         <span id="label-anio-lab" class="truncate font-medium">Todos los Años</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </button>
-                    <!-- Menú Desplegable 100% Sólido y por encima -->
                     <div id="dropdown-anio-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto">
                         <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
                             <button type="button" onclick="selectAllLab('anio', true)" class="hover:underline">Seleccionar Todos</button>
@@ -187,7 +186,6 @@
                         <span id="label-mes-lab" class="truncate font-medium">Todos los Meses</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </button>
-                    <!-- Menú Desplegable 100% Sólido y por encima -->
                     <div id="dropdown-mes-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto">
                         <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
                             <button type="button" onclick="selectAllLab('mes', true)" class="hover:underline">Seleccionar Todos</button>
@@ -204,7 +202,6 @@
                         <span id="label-caps-lab" class="truncate font-medium">Todos los CAPS</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </button>
-                    <!-- Menú Desplegable 100% Sólido y por encima -->
                     <div id="dropdown-caps-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto">
                         <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
                             <button type="button" onclick="selectAllLab('caps', true)" class="hover:underline">Seleccionar Todos</button>
@@ -219,29 +216,40 @@
             <div id="lab-kpi-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8 relative z-10"></div>
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
+                <!-- TOP 10 MENOR ASISTENCIA POR AÑO -->
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
-                        <i data-lucide="bar-chart-3" class="text-emerald-400 w-5 h-5"></i>
-                        Comparativa: Otorgados vs. Presentes vs. Ausentes
+                        <i data-lucide="alert-circle" class="text-rose-400 w-5 h-5"></i>
+                        Top 10 CAPS con Menor Asistencia (% Presentes)
+                    </h3>
+                    <div class="h-72 relative"><canvas id="chartLabTopMenorAsistencia"></canvas></div>
+                </div>
+
+                <!-- EVOLUCION COMPARATIVA CON LEYENDAS POR MES -->
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                        <i data-lucide="calendar" class="text-cyan-400 w-5 h-5"></i>
+                        Distribución de Asistencia por Mes (Leyendas de Meses)
                     </h3>
                     <div class="h-72 relative"><canvas id="chartLabEvolucion"></canvas></div>
                 </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
-                        <i data-lucide="pie-chart" class="text-cyan-400 w-5 h-5"></i>
-                        Proporción de Asistencia (Presentes vs. Ausentes)
+                        <i data-lucide="pie-chart" class="text-emerald-400 w-5 h-5"></i>
+                        Proporción General de Asistencia (Presentes vs. Ausentes)
                     </h3>
                     <div class="h-72 relative"><canvas id="chartLabEstado"></canvas></div>
                 </div>
-            </div>
-            
-            <div class="grid grid-cols-1 gap-6 mb-8 relative z-10">
+
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>
-                        Desglose General por CAPS / Mes
+                        Total de Turnos Otorgados por CAPS
                     </h3>
-                    <div class="h-80 relative"><canvas id="chartLabDetalle"></canvas></div>
+                    <div class="h-72 relative"><canvas id="chartLabDetalle"></canvas></div>
                 </div>
             </div>
         </section>
@@ -322,6 +330,12 @@
             { id: 'VACUNACION DENGUE', title: 'VAC. DENGUE', icon: 'shield', color: 'text-lime-400' }
         ];
 
+        const monthColors = {
+            'ENERO': '#3B82F6', 'FEBRERO': '#10B981', 'MARZO': '#F59E0B', 'ABRIL': '#EF4444',
+            'MAYO': '#8B5CF6', 'JUNIO': '#EC4899', 'JULIO': '#06B6D4', 'AGOSTO': '#14B8A6',
+            'SEPTIEMBRE': '#F97316', 'OCTUBRE': '#6366F1', 'NOVIEMBRE': '#84CC16', 'DICIEMBRE': '#D946EF'
+        };
+
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
@@ -369,7 +383,6 @@
             return isNaN(num) ? 0 : num;
         }
 
-        // Cierre automático de los dropdowns al hacer clic fuera
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.multi-select-container')) {
                 ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab'].forEach(id => {
@@ -656,7 +669,7 @@
             });
         }
 
-        /* ----- LABORATORIO INTELIGENTE (CHECKLIST MULTIPLE AÑO, MES Y CAPS) ----- */
+        /* ----- LABORATORIO INTELIGENTE (TOP 10 + LEYENDAS CON MESES) ----- */
         function initLaboratorioFilters() {
             const containerAnio = document.getElementById('checklist-anio-lab');
             const containerMes = document.getElementById('checklist-mes-lab');
@@ -763,7 +776,8 @@
             updateMultiSelectLabel('label-caps-lab', selectedCaps, totalCaps, 'CAPS');
 
             let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0;
-            let labelsRow = [], dataOtorgados = [], dataPresentes = [], dataAusentes = [];
+            let capsStats = {};
+            let monthCapsMap = {};
 
             laboratorioData.forEach((row, i) => {
                 let rowAnio = '';
@@ -777,13 +791,14 @@
                     if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) rowCaps = String(row[key] || '').trim().toUpperCase();
                 }
 
+                if (!rowCaps) rowCaps = row['CAPS'] || row['CENTRO'] || row['EFECTOR'] || Object.values(row)[0] || (`Reg ${i+1}`);
+                if (!rowMes) rowMes = 'GENERAL';
+
                 const matchAnio = selectedAnios.includes(rowAnio) || totalAnios === 0;
                 const matchMes = selectedMeses.includes(rowMes) || totalMeses === 0;
                 const matchCaps = selectedCaps.includes(rowCaps) || totalCaps === 0;
 
                 if (matchAnio && matchMes && matchCaps) {
-                    let label = row['CAPS'] || row['CENTRO'] || row['MES'] || row['EFECTOR'] || Object.values(row)[0] || (`Reg ${i+1}`);
-                    
                     let otorgados = 0, presentes = 0, ausentes = 0;
                     for (let key in row) {
                         let k = key.toUpperCase();
@@ -793,22 +808,31 @@
                         if (k.includes('AUSENTE') || k.includes('FALTA')) ausentes += val;
                     }
 
-                    if (otorgados > 0 || presentes > 0 || ausentes > 0) {
-                        labelsRow.push(String(label).trim());
-                        dataOtorgados.push(otorgados);
-                        dataPresentes.push(presentes);
-                        dataAusentes.push(ausentes);
+                    if (otorgados === 0 && (presentes > 0 || ausentes > 0)) {
+                        otorgados = presentes + ausentes;
+                    }
 
+                    if (otorgados > 0 || presentes > 0 || ausentes > 0) {
                         totalOtorgados += otorgados;
                         totalPresentes += presentes;
                         totalAusentes += ausentes;
+
+                        // Agrupación por CAPS
+                        if (!capsStats[rowCaps]) {
+                            capsStats[rowCaps] = { otorgados: 0, presentes: 0, ausentes: 0 };
+                        }
+                        capsStats[rowCaps].otorgados += otorgados;
+                        capsStats[rowCaps].presentes += presentes;
+                        capsStats[rowCaps].ausentes += ausentes;
+
+                        // Agrupación por Mes para Leyenda
+                        if (!monthCapsMap[rowMes]) monthCapsMap[rowMes] = {};
+                        if (!monthCapsMap[rowMes][rowCaps]) monthCapsMap[rowMes][rowCaps] = 0;
+                        monthCapsMap[rowMes][rowCaps] += presentes;
                     }
                 }
             });
 
-            if (totalOtorgados === 0 && (totalPresentes > 0 || totalAusentes > 0)) {
-                totalOtorgados = totalPresentes + totalAusentes;
-            }
             let efectividad = totalOtorgados > 0 ? ((totalPresentes / totalOtorgados) * 100).toFixed(1) : '0.0';
 
             kpiContainer.innerHTML = `
@@ -835,24 +859,87 @@
             `;
             if(window.lucide) window.lucide.createIcons();
 
+            // Destrucción previa de gráficos
+            if(charts.labTopMenorAsistencia) charts.labTopMenorAsistencia.destroy();
             if(charts.labEvolucion) charts.labEvolucion.destroy();
             if(charts.labEstado) charts.labEstado.destroy();
             if(charts.labDetalle) charts.labDetalle.destroy();
 
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
+            // --- GRAFICO 1: TOP 10 CAPS CON MENOR ASISTENCIA (% DE PRESENTES) ---
+            let sortedLowestCaps = Object.entries(capsStats)
+                .map(([name, data]) => {
+                    let pct = data.otorgados > 0 ? (data.presentes / data.otorgados) * 100 : 0;
+                    return { name, pct: parseFloat(pct.toFixed(1)), presentes: data.presentes, otorgados: data.otorgados };
+                })
+                .sort((a,b) => a.pct - b.pct) // Menor asistencia primero
+                .slice(0, 10);
+
+            charts.labTopMenorAsistencia = new Chart(document.getElementById('chartLabTopMenorAsistencia').getContext('2d'), {
+                type: 'bar',
+                indexAxis: 'y',
+                data: {
+                    labels: sortedLowestCaps.map(item => item.name),
+                    datasets: [{
+                        label: '% Asistencia',
+                        data: sortedLowestCaps.map(item => item.pct),
+                        backgroundColor: '#F43F5E',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Asistencia: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { max: 100, ticks: { callback: v => v + '%' } }
+                    }
+                }
+            });
+
+            // --- GRAFICO 2: COMPARACIÓN DE CAPS CON LEYENDAS POR MES ---
+            let uniqueCapsList = Object.keys(capsStats);
+            let activeMonths = Object.keys(monthCapsMap);
+            
+            let datasetsByMonth = activeMonths.map(month => {
+                return {
+                    label: month,
+                    data: uniqueCapsList.map(caps => monthCapsMap[month][caps] || 0),
+                    backgroundColor: monthColors[month] || '#3B82F6',
+                    borderRadius: 3
+                };
+            });
+
             charts.labEvolucion = new Chart(document.getElementById('chartLabEvolucion').getContext('2d'), {
                 type: 'bar',
                 data: {
-                    labels: labelsRow,
-                    datasets: [
-                        { label: 'Presentes', data: dataPresentes, backgroundColor: '#10B981', borderRadius: 4 },
-                        { label: 'Ausentes', data: dataAusentes, backgroundColor: '#F43F5E', borderRadius: 4 }
-                    ]
+                    labels: uniqueCapsList,
+                    datasets: datasetsByMonth
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { boxWidth: 12, font: { size: 11 } }
+                        }
+                    }
+                }
             });
 
+            // --- GRAFICO 3: PROPORCIÓN DOUGHNUT (PRESENTES VS AUSENTES) ---
             charts.labEstado = new Chart(document.getElementById('chartLabEstado').getContext('2d'), {
                 type: 'doughnut',
                 data: {
@@ -862,11 +949,13 @@
                 options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
             });
 
+            // --- GRAFICO 4: TOTAL DE TURNOS OTORGADOS POR CAPS ---
             charts.labDetalle = new Chart(document.getElementById('chartLabDetalle').getContext('2d'), {
-                type: 'bar', indexAxis: 'y',
+                type: 'bar',
+                indexAxis: 'y',
                 data: {
-                    labels: labelsRow,
-                    datasets: [{ label: 'Turnos Otorgados', data: dataOtorgados, backgroundColor: '#6366F1', borderRadius: 4 }]
+                    labels: uniqueCapsList,
+                    datasets: [{ label: 'Turnos Otorgados', data: uniqueCapsList.map(c => capsStats[c].otorgados), backgroundColor: '#6366F1', borderRadius: 4 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
