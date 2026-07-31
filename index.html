@@ -71,6 +71,9 @@
             <button onclick="switchView('laboratorio')" id="btn-laboratorio" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="flask-conical" class="w-5 h-5"></i> LABORATORIO
             </button>
+            <button onclick="switchView('hsi')" id="btn-hsi" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                <i data-lucide="folder-plus" class="w-5 h-5"></i> HSI (HISTORIA DE SALUD)
+            </button>
         </nav>
         <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">SS Recursos y Logística</div>
     </aside>
@@ -156,27 +159,58 @@
             </div>
         </section>
 
-        <!-- VISTA LABORATORIO (CON FILTRO DE AÑO, MES Y CAPS) -->
+        <!-- VISTA LABORATORIO (CHECKLISTS MULTI-SELECCIÓN) -->
         <section id="view-laboratorio" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año</label>
-                    <select id="filter-anio-lab" onchange="processLaboratorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
-                        <option value="TODOS">Todos los Años</option>
-                    </select>
+                
+                <!-- CHECKLIST MULTIPLE: AÑO -->
+                <div class="relative multi-select-container">
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año (Checklist)</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-anio-lab')" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none">
+                        <span id="label-anio-lab" class="truncate">Todos los Años</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-anio-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0F172A] border border-slate-700 rounded-lg shadow-2xl p-3 max-h-56 overflow-y-auto">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllLab('anio', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllLab('anio', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-anio-lab" class="space-y-1.5 text-xs text-slate-300"></div>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label>
-                    <select id="filter-mes-lab" onchange="processLaboratorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
-                        <option value="TODOS">Todos los Meses</option>
-                    </select>
+
+                <!-- CHECKLIST MULTIPLE: MES -->
+                <div class="relative multi-select-container">
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes (Checklist)</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-mes-lab')" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none">
+                        <span id="label-mes-lab" class="truncate">Todos los Meses</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-mes-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0F172A] border border-slate-700 rounded-lg shadow-2xl p-3 max-h-56 overflow-y-auto">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllLab('mes', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllLab('mes', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-mes-lab" class="space-y-1.5 text-xs text-slate-300"></div>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por CAPS / Centro</label>
-                    <select id="filter-caps-lab" onchange="processLaboratorioData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
-                        <option value="TODOS">Todos los CAPS / Centros</option>
-                    </select>
+
+                <!-- CHECKLIST MULTIPLE: CAPS / CENTRO -->
+                <div class="relative multi-select-container">
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por CAPS (Checklist)</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-caps-lab')" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none">
+                        <span id="label-caps-lab" class="truncate">Todos los CAPS</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-caps-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0F172A] border border-slate-700 rounded-lg shadow-2xl p-3 max-h-56 overflow-y-auto">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllLab('caps', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllLab('caps', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-caps-lab" class="space-y-1.5 text-xs text-slate-300"></div>
+                    </div>
                 </div>
+
             </div>
 
             <div id="lab-kpi-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8"></div>
@@ -208,6 +242,59 @@
                 </div>
             </div>
         </section>
+
+        <!-- VISTA HSI (HISTORIA DE SALUD INTEGRADA) -->
+        <section id="view-hsi" class="hidden">
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año</label>
+                    <select id="filter-anio-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los Años</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label>
+                    <select id="filter-mes-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los Meses</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por CAPS / Centro</label>
+                    <select id="filter-caps-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los CAPS / Centros</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="hsi-kpi-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8"></div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                        <i data-lucide="folder-plus" class="text-emerald-400 w-5 h-5"></i>
+                        Volumen de Registros HSI por Establecimiento / Período
+                    </h3>
+                    <div class="h-72 relative"><canvas id="chartHsiEvolucion"></canvas></div>
+                </div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                        <i data-lucide="pie-chart" class="text-cyan-400 w-5 h-5"></i>
+                        Distribución de Carga de Historias (Top Centros)
+                    </h3>
+                    <div class="h-72 relative"><canvas id="chartHsiEstado"></canvas></div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-6 mb-8">
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
+                        <i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>
+                        Ranking Detallado HSI de Mayor a Menor Volumen
+                    </h3>
+                    <div class="h-80 relative"><canvas id="chartHsiDetalle"></canvas></div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- LOGICA JAVASCRIPT Y URLs -->
@@ -216,8 +303,9 @@
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbw7tP5mgS3cfBpXi3-W_0Pks_tnZ7ncbEstZrF649byWy0YTsdmxLao_stLSK27F7Vblw/exec';
         const URL_IRAB = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
         const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzq7DlkN-FHkHXIlzk1xeHeE_zahNaUvozW62nTfrYmA8k0DnG9IO_D2TnMCUKQludD/exec';
+        const URL_HSI = '';
         
-        let territorioData = [], ausentismoData = [], irabData = [], laboratorioData = [], charts = {};
+        let territorioData = [], ausentismoData = [], irabData = [], laboratorioData = [], hsiData = [], charts = {};
         const kpiConfig = [
             { id: 'MANZ', title: 'MANZANAS', icon: 'map', color: 'text-indigo-400' },
             { id: 'CAL (APLIC)', title: 'CALENDARIO', icon: 'syringe', color: 'text-emerald-400' },
@@ -239,12 +327,17 @@
         }
 
         function switchView(viewId) {
-            ['territorio', 'ausentismo', 'irab', 'laboratorio'].forEach(v => {
-                document.getElementById(`view-${v}`).classList.add('hidden');
-                document.getElementById(`btn-${v}`).classList.remove('active');
+            ['territorio', 'ausentismo', 'irab', 'laboratorio', 'hsi'].forEach(v => {
+                const elView = document.getElementById(`view-${v}`);
+                const elBtn = document.getElementById(`btn-${v}`);
+                if (elView) elView.classList.add('hidden');
+                if (elBtn) elBtn.classList.remove('active');
             });
-            document.getElementById(`view-${viewId}`).classList.remove('hidden');
-            document.getElementById(`btn-${viewId}`).classList.add('active');
+            
+            const selView = document.getElementById(`view-${viewId}`);
+            const selBtn = document.getElementById(`btn-${viewId}`);
+            if (selView) selView.classList.remove('hidden');
+            if (selBtn) selBtn.classList.add('active');
 
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
@@ -257,6 +350,7 @@
             if(viewId === 'ausentismo' && ausentismoData.length) setTimeout(() => processAusentismoData(), 50);
             if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
             if(viewId === 'laboratorio' && laboratorioData.length) setTimeout(() => processLaboratorioData(), 50);
+            if(viewId === 'hsi' && (hsiData.length || !URL_HSI)) setTimeout(() => processHsiData(), 50);
         }
 
         function parseNumberSafe(val) {
@@ -272,19 +366,46 @@
             return isNaN(num) ? 0 : num;
         }
 
+        // Cierre automático de los dropdowns al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.multi-select-container')) {
+                ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+            }
+        });
+
+        function toggleMultiSelect(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const isHidden = dropdown.classList.contains('hidden');
+            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            if (isHidden) dropdown.classList.remove('hidden');
+        }
+
+        function selectAllLab(type, state) {
+            document.querySelectorAll(`.chk-${type}-lab`).forEach(cb => cb.checked = state);
+            processLaboratorioData();
+        }
+
         async function fetchAllData() {
             try {
-                const [resT, resA, resI, resL] = await Promise.all([
+                const [resT, resA, resI, resL, resH] = await Promise.all([
                     fetch(URL_TERRITORIO).then(r => r.json()).catch(() => []),
                     fetch(URL_AUSENTISMO).then(r => r.json()).catch(() => []),
                     fetch(URL_IRAB).then(r => r.json()).catch(() => []),
-                    fetch(URL_LABORATORIO).then(r => r.json()).catch(() => [])
+                    fetch(URL_LABORATORIO).then(r => r.json()).catch(() => []),
+                    URL_HSI ? fetch(URL_HSI).then(r => r.json()).catch(() => []) : Promise.resolve([])
                 ]);
 
                 territorioData = resT.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
                 ausentismoData = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 irabData = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 laboratorioData = resL.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                hsiData = resH.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
 
                 document.getElementById('loader').classList.add('hidden');
                 switchView('territorio');
@@ -293,10 +414,12 @@
                 initAusentismoFilters();
                 initIrabFilters();
                 initLaboratorioFilters();
+                initHsiFilters();
                 processTerritorioData();
                 processAusentismoData();
                 processIrabData();
                 processLaboratorioData();
+                processHsiData();
             } catch (e) {
                 console.error(e);
                 document.getElementById('loader').innerHTML = `<p class="text-red-500">Error al sincronizar datos.</p>`;
@@ -530,12 +653,16 @@
             });
         }
 
-        /* ----- LABORATORIO INTELIGENTE (AÑO, MES Y CAPS) ----- */
+        /* ----- LABORATORIO INTELIGENTE (CHECKLIST MULTIPLE AÑO, MES Y CAPS) ----- */
         function initLaboratorioFilters() {
-            const selectAnio = document.getElementById('filter-anio-lab');
-            const selectMes = document.getElementById('filter-mes-lab');
-            const selectCaps = document.getElementById('filter-caps-lab');
-            if (!selectAnio || !selectMes || !selectCaps) return;
+            const containerAnio = document.getElementById('checklist-anio-lab');
+            const containerMes = document.getElementById('checklist-mes-lab');
+            const containerCaps = document.getElementById('checklist-caps-lab');
+            if (!containerAnio || !containerMes || !containerCaps) return;
+
+            containerAnio.innerHTML = '';
+            containerMes.innerHTML = '';
+            containerCaps.innerHTML = '';
 
             let anios = new Set();
             let meses = new Set();
@@ -560,29 +687,54 @@
             });
 
             [...anios].sort().forEach(anio => {
-                let opt = document.createElement('option'); opt.value = anio; opt.textContent = anio;
-                selectAnio.appendChild(opt);
+                containerAnio.innerHTML += `
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-800 rounded cursor-pointer">
+                        <input type="checkbox" value="${anio}" checked onchange="processLaboratorioData()" class="chk-anio-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <span>${anio}</span>
+                    </label>`;
             });
 
             ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].forEach(m => {
                 if ([...meses].map(x => x.toUpperCase()).includes(m)) {
-                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
-                    selectMes.appendChild(opt);
+                    containerMes.innerHTML += `
+                        <label class="flex items-center gap-2 p-1 hover:bg-slate-800 rounded cursor-pointer">
+                            <input type="checkbox" value="${m}" checked onchange="processLaboratorioData()" class="chk-mes-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span>${m}</span>
+                        </label>`;
                 }
             });
-            // Si hay otros meses que no estén en la lista fija, agregarlos
             [...meses].sort().forEach(m => {
                 let mUp = m.toUpperCase();
                 if (!['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].includes(mUp)) {
-                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
-                    selectMes.appendChild(opt);
+                    containerMes.innerHTML += `
+                        <label class="flex items-center gap-2 p-1 hover:bg-slate-800 rounded cursor-pointer">
+                            <input type="checkbox" value="${m}" checked onchange="processLaboratorioData()" class="chk-mes-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span>${m}</span>
+                        </label>`;
                 }
             });
 
             [...capsSet].sort().forEach(c => {
-                let opt = document.createElement('option'); opt.value = c; opt.textContent = c;
-                selectCaps.appendChild(opt);
+                containerCaps.innerHTML += `
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-800 rounded cursor-pointer">
+                        <input type="checkbox" value="${c}" checked onchange="processLaboratorioData()" class="chk-caps-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <span>${c}</span>
+                    </label>`;
             });
+        }
+
+        function updateMultiSelectLabel(labelId, selectedArray, totalCount, defaultName) {
+            const label = document.getElementById(labelId);
+            if (!label) return;
+            if (selectedArray.length === totalCount || totalCount === 0) {
+                label.textContent = `Todos los ${defaultName}`;
+            } else if (selectedArray.length === 0) {
+                label.textContent = `Ninguno seleccionado`;
+            } else if (selectedArray.length === 1) {
+                label.textContent = selectedArray[0];
+            } else {
+                label.textContent = `${selectedArray.length} seleccionados`;
+            }
         }
 
         function processLaboratorioData() {
@@ -594,46 +746,37 @@
                 return;
             }
 
-            const sAnio = document.getElementById('filter-anio-lab').value;
-            const sMes = document.getElementById('filter-mes-lab').value;
-            const sCaps = document.getElementById('filter-caps-lab').value;
+            const selectedAnios = Array.from(document.querySelectorAll('.chk-anio-lab:checked')).map(cb => cb.value.toUpperCase());
+            const totalAnios = document.querySelectorAll('.chk-anio-lab').length;
+            
+            const selectedMeses = Array.from(document.querySelectorAll('.chk-mes-lab:checked')).map(cb => cb.value.toUpperCase());
+            const totalMeses = document.querySelectorAll('.chk-mes-lab').length;
+
+            const selectedCaps = Array.from(document.querySelectorAll('.chk-caps-lab:checked')).map(cb => cb.value.toUpperCase());
+            const totalCaps = document.querySelectorAll('.chk-caps-lab').length;
+
+            updateMultiSelectLabel('label-anio-lab', selectedAnios, totalAnios, 'Años');
+            updateMultiSelectLabel('label-mes-lab', selectedMeses, totalMeses, 'Meses');
+            updateMultiSelectLabel('label-caps-lab', selectedCaps, totalCaps, 'CAPS');
 
             let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0;
             let labelsRow = [], dataOtorgados = [], dataPresentes = [], dataAusentes = [];
 
             laboratorioData.forEach((row, i) => {
-                let matchAnio = true;
-                if (sAnio !== 'TODOS') {
-                    matchAnio = false;
-                    for (let key in row) {
-                        let k = key.toUpperCase();
-                        if ((k.includes('AÑO') || k.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) {
-                            matchAnio = true;
-                        }
-                    }
+                let rowAnio = '';
+                let rowMes = '';
+                let rowCaps = '';
+
+                for (let key in row) {
+                    let k = key.toUpperCase();
+                    if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) rowAnio = String(row[key] || '').trim().toUpperCase();
+                    if (k.includes('MES') || k.includes('PERIODO')) rowMes = String(row[key] || '').trim().toUpperCase();
+                    if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) rowCaps = String(row[key] || '').trim().toUpperCase();
                 }
 
-                let matchMes = true;
-                if (sMes !== 'TODOS') {
-                    matchMes = false;
-                    for (let key in row) {
-                        let k = key.toUpperCase();
-                        if ((k.includes('MES') || k.includes('PERIODO')) && String(row[key]).trim().toUpperCase() === sMes) {
-                            matchMes = true;
-                        }
-                    }
-                }
-
-                let matchCaps = true;
-                if (sCaps !== 'TODOS') {
-                    matchCaps = false;
-                    for (let key in row) {
-                        let k = key.toUpperCase();
-                        if ((k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) && String(row[key]).trim().toUpperCase() === sCaps) {
-                            matchCaps = true;
-                        }
-                    }
-                }
+                const matchAnio = selectedAnios.includes(rowAnio) || totalAnios === 0;
+                const matchMes = selectedMeses.includes(rowMes) || totalMeses === 0;
+                const matchCaps = selectedCaps.includes(rowCaps) || totalCaps === 0;
 
                 if (matchAnio && matchMes && matchCaps) {
                     let label = row['CAPS'] || row['CENTRO'] || row['MES'] || row['EFECTOR'] || Object.values(row)[0] || (`Reg ${i+1}`);
@@ -721,6 +864,198 @@
                 data: {
                     labels: labelsRow,
                     datasets: [{ label: 'Turnos Otorgados', data: dataOtorgados, backgroundColor: '#6366F1', borderRadius: 4 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        /* ----- HSI (HISTORIA DE SALUD INTEGRADA) ----- */
+        function initHsiFilters() {
+            const selectAnio = document.getElementById('filter-anio-hsi');
+            const selectMes = document.getElementById('filter-mes-hsi');
+            const selectCaps = document.getElementById('filter-caps-hsi');
+            if (!selectAnio || !selectMes || !selectCaps) return;
+
+            let anios = new Set();
+            let meses = new Set();
+            let capsSet = new Set();
+
+            hsiData.forEach(row => {
+                for (let key in row) {
+                    let k = key.toUpperCase();
+                    if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) {
+                        let val = String(row[key] || '').trim();
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL') anios.add(val);
+                    }
+                    if (k.includes('MES') || k.includes('PERIODO')) {
+                        let val = String(row[key] || '').trim();
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL') meses.add(val);
+                    }
+                    if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) {
+                        let val = String(row[key] || '').trim();
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL') capsSet.add(val);
+                    }
+                }
+            });
+
+            [...anios].sort().forEach(anio => {
+                let opt = document.createElement('option'); opt.value = anio; opt.textContent = anio;
+                selectAnio.appendChild(opt);
+            });
+
+            ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].forEach(m => {
+                if ([...meses].map(x => x.toUpperCase()).includes(m)) {
+                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
+                    selectMes.appendChild(opt);
+                }
+            });
+            [...meses].sort().forEach(m => {
+                let mUp = m.toUpperCase();
+                if (!['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].includes(mUp)) {
+                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
+                    selectMes.appendChild(opt);
+                }
+            });
+
+            [...capsSet].sort().forEach(c => {
+                let opt = document.createElement('option'); opt.value = c; opt.textContent = c;
+                selectCaps.appendChild(opt);
+            });
+        }
+
+        function processHsiData() {
+            const kpiContainer = document.getElementById('hsi-kpi-container');
+            if (!kpiContainer) return;
+
+            if (!URL_HSI || hsiData.length === 0) {
+                kpiContainer.innerHTML = `<div class="col-span-4 glass-card p-6 text-center text-amber-400 text-sm font-medium">Pega el enlace web (/exec) de tu script en la variable URL_HSI de este código para visualizar tus datos de Historia de Salud Integrada.</div>`;
+                return;
+            }
+
+            const sAnio = document.getElementById('filter-anio-hsi').value;
+            const sMes = document.getElementById('filter-mes-hsi').value;
+            const sCaps = document.getElementById('filter-caps-hsi').value;
+
+            let totalVolumen = 0;
+            let labelsRow = [], dataVolumen = [];
+
+            hsiData.forEach((row, i) => {
+                let matchAnio = true;
+                if (sAnio !== 'TODOS') {
+                    matchAnio = false;
+                    for (let key in row) {
+                        let k = key.toUpperCase();
+                        if ((k.includes('AÑO') || k.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) {
+                            matchAnio = true;
+                        }
+                    }
+                }
+
+                let matchMes = true;
+                if (sMes !== 'TODOS') {
+                    matchMes = false;
+                    for (let key in row) {
+                        let k = key.toUpperCase();
+                        if ((k.includes('MES') || k.includes('PERIODO')) && String(row[key]).trim().toUpperCase() === sMes) {
+                            matchMes = true;
+                        }
+                    }
+                }
+
+                let matchCaps = true;
+                if (sCaps !== 'TODOS') {
+                    matchCaps = false;
+                    for (let key in row) {
+                        let k = key.toUpperCase();
+                        if ((k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) && String(row[key]).trim().toUpperCase() === sCaps) {
+                            matchCaps = true;
+                        }
+                    }
+                }
+
+                if (matchAnio && matchMes && matchCaps) {
+                    let label = row['CAPS'] || row['CENTRO'] || row['ESTABLECIMIENTO'] || row['MES'] || Object.values(row)[0] || (`Reg ${i+1}`);
+                    
+                    let sumaFila = 0;
+                    for (let key in row) {
+                        let k = key.toUpperCase();
+                        let val = parseNumberSafe(row[key]);
+                        if (!k.includes('ID') && !k.includes('AÑO') && !k.includes('ANIO') && !k.includes('YEAR') && val > 0) {
+                            sumaFila += val;
+                        }
+                    }
+
+                    if (sumaFila > 0) {
+                        labelsRow.push(String(label).trim());
+                        dataVolumen.push(sumaFila);
+                        totalVolumen += sumaFila;
+                    }
+                }
+            });
+
+            let promedio = labelsRow.length > 0 ? Math.round(totalVolumen / labelsRow.length) : 0;
+            let maxIndex = dataVolumen.length > 0 ? dataVolumen.indexOf(Math.max(...dataVolumen)) : 0;
+            let topEfector = labelsRow[maxIndex] || 'N/A';
+            
+            kpiContainer.innerHTML = `
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="folder-plus" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Volumen HSI Total</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${totalVolumen.toLocaleString('es-AR')}</span>
+                </div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="bar-chart-2" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Promedio por Registro</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${promedio.toLocaleString('es-AR')}</span>
+                </div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="award" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Mayor Volumen</h4>
+                    <span class="text-sm md:text-base font-bold text-white truncate max-w-[140px]" title="${topEfector}">${topEfector}</span>
+                </div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                    <i data-lucide="building-2" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                    <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Registros</h4>
+                    <span class="text-lg md:text-2xl font-bold text-white">${labelsRow.length}</span>
+                </div>
+            `;
+            if(window.lucide) window.lucide.createIcons();
+
+            if(charts.hsiEvolucion) charts.hsiEvolucion.destroy();
+            if(charts.hsiEstado) charts.hsiEstado.destroy();
+            if(charts.hsiDetalle) charts.hsiDetalle.destroy();
+
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+
+            charts.hsiEvolucion = new Chart(document.getElementById('chartHsiEvolucion').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labelsRow,
+                    datasets: [{ label: 'Registros HSI', data: dataVolumen, backgroundColor: '#10B981', borderRadius: 6 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            let topIndices = dataVolumen.map((val, idx) => ({ val, idx })).sort((a,b) => b.val - a.val).slice(0, 5);
+            charts.hsiEstado = new Chart(document.getElementById('chartHsiEstado').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: topIndices.map(i => labelsRow[i.idx]),
+                    datasets: [{
+                        data: topIndices.map(i => i.val),
+                        backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#A855F7', '#EC4899'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
+            });
+
+            let sortedAll = dataVolumen.map((val, idx) => ({ label: labelsRow[idx], val })).sort((a,b) => b.val - a.val);
+            charts.hsiDetalle = new Chart(document.getElementById('chartHsiDetalle').getContext('2d'), {
+                type: 'bar', indexAxis: 'y',
+                data: {
+                    labels: sortedAll.map(i => i.label),
+                    datasets: [{ label: 'Registros', data: sortedAll.map(i => i.val), backgroundColor: '#6366F1', borderRadius: 4 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
