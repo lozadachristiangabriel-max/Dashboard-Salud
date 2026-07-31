@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subsecretaría de Recursos y Logística</title>
+    <title>Subsecretaría de Recursos y Logística - Florencio Varela</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2pdf.js para exportar a PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -31,15 +33,27 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0B1121; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        /* Clases para modo PDF */
+        .pdf-export-mode {
+            background-color: #0B1121 !important;
+            padding: 20px !important;
+        }
     </style>
 </head>
 <body class="flex min-h-screen antialiased flex-col md:flex-row">
 
     <!-- BARRA SUPERIOR MÓVIL -->
     <header class="md:hidden bg-[#0F172A] border-b border-slate-800 p-4 flex items-center justify-between sticky top-0 z-30 shadow-lg">
-        <h2 class="text-[#10B981] font-bold tracking-widest text-sm uppercase flex items-center gap-2">
-            <i data-lucide="activity" class="w-5 h-5"></i> SALUD PANEL
-        </h2>
+        <div class="flex items-center gap-2">
+            <!-- Emblema Verde Varela SVG -->
+            <svg class="w-7 h-7" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 75C35 60 10 45 10 20C20 25 30 35 35 45C35 30 25 15 20 5C35 10 45 25 48 40C50 25 50 10 50 5C50 10 50 25 52 40C55 25 65 10 80 5C75 15 65 30 65 45C70 35 80 25 90 20C90 45 65 60 50 75Z" fill="#16A34A"/>
+                <circle cx="50" cy="55" r="4" fill="#A3E635"/>
+                <circle cx="50" cy="42" r="3" fill="#A3E635"/>
+                <circle cx="50" cy="31" r="2" fill="#A3E635"/>
+            </svg>
+            <span class="text-white font-bold tracking-wider text-xs uppercase">FLORENCIO VARELA</span>
+        </div>
         <button onclick="toggleMobileMenu()" class="text-slate-300 hover:text-white focus:outline-none p-1">
             <i data-lucide="menu" class="w-7 h-7" id="menu-icon"></i>
         </button>
@@ -49,11 +63,19 @@
 
     <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col fixed h-full z-40 shadow-2xl transition-transform duration-300 transform -translate-x-full md:translate-x-0">
-        <div class="p-6 flex items-center justify-between">
-            <h2 class="text-[#10B981] font-bold tracking-widest text-sm uppercase flex items-center gap-2">
-                <i data-lucide="activity" class="w-5 h-5"></i> SALUD PANEL
-            </h2>
-            <button onclick="toggleMobileMenu()" class="md:hidden text-slate-400 hover:text-white">
+        <!-- LOGO INSTITUCIONAL FLORENCIO VARELA -->
+        <div class="p-5 border-b border-slate-800/80 flex items-center gap-3">
+            <svg class="w-10 h-10 shrink-0" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 75C35 60 10 45 10 20C20 25 30 35 35 45C35 30 25 15 20 5C35 10 45 25 48 40C50 25 50 10 50 5C50 10 50 25 52 40C55 25 65 10 80 5C75 15 65 30 65 45C70 35 80 25 90 20C90 45 65 60 50 75Z" fill="#16A34A"/>
+                <circle cx="50" cy="55" r="4" fill="#A3E635"/>
+                <circle cx="50" cy="42" r="3" fill="#A3E635"/>
+                <circle cx="50" cy="31" r="2" fill="#A3E635"/>
+            </svg>
+            <div>
+                <h2 class="text-white font-bold leading-tight tracking-wide text-sm">Florencio Varela</h2>
+                <span class="text-[#84CC16] font-semibold text-xs tracking-wider uppercase block">Municipalidad</span>
+            </div>
+            <button onclick="toggleMobileMenu()" class="md:hidden ml-auto text-slate-400 hover:text-white">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
@@ -80,9 +102,23 @@
 
     <!-- MAIN -->
     <main class="md:ml-64 flex-1 p-4 md:p-8 overflow-x-hidden">
-        <header class="mb-6 md:mb-8">
-            <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">SUBSECRETARÍA DE RECURSOS Y LOGÍSTICA</h1>
-            <p class="text-xs md:text-sm text-slate-400">Centro de control y visualización de datos operativos</p>
+        
+        <!-- HEADER PRINCIPAL CON BOTÓN DE EXPORTACIÓN A PDF -->
+        <header class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+            <div>
+                <div class="flex items-center gap-3 mb-1">
+                    <span class="bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-2.5 py-0.5 rounded border border-emerald-500/20 uppercase tracking-wider">Gestión Municipal</span>
+                    <span class="text-slate-400 text-xs">| Florencio Varela</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">SUBSECRETARÍA DE RECURSOS Y LOGÍSTICA</h1>
+                <p class="text-xs md:text-sm text-slate-400">Centro de control y visualización de datos operativos</p>
+            </div>
+
+            <!-- BOTÓN EXPORTAR A PDF -->
+            <button onclick="exportCurrentViewToPDF()" id="btn-export-pdf" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-900/30 transition-all shrink-0">
+                <i data-lucide="file-down" class="w-4 h-4"></i>
+                <span id="txt-export-pdf">Exportar Hoja a PDF</span>
+            </button>
         </header>
 
         <!-- LOADER -->
@@ -159,7 +195,7 @@
             </div>
         </section>
 
-        <!-- VISTA LABORATORIO (CHECKLISTS + TOP 10 CORREGIDO) -->
+        <!-- VISTA LABORATORIO -->
         <section id="view-laboratorio" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40 overflow-visible">
                 
@@ -316,6 +352,7 @@
         const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzq7DlkN-FHkHXIlzk1xeHeE_zahNaUvozW62nTfrYmA8k0DnG9IO_D2TnMCUKQludD/exec';
         const URL_HSI = '';
         
+        let activeTab = 'territorio';
         let territorioData = [], ausentismoData = [], irabData = [], laboratorioData = [], hsiData = [], charts = {};
         const kpiConfig = [
             { id: 'MANZ', title: 'MANZANAS', icon: 'map', color: 'text-indigo-400' },
@@ -344,6 +381,7 @@
         }
 
         function switchView(viewId) {
+            activeTab = viewId;
             ['territorio', 'ausentismo', 'irab', 'laboratorio', 'hsi'].forEach(v => {
                 const elView = document.getElementById(`view-${v}`);
                 const elBtn = document.getElementById(`btn-${v}`);
@@ -368,6 +406,34 @@
             if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
             if(viewId === 'laboratorio' && laboratorioData.length) setTimeout(() => processLaboratorioData(), 50);
             if(viewId === 'hsi' && (hsiData.length || !URL_HSI)) setTimeout(() => processHsiData(), 50);
+        }
+
+        // --- SISTEMA DE EXPORTACIÓN A PDF POR HOJA ---
+        function exportCurrentViewToPDF() {
+            const btn = document.getElementById('btn-export-pdf');
+            const txt = document.getElementById('txt-export-pdf');
+            const element = document.getElementById(`view-${activeTab}`);
+            
+            if (!element) return;
+
+            // Indicar carga en el botón
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            txt.textContent = 'Generando PDF...';
+
+            const opt = {
+                margin:       0.3,
+                filename:     `Reporte_Salud_${activeTab.toUpperCase()}_Varela.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0B1121' },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                txt.textContent = 'Exportar Hoja a PDF';
+            });
         }
 
         function parseNumberSafe(val) {
@@ -885,7 +951,7 @@
                     }]
                 },
                 options: {
-                    indexAxis: 'y', // <-- ESTA LÍNEA DENTRO DE OPTIONS HACE QUE SEA HORIZONTAL CON NOMBRES EN EJE Y
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
