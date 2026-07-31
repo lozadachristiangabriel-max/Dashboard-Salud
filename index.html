@@ -159,7 +159,7 @@
             </div>
         </section>
 
-        <!-- VISTA LABORATORIO (TOP 10 + LEYENDAS CON MESES) -->
+        <!-- VISTA LABORATORIO (CHECKLISTS + TOP 10 CORREGIDO) -->
         <section id="view-laboratorio" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40 overflow-visible">
                 
@@ -535,7 +535,7 @@
             if(charts.ausentismoMensual) charts.ausentismoMensual.destroy(); if(charts.topAgentes) charts.topAgentes.destroy();
             charts.ausentismoMensual = new Chart(document.getElementById('chartAusentismoMensual').getContext('2d'), { type: 'bar', data: { labels: Object.keys(mesesTotales), datasets: [{ data: Object.values(mesesTotales), backgroundColor: '#EF4444', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             const sortedAgentes = Object.entries(agentesTotales).sort((a,b) => b[1] - a[1]).slice(0, 5);
-            charts.topAgentes = new Chart(document.getElementById('chartTopAgentes').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: sortedAgentes.map(i => i[0]), datasets: [{ data: sortedAgentes.map(i => i[1]), backgroundColor: '#F59E0B', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            charts.topAgentes = new Chart(document.getElementById('chartTopAgentes').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: sortedAgentes.map(i => i[0]), datasets: [{ data: sortedAgentes.map(i => i[1]), backgroundColor: '#F59E0B', borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
 
         /* ----- IRAB 2026 ----- */
@@ -659,7 +659,7 @@
                         borderRadius: 4
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
             charts.irabTurnos = new Chart(document.getElementById('chartIrabTurnos').getContext('2d'), {
@@ -817,7 +817,6 @@
                         totalPresentes += presentes;
                         totalAusentes += ausentes;
 
-                        // Agrupación por CAPS
                         if (!capsStats[rowCaps]) {
                             capsStats[rowCaps] = { otorgados: 0, presentes: 0, ausentes: 0 };
                         }
@@ -825,7 +824,6 @@
                         capsStats[rowCaps].presentes += presentes;
                         capsStats[rowCaps].ausentes += ausentes;
 
-                        // Agrupación por Mes para Leyenda
                         if (!monthCapsMap[rowMes]) monthCapsMap[rowMes] = {};
                         if (!monthCapsMap[rowMes][rowCaps]) monthCapsMap[rowMes][rowCaps] = 0;
                         monthCapsMap[rowMes][rowCaps] += presentes;
@@ -859,7 +857,6 @@
             `;
             if(window.lucide) window.lucide.createIcons();
 
-            // Destrucción previa de gráficos
             if(charts.labTopMenorAsistencia) charts.labTopMenorAsistencia.destroy();
             if(charts.labEvolucion) charts.labEvolucion.destroy();
             if(charts.labEstado) charts.labEstado.destroy();
@@ -867,18 +864,17 @@
 
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
-            // --- GRAFICO 1: TOP 10 CAPS CON MENOR ASISTENCIA (% DE PRESENTES) ---
+            // --- GRAFICO 1 HORIZONTAL: NOMBRES DE CAPS EN EJE Y, % EN EJE X ---
             let sortedLowestCaps = Object.entries(capsStats)
                 .map(([name, data]) => {
                     let pct = data.otorgados > 0 ? (data.presentes / data.otorgados) * 100 : 0;
                     return { name, pct: parseFloat(pct.toFixed(1)), presentes: data.presentes, otorgados: data.otorgados };
                 })
-                .sort((a,b) => a.pct - b.pct) // Menor asistencia primero
+                .sort((a,b) => a.pct - b.pct)
                 .slice(0, 10);
 
             charts.labTopMenorAsistencia = new Chart(document.getElementById('chartLabTopMenorAsistencia').getContext('2d'), {
                 type: 'bar',
-                indexAxis: 'y',
                 data: {
                     labels: sortedLowestCaps.map(item => item.name),
                     datasets: [{
@@ -889,6 +885,7 @@
                     }]
                 },
                 options: {
+                    indexAxis: 'y', // <-- ESTA LÍNEA DENTRO DE OPTIONS HACE QUE SEA HORIZONTAL CON NOMBRES EN EJE Y
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
@@ -902,7 +899,13 @@
                         }
                     },
                     scales: {
-                        x: { max: 100, ticks: { callback: v => v + '%' } }
+                        x: {
+                            max: 100,
+                            ticks: { callback: v => v + '%' }
+                        },
+                        y: {
+                            ticks: { font: { size: 10 } }
+                        }
                     }
                 }
             });
@@ -939,7 +942,7 @@
                 }
             });
 
-            // --- GRAFICO 3: PROPORCIÓN DOUGHNUT (PRESENTES VS AUSENTES) ---
+            // --- GRAFICO 3: PROPORCIÓN DOUGHNUT ---
             charts.labEstado = new Chart(document.getElementById('chartLabEstado').getContext('2d'), {
                 type: 'doughnut',
                 data: {
@@ -952,12 +955,16 @@
             // --- GRAFICO 4: TOTAL DE TURNOS OTORGADOS POR CAPS ---
             charts.labDetalle = new Chart(document.getElementById('chartLabDetalle').getContext('2d'), {
                 type: 'bar',
-                indexAxis: 'y',
                 data: {
                     labels: uniqueCapsList,
                     datasets: [{ label: 'Turnos Otorgados', data: uniqueCapsList.map(c => capsStats[c].otorgados), backgroundColor: '#6366F1', borderRadius: 4 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
             });
         }
 
@@ -1144,12 +1151,17 @@
 
             let sortedAll = dataVolumen.map((val, idx) => ({ label: labelsRow[idx], val })).sort((a,b) => b.val - a.val);
             charts.hsiDetalle = new Chart(document.getElementById('chartHsiDetalle').getContext('2d'), {
-                type: 'bar', indexAxis: 'y',
+                type: 'bar',
                 data: {
                     labels: sortedAll.map(i => i.label),
                     datasets: [{ label: 'Registros', data: sortedAll.map(i => i.val), backgroundColor: '#6366F1', borderRadius: 4 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
             });
         }
 
