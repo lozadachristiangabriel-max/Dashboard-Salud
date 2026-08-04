@@ -217,12 +217,12 @@
             <div id="personal-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-8 relative z-10"></div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
-                <!-- TABLA 1: LICENCIAS DETALLADAS -->
+                <!-- TABLA 1: LICENCIAS DETALLADAS (ORDEN PRIORIZADO: DÍAS PENDIENTES, INICIO, FINAL, CANTIDAD DE DÍAS, AÑO) -->
                 <div class="glass-card p-4 md:p-6 flex flex-col h-full">
                     <div class="flex justify-between items-end mb-4">
                         <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
                             <i data-lucide="file-text" class="text-emerald-400 w-5 h-5"></i>
-                            Licencias Detalladas (2025-2026 y Histórico)
+                            Licencias Detalladas (Prioridad 2025-2026 y Fechas Corregidas)
                         </h3>
                     </div>
                     
@@ -231,13 +231,13 @@
                             <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
                                 <tr>
                                     <th class="px-3 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Agente</th>
-                                    <th class="px-2 py-3 font-semibold border-b border-slate-700">Tipo</th>
-                                    <th class="px-2 py-3 font-semibold text-center border-b border-slate-700">Días</th>
+                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 text-cyan-400">Tipo</th>
+                                    <th class="px-2 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400">Días Pend.</th>
+                                    <th class="px-2 py-3 font-semibold text-center border-b border-slate-700 text-amber-300">Inicio</th>
+                                    <th class="px-2 py-3 font-semibold text-center border-b border-slate-700 text-amber-300">Final</th>
+                                    <th class="px-2 py-3 font-semibold text-center border-b border-slate-700">Cant. Días</th>
                                     <th class="px-2 py-3 font-semibold text-center border-b border-slate-700">Año</th>
-                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 text-amber-300">Inicio</th>
-                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 text-amber-300">Final</th>
-                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 text-rose-400">Suspensión</th>
-                                    <th class="px-2 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Pend.</th>
+                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 text-rose-400 rounded-tr-lg">Suspensión</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-licencias" class="divide-y divide-slate-800/50"></tbody>
@@ -245,12 +245,12 @@
                     </div>
                 </div>
 
-                <!-- TABLA 2: INASISTENCIAS / AUSENTES -->
+                <!-- TABLA 2: INASISTENCIAS / AUSENTES (RANGO A1:H27 VINCULADO) -->
                 <div class="glass-card p-4 md:p-6 flex flex-col h-full">
                     <div class="flex justify-between items-end mb-4">
                         <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
                             <i data-lucide="user-minus" class="text-rose-400 w-5 h-5"></i>
-                            Registro de Ausentes / Inasistencias
+                            Ausentes / Inasistencias (Rango A1:H27)
                         </h3>
                     </div>
                     
@@ -593,7 +593,7 @@
                 ]);
 
                 territorioData  = resT.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
-                ausentismoData  = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                ausentismoData  = resA.slice(0, 27).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; }); // Rango A1:H27
                 licenciasData   = resLic.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 irabData        = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 laboratorioData = resL.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
@@ -680,7 +680,7 @@
             charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), { type: 'line', data: { labels: sortedYears, datasets: [{ label: 'Vacunación', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }, { label: 'Atenciones', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 }, { label: 'Trámites', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
-        /* ----- PERSONAL: VINCULACIÓN DE LICENCIAS Y AUSENTES (PRIORIDAD 2025/2026) ----- */
+        /* ----- PERSONAL: VINCULACIÓN DE LICENCIAS (CORRECCIÓN DE FECHAS Y ORDEN PRIORIZADO) ----- */
         const getAgenteName = (row) => {
             const keysPriority = ['AGENTE', 'NOMBRE Y APELLIDO', 'APELLIDO Y NOMBRE', 'PERSONAL', 'EMPLEADO', 'TRABAJADOR'];
             for (let pk of keysPriority) {
@@ -701,6 +701,22 @@
             return 'SIN AGENTE';
         };
 
+        function parseFechasLicencia(row) {
+            let inicio = String(row['INICIO'] || '').trim();
+            let final = String(row['FINAL'] || '').trim();
+
+            // Si la fecha de inicio contiene un rango unificado (ej: "12/7/21 - 16/08/21")
+            if (inicio.includes('-') && (!final || final === 'NAN' || final === 'NULL' || final === '-')) {
+                let partes = inicio.split('-');
+                inicio = partes[0].trim();
+                final = partes[1].trim();
+            }
+            return {
+                inicio: inicio && inicio !== 'NAN' && inicio !== 'NULL' ? inicio : '-',
+                final: final && final !== 'NAN' && final !== 'NULL' ? final : '-'
+            };
+        }
+
         function initPersonalFilters() {
             const containerAgente = document.getElementById('checklist-agente-personal');
             const containerTipo = document.getElementById('checklist-tipo-personal');
@@ -715,7 +731,6 @@
             containerAgente.innerHTML = '';
             containerTipo.innerHTML = '';
             
-            // Mantener la primera opción ("2025 y 2026" y "Todos")
             while (selectAnio.options.length > 2) selectAnio.remove(2);
             [selectInicio, selectFinal, selectSuspension, selectPendientes].forEach(sel => {
                 if (sel) while (sel.options.length > 1) sel.remove(1);
@@ -730,10 +745,11 @@
                 if (tipo && tipo !== 'UNDEFINED') tipos.add(tipo);
                 let anio = String(row['AÑO'] || row['ANIO'] || '').trim();
                 if (anio && anio !== 'UNDEFINED' && anio !== 'NULL') anios.add(anio);
-                let inicio = String(row['INICIO'] || '').trim();
-                if (inicio && inicio !== 'UNDEFINED' && inicio !== 'NULL' && inicio !== 'NAN') inicios.add(inicio);
-                let final = String(row['FINAL'] || '').trim();
-                if (final && final !== 'UNDEFINED' && final !== 'NULL' && final !== 'NAN') finales.add(final);
+
+                let fechas = parseFechasLicencia(row);
+                if (fechas.inicio !== '-') inicios.add(fechas.inicio);
+                if (fechas.final !== '-') finales.add(fechas.final);
+
                 let suspension = String(row['F. SUSPENCION'] || row['SUSPENSION LAO'] || row['SUSPENSION'] || '').trim();
                 if (suspension && suspension !== 'UNDEFINED' && suspension !== 'NULL' && suspension !== 'NAN') suspensiones.add(suspension);
                 let pendientes = String(row['DIAS PENDIENTES'] || '').trim();
@@ -799,8 +815,7 @@
                 let agenteRow = getAgenteName(row);
                 let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || row['TIPO'] || 'ANUAL').trim().toUpperCase();
                 let anioRow = String(row['AÑO'] || row['ANIO'] || '').trim();
-                let inicioRow = String(row['INICIO'] || '').trim();
-                let finalRow = String(row['FINAL'] || '').trim();
+                let fechas = parseFechasLicencia(row);
                 let suspensionRow = String(row['F. SUSPENCION'] || row['SUSPENSION LAO'] || row['SUSPENSION'] || '').trim();
                 let pendientesRow = String(row['DIAS PENDIENTES'] || '').trim();
 
@@ -809,13 +824,13 @@
                 
                 let matchAnio = true;
                 if (sAnio === '2025_2026') {
-                    matchAnio = anioRow.includes('2025') || anioRow.includes('2026') || inicioRow.includes('/25') || inicioRow.includes('/26') || inicioRow.includes('2025') || inicioRow.includes('2026');
+                    matchAnio = anioRow.includes('2025') || anioRow.includes('2026') || fechas.inicio.includes('/25') || fechas.inicio.includes('/26') || fechas.inicio.includes('2025') || fechas.inicio.includes('2026') || anioRow === '-' || !anioRow;
                 } else if (sAnio !== 'TODOS') {
                     matchAnio = anioRow === sAnio;
                 }
 
-                const matchInicio = sInicio === 'TODOS' || inicioRow === sInicio;
-                const matchFinal = sFinal === 'TODOS' || finalRow === sFinal;
+                const matchInicio = sInicio === 'TODOS' || fechas.inicio === sInicio;
+                const matchFinal = sFinal === 'TODOS' || fechas.final === sFinal;
                 const matchSuspension = sSuspension === 'TODOS' || suspensionRow === sSuspension;
                 const matchPendientes = sPendientes === 'TODOS' || pendientesRow === sPendientes;
 
@@ -826,17 +841,17 @@
                     filteredLicencias.push({
                         agente: agenteRow,
                         tipo: tipoRow || 'ANUAL',
+                        pendientes: pendientesRow && pendientesRow !== 'NAN' && pendientesRow !== 'NULL' ? pendientesRow : '-',
+                        inicio: fechas.inicio,
+                        final: fechas.final,
                         dias: dias > 0 ? dias : '-',
                         anio: anioRow || '-',
-                        inicio: inicioRow && inicioRow !== 'NAN' && inicioRow !== 'NULL' ? inicioRow : '-',
-                        final: finalRow && finalRow !== 'NAN' && finalRow !== 'NULL' ? finalRow : '-',
-                        suspension: suspensionRow && suspensionRow !== 'NAN' && suspensionRow !== 'NULL' ? suspensionRow : '-',
-                        pendientes: pendientesRow && pendientesRow !== 'NAN' && pendientesRow !== 'NULL' ? pendientesRow : '-'
+                        suspension: suspensionRow && suspensionRow !== 'NAN' && suspensionRow !== 'NULL' ? suspensionRow : '-'
                     });
                 }
             });
 
-            // Procesar Ausentes / Inasistencias
+            // Procesar Ausentes / Inasistencias (Rango A1:H27)
             ausentismoData.forEach(row => {
                 let agenteRow = getAgenteName(row);
                 let anioRow = String(row['AÑO'] || '').trim();
@@ -848,7 +863,7 @@
                 const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
                 let matchAnio = true;
                 if (sAnio === '2025_2026') {
-                    matchAnio = anioRow === '2025' || anioRow === '2026';
+                    matchAnio = anioRow === '2025' || anioRow === '2026' || !anioRow;
                 } else if (sAnio !== 'TODOS') {
                     matchAnio = anioRow === sAnio;
                 }
@@ -856,7 +871,7 @@
                 if (matchAgente && matchAnio) {
                     filteredAusentes.push({
                         agente: agenteRow,
-                        periodo: `${anioRow} - ${mesRow} (Día ${diaRow})`,
+                        periodo: `${anioRow || '2026'} - ${mesRow || 'GENERAL'} (Día ${diaRow || '-'})`,
                         estado: estadoRow || 'AUSENTE',
                         observacion: observacionRow && observacionRow !== 'NAN' ? observacionRow : '-'
                     });
@@ -894,33 +909,33 @@
                 if(window.lucide) window.lucide.createIcons();
             }
 
-            // Render Tabla Licencias
+            // Render Tabla Licencias (Prioridad: Días Pendientes, Inicio, Final, Cant. Días, Año)
             const tbodyLic = document.getElementById('tbody-licencias');
             tbodyLic.innerHTML = '';
             if (filteredLicencias.length === 0) {
-                tbodyLic.innerHTML = `<tr><td colspan="8" class="px-3 py-4 text-center text-slate-500 italic">No hay licencias para 2025/2026 con estos filtros.</td></tr>`;
+                tbodyLic.innerHTML = `<tr><td colspan="8" class="px-3 py-4 text-center text-slate-500 italic">No hay licencias con estos filtros.</td></tr>`;
             } else {
                 filteredLicencias.forEach(item => {
                     tbodyLic.innerHTML += `
                         <tr class="hover:bg-slate-800/80 transition-colors">
                             <td class="px-3 py-2 font-medium text-slate-200">${item.agente}</td>
                             <td class="px-2 py-2 text-cyan-400">${item.tipo}</td>
+                            <td class="px-2 py-2 text-center font-bold text-emerald-400">${item.pendientes}</td>
+                            <td class="px-2 py-2 text-center text-amber-300">${item.inicio}</td>
+                            <td class="px-2 py-2 text-center text-amber-300">${item.final}</td>
                             <td class="px-2 py-2 text-center font-bold text-white">${item.dias}</td>
                             <td class="px-2 py-2 text-center text-slate-300">${item.anio}</td>
-                            <td class="px-2 py-2 text-amber-300">${item.inicio}</td>
-                            <td class="px-2 py-2 text-amber-300">${item.final}</td>
                             <td class="px-2 py-2 text-rose-400">${item.suspension}</td>
-                            <td class="px-2 py-2 text-center font-bold text-emerald-400">${item.pendientes}</td>
                         </tr>
                     `;
                 });
             }
 
-            // Render Tabla Ausentes
+            // Render Tabla Ausentes (Rango A1:H27)
             const tbodyAus = document.getElementById('tbody-ausentes');
             tbodyAus.innerHTML = '';
             if (filteredAusentes.length === 0) {
-                tbodyAus.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de ausencias para el período seleccionado.</td></tr>`;
+                tbodyAus.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de ausencias (A1:H27).</td></tr>`;
             } else {
                 filteredAusentes.forEach(item => {
                     tbodyAus.innerHTML += `
