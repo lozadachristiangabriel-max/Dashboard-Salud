@@ -142,12 +142,13 @@
             <div class="glass-card p-4 md:p-6 mt-6 mb-8"><div class="h-72 md:h-80 relative"><canvas id="chartAnual"></canvas></div></div>
         </section>
 
-        <!-- VISTA PERSONAL (AUSENCIAS Y LICENCIAS CON CHECKLISTS) -->
+        <!-- VISTA PERSONAL (AUSENCIAS Y LICENCIAS DETALLADAS) -->
         <section id="view-personal" class="hidden">
+            <!-- FILTROS SUPERIORES (CHECKLIST AGENTE Y TIPO DE LICENCIA) -->
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40 overflow-visible">
                 <!-- CHECKLIST MULTIPLE: AGENTE -->
                 <div class="relative multi-select-container z-50">
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Personal (Checklist por Agente)</label>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Agente (Dato Duro)</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-agente-personal')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
                         <span id="label-agente-personal" class="truncate font-medium">Todos los Agentes</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
@@ -161,54 +162,85 @@
                     </div>
                 </div>
 
-                <!-- CHECKLIST MULTIPLE: MES -->
+                <!-- CHECKLIST MULTIPLE: TIPO DE LICENCIA -->
                 <div class="relative multi-select-container z-50">
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Meses (Checklist)</label>
-                    <button type="button" onclick="toggleMultiSelect('dropdown-mes-personal')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
-                        <span id="label-mes-personal" class="truncate font-medium">Todos los Meses</span>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Tipo de Licencia</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-tipo-personal')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-tipo-personal" class="truncate font-medium">Todos los Tipos</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </button>
-                    <div id="dropdown-mes-personal" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
+                    <div id="dropdown-tipo-personal" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
                         <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
-                            <button type="button" onclick="selectAllPersonal('mes', true)" class="hover:underline">Seleccionar Todos</button>
-                            <button type="button" onclick="selectAllPersonal('mes', false)" class="hover:underline text-rose-400">Ninguno</button>
+                            <button type="button" onclick="selectAllPersonal('tipo', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllPersonal('tipo', false)" class="hover:underline text-rose-400">Ninguno</button>
                         </div>
-                        <div id="checklist-mes-personal" class="space-y-1.5 text-xs text-slate-200"></div>
+                        <div id="checklist-tipo-personal" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- FILTROS INFERIORES: AÑO, FECHA INICIO, FECHA FINAL, SUSPENSIÓN Y DÍAS PENDIENTES -->
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 relative z-30">
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año</label>
+                    <select id="filter-anio-lic" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los Años</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Fecha Inicio</label>
+                    <select id="filter-inicio-lic" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Fecha Final</label>
+                    <select id="filter-final-lic" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Suspensión</label>
+                    <select id="filter-suspension-lic" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Días Pendientes</label>
+                    <select id="filter-pendientes-lic" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos</option>
+                    </select>
                 </div>
             </div>
             
             <div id="personal-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-8 relative z-10"></div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
-                <div class="glass-card p-4 md:p-6">
-                    <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2">
-                        <i data-lucide="bar-chart-2" class="text-cyan-400 w-5 h-5"></i>
-                        Inasistencias y Licencias por Mes
-                    </h3>
-                    <div class="h-64 md:h-72 relative"><canvas id="chartPersonalMensual"></canvas></div>
-                </div>
-                
+            <div class="grid grid-cols-1 gap-6 mb-8 relative z-10">
                 <div class="glass-card p-4 md:p-6 flex flex-col h-full">
                     <div class="flex justify-between items-end mb-4">
                         <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
-                            <i data-lucide="list" class="text-purple-400 w-5 h-5"></i>
-                            Listado Completo por Agente (Ausentismo y Licencias)
+                            <i data-lucide="list" class="text-emerald-400 w-5 h-5"></i>
+                            Registro Detallado de Licencias por Agente (Control de Días, Fechas y Suspensiones)
                         </h3>
                     </div>
                     
-                    <div class="overflow-y-auto max-h-[19rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
-                        <table class="w-full text-left text-xs text-slate-300 relative">
+                    <div class="overflow-x-auto max-h-[26rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
+                        <table class="w-full text-left text-xs text-slate-300 relative whitespace-nowrap">
                             <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
                                 <tr>
-                                    <th class="px-4 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Nombre del Agente</th>
-                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-rose-400">Ausencias</th>
-                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-amber-400">Licencias</th>
-                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Total Faltas</th>
+                                    <th class="px-4 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Agente</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Legajo</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-cyan-400">Tipo Lic.</th>
+                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700">Días</th>
+                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700">Año</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-amber-400">Fecha Inicio</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-amber-400">Fecha Final</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-rose-400">Suspensión</th>
+                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Días Pendientes</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-personal" class="divide-y divide-slate-800/50">
-                                <!-- Filas generadas por JS por AGENTE -->
+                                <!-- Filas de licencias detalladas -->
                             </tbody>
                         </table>
                     </div>
@@ -338,7 +370,7 @@
             </div>
         </section>
 
-        <!-- VISTA HSI (HISTORIA DE SALUD INTEGRADA) -->
+        <!-- VISTA HSI -->
         <section id="view-hsi" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40">
                 <div>
@@ -396,7 +428,7 @@
     <script>
         const URL_TERRITORIO = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbw7tP5mgS3cfBpXi3-W_0Pks_tnZ7ncbEstZrF649byWy0YTsdmxLao_stLSK27F7Vblw/exec';
-        const URL_LICENCIAS  = 'https://script.google.com/macros/s/AKfycbx-Tzy_-zZIho5p5IomrHfO9VS7V8lDvytmXJhx51oEhF76g5DNgUSXKWuli6KCIXBq/exec'; // <-- VINCULADA TU HOJA OFICIAL
+        const URL_LICENCIAS  = 'https://script.google.com/macros/s/AKfycbx-Tzy_-zZIho5p5IomrHfO9VS7V8lDvytmXJhx51oEhF76g5DNgUSXKWuli6KCIXBq/exec';
         const URL_IRAB       = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
         const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzq7DlkN-FHkHXIlzk1xeHeE_zahNaUvozW62nTfrYmA8k0DnG9IO_D2TnMCUKQludD/exec';
         const URL_HSI        = '';
@@ -452,7 +484,7 @@
             }
 
             if(viewId === 'territorio' && territorioData.length) setTimeout(() => processTerritorioData(), 50);
-            if(viewId === 'personal' && (ausentismoData.length || licenciasData.length)) setTimeout(() => processPersonalData(), 50);
+            if(viewId === 'personal' && licenciasData.length) setTimeout(() => processPersonalData(), 50);
             if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
             if(viewId === 'laboratorio' && laboratorioData.length) setTimeout(() => processLaboratorioData(), 50);
             if(viewId === 'hsi' && (hsiData.length || !URL_HSI)) setTimeout(() => processHsiData(), 50);
@@ -499,7 +531,7 @@
 
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.multi-select-container')) {
-                ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-personal', 'dropdown-mes-personal'].forEach(id => {
+                ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-personal', 'dropdown-tipo-personal'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -509,7 +541,7 @@
         function toggleMultiSelect(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             const isHidden = dropdown.classList.contains('hidden');
-            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-personal', 'dropdown-mes-personal'].forEach(id => {
+            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-personal', 'dropdown-tipo-personal'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
@@ -625,21 +657,17 @@
             charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), { type: 'line', data: { labels: sortedYears, datasets: [{ label: 'Vacunación', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }, { label: 'Atenciones', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 }, { label: 'Trámites', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
-        /* ----- PERSONAL: VINCULACIÓN POR DATO DURO (AGENTE) ----- */
+        /* ----- PERSONAL: VINCULACIÓN DE LICENCIAS CON FILTROS ESPECÍFICOS ----- */
         const getAgenteName = (row) => {
-            // Prioridad 1: Buscar exactamente la columna AGENTE, o variaciones explícitas de nombre
             const keysPriority = ['AGENTE', 'NOMBRE Y APELLIDO', 'APELLIDO Y NOMBRE', 'PERSONAL', 'EMPLEADO', 'TRABAJADOR'];
             for (let pk of keysPriority) {
                 for (let k in row) {
                     if (k.toUpperCase().trim() === pk) {
                         let val = String(row[k] || '').trim();
-                        if (val && val !== 'UNDEFINED' && val !== 'NULL' && val !== 'NAN') {
-                            return val.toUpperCase();
-                        }
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL' && val !== 'NAN') return val.toUpperCase();
                     }
                 }
             }
-            // Prioridad 2: Buscar si alguna columna contiene la palabra AGENTE o NOMBRE
             for (let k in row) {
                 let keyUp = k.toUpperCase();
                 if (keyUp.includes('AGENTE') || keyUp.includes('NOMBRE') || keyUp.includes('PERSONAL') || keyUp.includes('APELLIDO')) {
@@ -647,21 +675,55 @@
                     if (val && val !== 'UNDEFINED' && val !== 'NULL' && val !== 'NAN') return val.toUpperCase();
                 }
             }
-            return '';
+            return 'SIN AGENTE';
         };
 
         function initPersonalFilters() {
             const containerAgente = document.getElementById('checklist-agente-personal');
-            const containerMes = document.getElementById('checklist-mes-personal');
-            if (!containerAgente || !containerMes) return;
+            const containerTipo = document.getElementById('checklist-tipo-personal');
+            const selectAnio = document.getElementById('filter-anio-lic');
+            const selectInicio = document.getElementById('filter-inicio-lic');
+            const selectFinal = document.getElementById('filter-final-lic');
+            const selectSuspension = document.getElementById('filter-suspension-lic');
+            const selectPendientes = document.getElementById('filter-pendientes-lic');
+
+            if (!containerAgente || !containerTipo) return;
 
             containerAgente.innerHTML = '';
-            containerMes.innerHTML = '';
-
-            let agentes = new Set();
-            ausentismoData.forEach(row => { let ag = getAgenteName(row); if (ag) agentes.add(ag); });
-            licenciasData.forEach(row => { let ag = getAgenteName(row); if (ag) agentes.add(ag); });
+            containerTipo.innerHTML = '';
             
+            // Limpiar selects únicos manteniendo la opción "TODOS"
+            [selectAnio, selectInicio, selectFinal, selectSuspension, selectPendientes].forEach(sel => {
+                if (sel) {
+                    while (sel.options.length > 1) sel.remove(1);
+                }
+            });
+
+            let agentes = new Set(), tipos = new Set(), anios = new Set(), inicios = new Set(), finales = new Set(), suspensiones = new Set(), pendientesSet = new Set();
+
+            licenciasData.forEach(row => {
+                let ag = getAgenteName(row);
+                if (ag && ag !== 'SIN AGENTE') agentes.add(ag);
+
+                let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || row['TIPO'] || 'ANUAL').trim().toUpperCase();
+                if (tipo && tipo !== 'UNDEFINED') tipos.add(tipo);
+
+                let anio = String(row['AÑO'] || row['ANIO'] || '').trim();
+                if (anio && anio !== 'UNDEFINED' && anio !== 'NULL') anios.add(anio);
+
+                let inicio = String(row['INICIO'] || '').trim();
+                if (inicio && inicio !== 'UNDEFINED' && inicio !== 'NULL' && inicio !== 'NAN') inicios.add(inicio);
+
+                let final = String(row['FINAL'] || '').trim();
+                if (final && final !== 'UNDEFINED' && final !== 'NULL' && final !== 'NAN') finales.add(final);
+
+                let suspension = String(row['F. SUSPENCION'] || row['SUSPENSION LAO'] || row['SUSPENSION'] || '').trim();
+                if (suspension && suspension !== 'UNDEFINED' && suspension !== 'NULL' && suspension !== 'NAN') suspensiones.add(suspension);
+
+                let pendientes = String(row['DIAS PENDIENTES'] || '').trim();
+                if (pendientes && pendientes !== 'UNDEFINED' && pendientes !== 'NULL' && pendientes !== 'NAN') pendientesSet.add(pendientes);
+            });
+
             [...agentes].sort().forEach(ag => {
                 containerAgente.innerHTML += `
                     <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
@@ -670,180 +732,124 @@
                     </label>`;
             });
 
-            allMonths.forEach(m => {
-                containerMes.innerHTML += `
+            [...tipos].sort().forEach(t => {
+                containerTipo.innerHTML += `
                     <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
-                        <input type="checkbox" value="${m}" checked onchange="processPersonalData()" class="chk-mes-personal rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
-                        <span class="font-medium">${m}</span>
+                        <input type="checkbox" value="${t}" checked onchange="processPersonalData()" class="chk-tipo-personal rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <span class="font-medium">${t}</span>
                     </label>`;
             });
+
+            [...anios].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectAnio.appendChild(opt); });
+            [...inicios].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectInicio.appendChild(opt); });
+            [...finales].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectFinal.appendChild(opt); });
+            [...suspensiones].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectSuspension.appendChild(opt); });
+            [...pendientesSet].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectPendientes.appendChild(opt); });
         }
 
         function processPersonalData() {
             const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-personal:checked')).map(cb => cb.value.toUpperCase());
             const totalCheckAgentes = document.querySelectorAll('.chk-agente-personal').length;
             
-            const checkedMeses = Array.from(document.querySelectorAll('.chk-mes-personal:checked')).map(cb => cb.value.toUpperCase());
-            const totalCheckMeses = document.querySelectorAll('.chk-mes-personal').length;
+            const checkedTipos = Array.from(document.querySelectorAll('.chk-tipo-personal:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckTipos = document.querySelectorAll('.chk-tipo-personal').length;
+
+            const sAnio = document.getElementById('filter-anio-lic').value;
+            const sInicio = document.getElementById('filter-inicio-lic').value;
+            const sFinal = document.getElementById('filter-final-lic').value;
+            const sSuspension = document.getElementById('filter-suspension-lic').value;
+            const sPendientes = document.getElementById('filter-pendientes-lic').value;
 
             updateMultiSelectLabel('label-agente-personal', checkedAgentes, totalCheckAgentes, 'Agentes');
-            updateMultiSelectLabel('label-mes-personal', checkedMeses, totalCheckMeses, 'Meses');
+            updateMultiSelectLabel('label-tipo-personal', checkedTipos, totalCheckTipos, 'Tipos');
 
-            let mesesTotales = {}; 
-            allMonths.forEach(m => mesesTotales[m] = { ausencias: 0, licencias: 0 });
-            let agentesTotales = {}; 
+            let filteredLicencias = [];
+            let totalDiasAcumulados = 0;
 
-            // 1. Procesar Ausencias (Vinculado por AGENTE)
-            ausentismoData.forEach(row => {
-                let agenteRow = getAgenteName(row);
-                if (!agenteRow) return;
-
-                const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
-                if (matchAgente) {
-                    if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, licencias: 0, total: 0 };
-                    
-                    let mesDeFila = String(row['MES'] || '').trim().toUpperCase();
-                    if (mesDeFila && allMonths.includes(mesDeFila)) {
-                        const matchMes = checkedMeses.includes(mesDeFila) || totalCheckMeses === 0;
-                        if (matchMes) {
-                            mesesTotales[mesDeFila].ausencias += 1;
-                            agentesTotales[agenteRow].ausencias += 1;
-                            agentesTotales[agenteRow].total += 1;
-                        }
-                    } else {
-                        allMonths.forEach(mes => {
-                            const matchMes = checkedMeses.includes(mes) || totalCheckMeses === 0;
-                            if (matchMes) {
-                                let valMes = 0;
-                                for (let k in row) if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]);
-                                mesesTotales[mes].ausencias += valMes;
-                                agentesTotales[agenteRow].ausencias += valMes;
-                                agentesTotales[agenteRow].total += valMes;
-                            }
-                        });
-                    }
-                }
-            });
-
-            // 2. Procesar Licencias (Vinculado por AGENTE)
             licenciasData.forEach(row => {
                 let agenteRow = getAgenteName(row);
-                if (!agenteRow) return;
+                let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || row['TIPO'] || 'ANUAL').trim().toUpperCase();
+                let anioRow = String(row['AÑO'] || row['ANIO'] || '').trim();
+                let inicioRow = String(row['INICIO'] || '').trim();
+                let finalRow = String(row['FINAL'] || '').trim();
+                let suspensionRow = String(row['F. SUSPENCION'] || row['SUSPENSION LAO'] || row['SUSPENSION'] || '').trim();
+                let pendientesRow = String(row['DIAS PENDIENTES'] || '').trim();
 
                 const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
-                if (matchAgente) {
-                    if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, licencias: 0, total: 0 };
-                    
-                    let diasLicencia = parseNumberSafe(row['DIAS'] || row['CANTIDAD DE DIAS'] || row['DIAS USUFRUCTUADOS'] || row['CANTIDAD'] || 1);
-                    let mesDeFila = String(row['MES'] || '').trim().toUpperCase();
+                const matchTipo = checkedTipos.includes(tipoRow) || totalCheckTipos === 0;
+                const matchAnio = sAnio === 'TODOS' || anioRow === sAnio;
+                const matchInicio = sInicio === 'TODOS' || inicioRow === sInicio;
+                const matchFinal = sFinal === 'TODOS' || finalRow === sFinal;
+                const matchSuspension = sSuspension === 'TODOS' || suspensionRow === sSuspension;
+                const matchPendientes = sPendientes === 'TODOS' || pendientesRow === sPendientes;
 
-                    if (mesDeFila && allMonths.includes(mesDeFila)) {
-                        const matchMes = checkedMeses.includes(mesDeFila) || totalCheckMeses === 0;
-                        if (matchMes) {
-                            mesesTotales[mesDeFila].licencias += diasLicencia;
-                            agentesTotales[agenteRow].licencias += diasLicencia;
-                            agentesTotales[agenteRow].total += diasLicencia;
-                        }
-                    } else {
-                        allMonths.forEach(mes => {
-                            const matchMes = checkedMeses.includes(mes) || totalCheckMeses === 0;
-                            if (matchMes) {
-                                let valMes = 0;
-                                for (let k in row) if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]);
-                                if (valMes > 0) {
-                                    mesesTotales[mes].licencias += valMes;
-                                    agentesTotales[agenteRow].licencias += valMes;
-                                    agentesTotales[agenteRow].total += valMes;
-                                }
-                            }
-                        });
-                    }
+                if (matchAgente && matchTipo && matchAnio && matchInicio && matchFinal && matchSuspension && matchPendientes) {
+                    let dias = parseNumberSafe(row['DIAS'] || row['CANTIDAD DE DIAS'] || row['CANTIDAD'] || 0);
+                    totalDiasAcumulados += dias;
+
+                    filteredLicencias.push({
+                        agente: agenteRow,
+                        legajo: row['LEGAJO'] || '-',
+                        tipo: tipoRow || 'ANUAL',
+                        dias: dias > 0 ? dias : '-',
+                        anio: anioRow || '-',
+                        inicio: inicioRow && inicioRow !== 'NAN' && inicioRow !== 'NULL' ? inicioRow : '-',
+                        final: finalRow && finalRow !== 'NAN' && finalRow !== 'NULL' ? finalRow : '-',
+                        suspension: suspensionRow && suspensionRow !== 'NAN' && suspensionRow !== 'NULL' ? suspensionRow : '-',
+                        pendientes: pendientesRow && pendientesRow !== 'NAN' && pendientesRow !== 'NULL' ? pendientesRow : '-'
+                    });
                 }
             });
 
-            renderPersonalUI(mesesTotales, agentesTotales, checkedMeses);
+            renderPersonalUI(filteredLicencias, totalDiasAcumulados);
         }
 
-        function renderPersonalUI(mesesTotales, agentesTotales, checkedMeses) {
-            let totalAusencias = 0, totalLicencias = 0, agentesConFaltas = 0;
-
-            Object.values(agentesTotales).forEach(ag => {
-                if (ag.total > 0) agentesConFaltas++;
-                totalAusencias += ag.ausencias;
-                totalLicencias += ag.licencias;
-            });
-
+        function renderPersonalUI(filteredLicencias, totalDiasAcumulados) {
             const kpiContainer = document.getElementById('personal-kpi-container');
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
                     <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="users" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Agentes con Novedades</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${agentesConFaltas}</span>
+                        <i data-lucide="file-text" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Registros Filtrados</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${filteredLicencias.length}</span>
                     </div>
                     <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="user-minus" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Inasistencias</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${totalAusencias}</span>
+                        <i data-lucide="calendar" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Suma Total de Días</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${totalDiasAcumulados}</span>
                     </div>
                     <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="file-text" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Licencias</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${totalLicencias}</span>
+                        <i data-lucide="users" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Agentes Únicos</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${new Set(filteredLicencias.map(l => l.agente)).size}</span>
                     </div>
                     <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="calculator" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Suma Gral. de Faltas</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${totalAusencias + totalLicencias}</span>
+                        <i data-lucide="check-circle-2" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Estado</h4>
+                        <span class="text-sm md:text-base font-bold text-emerald-400">Actualizado</span>
                     </div>
                 `;
                 if(window.lucide) window.lucide.createIcons();
             }
 
-            if(charts.personalMensual) charts.personalMensual.destroy();
-            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
-
-            const mesesAVisibilizar = checkedMeses.length > 0 ? checkedMeses : allMonths;
-
-            charts.personalMensual = new Chart(document.getElementById('chartPersonalMensual').getContext('2d'), {
-                type: 'bar',
-                data: { 
-                    labels: mesesAVisibilizar, 
-                    datasets: [
-                        { label: 'Inasistencias', data: mesesAVisibilizar.map(m => mesesTotales[m].ausencias), backgroundColor: '#F43F5E', borderRadius: 4 },
-                        { label: 'Licencias', data: mesesAVisibilizar.map(m => mesesTotales[m].licencias), backgroundColor: '#F59E0B', borderRadius: 4 }
-                    ] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    scales: { x: { stacked: true }, y: { stacked: true } },
-                    plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } } 
-                } 
-            });
-
             const tbody = document.getElementById('tbody-personal');
             tbody.innerHTML = '';
             
-            const sortedAgentes = Object.entries(agentesTotales)
-                .filter(item => item[1].total > 0)
-                .sort((a, b) => b[1].total - a[1].total);
-
-            if (sortedAgentes.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de faltas para el personal o los meses seleccionados.</td></tr>`;
+            if (filteredLicencias.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-6 text-center text-slate-500 italic">No se encontraron registros de licencias con los filtros seleccionados.</td></tr>`;
             } else {
-                sortedAgentes.forEach(item => {
-                    const nombre = item[0];
-                    const ausencias = item[1].ausencias;
-                    const licencias = item[1].licencias;
-                    const total = item[1].total;
-
+                filteredLicencias.forEach(item => {
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-800/80 transition-colors">
-                            <td class="px-4 py-2 font-medium text-slate-200">${nombre}</td>
-                            <td class="px-3 py-2 text-center text-rose-400">${ausencias > 0 ? ausencias : '-'}</td>
-                            <td class="px-3 py-2 text-center text-amber-400">${licencias > 0 ? licencias : '-'}</td>
-                            <td class="px-3 py-2 text-center font-bold text-emerald-400">${total}</td>
+                            <td class="px-4 py-2 font-medium text-slate-200">${item.agente}</td>
+                            <td class="px-3 py-2 text-slate-400">${item.legajo}</td>
+                            <td class="px-3 py-2 text-cyan-400 font-medium">${item.tipo}</td>
+                            <td class="px-3 py-2 text-center font-bold text-white">${item.dias}</td>
+                            <td class="px-3 py-2 text-center text-slate-300">${item.anio}</td>
+                            <td class="px-3 py-2 text-amber-300">${item.inicio}</td>
+                            <td class="px-3 py-2 text-amber-300">${item.final}</td>
+                            <td class="px-3 py-2 text-rose-400">${item.suspension}</td>
+                            <td class="px-3 py-2 text-center font-bold text-emerald-400">${item.pendientes}</td>
                         </tr>
                     `;
                 });
