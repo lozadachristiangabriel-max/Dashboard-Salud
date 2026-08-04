@@ -85,7 +85,7 @@
                 <i data-lucide="map" class="w-5 h-5"></i> TERRITORIO
             </button>
             <button onclick="switchView('personal')" id="btn-personal" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
-                <i data-lucide="users" class="w-5 h-5"></i> PERSONAL (FALTAS)
+                <i data-lucide="users" class="w-5 h-5"></i> PERSONAL (FALTAS Y LICENCIAS)
             </button>
             <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="thermometer" class="w-5 h-5"></i> IRAB 2026
@@ -142,9 +142,9 @@
             <div class="glass-card p-4 md:p-6 mt-6 mb-8"><div class="h-72 md:h-80 relative"><canvas id="chartAnual"></canvas></div></div>
         </section>
 
-        <!-- VISTA PERSONAL (AUSENCIAS Y LICENCIAS DETALLADAS) -->
+        <!-- VISTA PERSONAL (FALTAS, AUSENTES Y LICENCIAS 2025/2026) -->
         <section id="view-personal" class="hidden">
-            <!-- FILTROS SUPERIORES (CHECKLIST AGENTE Y TIPO DE LICENCIA) -->
+            <!-- FILTROS SUPERIORES: AGENTE Y TIPO DE LICENCIA -->
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40 overflow-visible">
                 <!-- CHECKLIST MULTIPLE: AGENTE -->
                 <div class="relative multi-select-container z-50">
@@ -179,11 +179,12 @@
                 </div>
             </div>
 
-            <!-- FILTROS INFERIORES: AÑO, FECHA INICIO, FECHA FINAL, SUSPENSIÓN Y DÍAS PENDIENTES -->
+            <!-- FILTROS INFERIORES: AÑO (PRIORIDAD 2025/2026), FECHA INICIO, FECHA FINAL, SUSPENSIÓN Y DÍAS PENDIENTES -->
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 relative z-30">
                 <div>
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año</label>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año (Prioridad 2025/2026)</label>
                     <select id="filter-anio-lic" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="2025_2026">2025 y 2026 (Prioridad)</option>
                         <option value="TODOS">Todos los Años</option>
                     </select>
                 </div>
@@ -215,33 +216,55 @@
             
             <div id="personal-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-8 relative z-10"></div>
 
-            <div class="grid grid-cols-1 gap-6 mb-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
+                <!-- TABLA 1: LICENCIAS DETALLADAS -->
                 <div class="glass-card p-4 md:p-6 flex flex-col h-full">
                     <div class="flex justify-between items-end mb-4">
                         <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
-                            <i data-lucide="list" class="text-emerald-400 w-5 h-5"></i>
-                            Registro Detallado de Licencias por Agente (Control de Días, Fechas y Suspensiones)
+                            <i data-lucide="file-text" class="text-emerald-400 w-5 h-5"></i>
+                            Licencias Detalladas (2025-2026 y Histórico)
                         </h3>
                     </div>
                     
-                    <div class="overflow-x-auto max-h-[26rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
+                    <div class="overflow-x-auto max-h-[22rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
                         <table class="w-full text-left text-xs text-slate-300 relative whitespace-nowrap">
                             <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
                                 <tr>
-                                    <th class="px-4 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Agente</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Legajo</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-cyan-400">Tipo Lic.</th>
-                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700">Días</th>
-                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700">Año</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-amber-400">Fecha Inicio</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-amber-400">Fecha Final</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-rose-400">Suspensión</th>
-                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Días Pendientes</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Agente</th>
+                                    <th class="px-2 py-3 font-semibold border-b border-slate-700">Tipo</th>
+                                    <th class="px-2 py-3 font-semibold text-center border-b border-slate-700">Días</th>
+                                    <th class="px-2 py-3 font-semibold text-center border-b border-slate-700">Año</th>
+                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 text-amber-300">Inicio</th>
+                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 text-amber-300">Final</th>
+                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 text-rose-400">Suspensión</th>
+                                    <th class="px-2 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Pend.</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-personal" class="divide-y divide-slate-800/50">
-                                <!-- Filas de licencias detalladas -->
-                            </tbody>
+                            <tbody id="tbody-licencias" class="divide-y divide-slate-800/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TABLA 2: INASISTENCIAS / AUSENTES -->
+                <div class="glass-card p-4 md:p-6 flex flex-col h-full">
+                    <div class="flex justify-between items-end mb-4">
+                        <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
+                            <i data-lucide="user-minus" class="text-rose-400 w-5 h-5"></i>
+                            Registro de Ausentes / Inasistencias
+                        </h3>
+                    </div>
+                    
+                    <div class="overflow-y-auto max-h-[22rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
+                        <table class="w-full text-left text-xs text-slate-300 relative">
+                            <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Agente</th>
+                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700">Año / Mes</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-rose-400">Estado / Motivo</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 rounded-tr-lg">Observación</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-ausentes" class="divide-y divide-slate-800/50"></tbody>
                         </table>
                     </div>
                 </div>
@@ -484,7 +507,7 @@
             }
 
             if(viewId === 'territorio' && territorioData.length) setTimeout(() => processTerritorioData(), 50);
-            if(viewId === 'personal' && licenciasData.length) setTimeout(() => processPersonalData(), 50);
+            if(viewId === 'personal' && (licenciasData.length || ausentismoData.length)) setTimeout(() => processPersonalData(), 50);
             if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
             if(viewId === 'laboratorio' && laboratorioData.length) setTimeout(() => processLaboratorioData(), 50);
             if(viewId === 'hsi' && (hsiData.length || !URL_HSI)) setTimeout(() => processHsiData(), 50);
@@ -657,7 +680,7 @@
             charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), { type: 'line', data: { labels: sortedYears, datasets: [{ label: 'Vacunación', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }, { label: 'Atenciones', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 }, { label: 'Trámites', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
-        /* ----- PERSONAL: VINCULACIÓN DE LICENCIAS CON FILTROS ESPECÍFICOS ----- */
+        /* ----- PERSONAL: VINCULACIÓN DE LICENCIAS Y AUSENTES (PRIORIDAD 2025/2026) ----- */
         const getAgenteName = (row) => {
             const keysPriority = ['AGENTE', 'NOMBRE Y APELLIDO', 'APELLIDO Y NOMBRE', 'PERSONAL', 'EMPLEADO', 'TRABAJADOR'];
             for (let pk of keysPriority) {
@@ -692,11 +715,10 @@
             containerAgente.innerHTML = '';
             containerTipo.innerHTML = '';
             
-            // Limpiar selects únicos manteniendo la opción "TODOS"
-            [selectAnio, selectInicio, selectFinal, selectSuspension, selectPendientes].forEach(sel => {
-                if (sel) {
-                    while (sel.options.length > 1) sel.remove(1);
-                }
+            // Mantener la primera opción ("2025 y 2026" y "Todos")
+            while (selectAnio.options.length > 2) selectAnio.remove(2);
+            [selectInicio, selectFinal, selectSuspension, selectPendientes].forEach(sel => {
+                if (sel) while (sel.options.length > 1) sel.remove(1);
             });
 
             let agentes = new Set(), tipos = new Set(), anios = new Set(), inicios = new Set(), finales = new Set(), suspensiones = new Set(), pendientesSet = new Set();
@@ -704,24 +726,25 @@
             licenciasData.forEach(row => {
                 let ag = getAgenteName(row);
                 if (ag && ag !== 'SIN AGENTE') agentes.add(ag);
-
                 let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || row['TIPO'] || 'ANUAL').trim().toUpperCase();
                 if (tipo && tipo !== 'UNDEFINED') tipos.add(tipo);
-
                 let anio = String(row['AÑO'] || row['ANIO'] || '').trim();
                 if (anio && anio !== 'UNDEFINED' && anio !== 'NULL') anios.add(anio);
-
                 let inicio = String(row['INICIO'] || '').trim();
                 if (inicio && inicio !== 'UNDEFINED' && inicio !== 'NULL' && inicio !== 'NAN') inicios.add(inicio);
-
                 let final = String(row['FINAL'] || '').trim();
                 if (final && final !== 'UNDEFINED' && final !== 'NULL' && final !== 'NAN') finales.add(final);
-
                 let suspension = String(row['F. SUSPENCION'] || row['SUSPENSION LAO'] || row['SUSPENSION'] || '').trim();
                 if (suspension && suspension !== 'UNDEFINED' && suspension !== 'NULL' && suspension !== 'NAN') suspensiones.add(suspension);
-
                 let pendientes = String(row['DIAS PENDIENTES'] || '').trim();
                 if (pendientes && pendientes !== 'UNDEFINED' && pendientes !== 'NULL' && pendientes !== 'NAN') pendientesSet.add(pendientes);
+            });
+
+            ausentismoData.forEach(row => {
+                let ag = getAgenteName(row);
+                if (ag && ag !== 'SIN AGENTE') agentes.add(ag);
+                let anio = String(row['AÑO'] || '').trim();
+                if (anio && anio !== 'UNDEFINED' && anio !== 'NULL') anios.add(anio);
             });
 
             [...agentes].sort().forEach(ag => {
@@ -740,7 +763,11 @@
                     </label>`;
             });
 
-            [...anios].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectAnio.appendChild(opt); });
+            [...anios].sort().forEach(val => { 
+                if (val !== '2025' && val !== '2026') {
+                    let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectAnio.appendChild(opt); 
+                }
+            });
             [...inicios].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectInicio.appendChild(opt); });
             [...finales].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectFinal.appendChild(opt); });
             [...suspensiones].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectSuspension.appendChild(opt); });
@@ -764,8 +791,10 @@
             updateMultiSelectLabel('label-tipo-personal', checkedTipos, totalCheckTipos, 'Tipos');
 
             let filteredLicencias = [];
+            let filteredAusentes = [];
             let totalDiasAcumulados = 0;
 
+            // Procesar Licencias
             licenciasData.forEach(row => {
                 let agenteRow = getAgenteName(row);
                 let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || row['TIPO'] || 'ANUAL').trim().toUpperCase();
@@ -777,7 +806,14 @@
 
                 const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
                 const matchTipo = checkedTipos.includes(tipoRow) || totalCheckTipos === 0;
-                const matchAnio = sAnio === 'TODOS' || anioRow === sAnio;
+                
+                let matchAnio = true;
+                if (sAnio === '2025_2026') {
+                    matchAnio = anioRow.includes('2025') || anioRow.includes('2026') || inicioRow.includes('/25') || inicioRow.includes('/26') || inicioRow.includes('2025') || inicioRow.includes('2026');
+                } else if (sAnio !== 'TODOS') {
+                    matchAnio = anioRow === sAnio;
+                }
+
                 const matchInicio = sInicio === 'TODOS' || inicioRow === sInicio;
                 const matchFinal = sFinal === 'TODOS' || finalRow === sFinal;
                 const matchSuspension = sSuspension === 'TODOS' || suspensionRow === sSuspension;
@@ -789,7 +825,6 @@
 
                     filteredLicencias.push({
                         agente: agenteRow,
-                        legajo: row['LEGAJO'] || '-',
                         tipo: tipoRow || 'ANUAL',
                         dias: dias > 0 ? dias : '-',
                         anio: anioRow || '-',
@@ -801,55 +836,99 @@
                 }
             });
 
-            renderPersonalUI(filteredLicencias, totalDiasAcumulados);
+            // Procesar Ausentes / Inasistencias
+            ausentismoData.forEach(row => {
+                let agenteRow = getAgenteName(row);
+                let anioRow = String(row['AÑO'] || '').trim();
+                let mesRow = String(row['MES'] || '').trim();
+                let diaRow = String(row['DIA'] || '').trim();
+                let estadoRow = String(row['ESTADO'] || '').trim();
+                let observacionRow = String(row['OBSERVACION'] || '').trim();
+
+                const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
+                let matchAnio = true;
+                if (sAnio === '2025_2026') {
+                    matchAnio = anioRow === '2025' || anioRow === '2026';
+                } else if (sAnio !== 'TODOS') {
+                    matchAnio = anioRow === sAnio;
+                }
+
+                if (matchAgente && matchAnio) {
+                    filteredAusentes.push({
+                        agente: agenteRow,
+                        periodo: `${anioRow} - ${mesRow} (Día ${diaRow})`,
+                        estado: estadoRow || 'AUSENTE',
+                        observacion: observacionRow && observacionRow !== 'NAN' ? observacionRow : '-'
+                    });
+                }
+            });
+
+            renderPersonalUI(filteredLicencias, filteredAusentes, totalDiasAcumulados);
         }
 
-        function renderPersonalUI(filteredLicencias, totalDiasAcumulados) {
+        function renderPersonalUI(filteredLicencias, filteredAusentes, totalDiasAcumulados) {
             const kpiContainer = document.getElementById('personal-kpi-container');
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
                     <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="file-text" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Registros Filtrados</h4>
+                        <i data-lucide="file-text" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Licencias Filtradas</h4>
                         <span class="text-lg md:text-2xl font-bold text-white">${filteredLicencias.length}</span>
                     </div>
                     <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="calendar" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Suma Total de Días</h4>
+                        <i data-lucide="user-minus" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Ausencias</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${filteredAusentes.length}</span>
+                    </div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                        <i data-lucide="calendar" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días de Licencia</h4>
                         <span class="text-lg md:text-2xl font-bold text-white">${totalDiasAcumulados}</span>
                     </div>
                     <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
                         <i data-lucide="users" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Agentes Únicos</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${new Set(filteredLicencias.map(l => l.agente)).size}</span>
-                    </div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
-                        <i data-lucide="check-circle-2" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Estado</h4>
-                        <span class="text-sm md:text-base font-bold text-emerald-400">Actualizado</span>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Agentes</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${new Set([...filteredLicencias.map(l => l.agente), ...filteredAusentes.map(a => a.agente)]).size}</span>
                     </div>
                 `;
                 if(window.lucide) window.lucide.createIcons();
             }
 
-            const tbody = document.getElementById('tbody-personal');
-            tbody.innerHTML = '';
-            
+            // Render Tabla Licencias
+            const tbodyLic = document.getElementById('tbody-licencias');
+            tbodyLic.innerHTML = '';
             if (filteredLicencias.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-6 text-center text-slate-500 italic">No se encontraron registros de licencias con los filtros seleccionados.</td></tr>`;
+                tbodyLic.innerHTML = `<tr><td colspan="8" class="px-3 py-4 text-center text-slate-500 italic">No hay licencias para 2025/2026 con estos filtros.</td></tr>`;
             } else {
                 filteredLicencias.forEach(item => {
-                    tbody.innerHTML += `
+                    tbodyLic.innerHTML += `
+                        <tr class="hover:bg-slate-800/80 transition-colors">
+                            <td class="px-3 py-2 font-medium text-slate-200">${item.agente}</td>
+                            <td class="px-2 py-2 text-cyan-400">${item.tipo}</td>
+                            <td class="px-2 py-2 text-center font-bold text-white">${item.dias}</td>
+                            <td class="px-2 py-2 text-center text-slate-300">${item.anio}</td>
+                            <td class="px-2 py-2 text-amber-300">${item.inicio}</td>
+                            <td class="px-2 py-2 text-amber-300">${item.final}</td>
+                            <td class="px-2 py-2 text-rose-400">${item.suspension}</td>
+                            <td class="px-2 py-2 text-center font-bold text-emerald-400">${item.pendientes}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Render Tabla Ausentes
+            const tbodyAus = document.getElementById('tbody-ausentes');
+            tbodyAus.innerHTML = '';
+            if (filteredAusentes.length === 0) {
+                tbodyAus.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de ausencias para el período seleccionado.</td></tr>`;
+            } else {
+                filteredAusentes.forEach(item => {
+                    tbodyAus.innerHTML += `
                         <tr class="hover:bg-slate-800/80 transition-colors">
                             <td class="px-4 py-2 font-medium text-slate-200">${item.agente}</td>
-                            <td class="px-3 py-2 text-slate-400">${item.legajo}</td>
-                            <td class="px-3 py-2 text-cyan-400 font-medium">${item.tipo}</td>
-                            <td class="px-3 py-2 text-center font-bold text-white">${item.dias}</td>
-                            <td class="px-3 py-2 text-center text-slate-300">${item.anio}</td>
-                            <td class="px-3 py-2 text-amber-300">${item.inicio}</td>
-                            <td class="px-3 py-2 text-amber-300">${item.final}</td>
-                            <td class="px-3 py-2 text-rose-400">${item.suspension}</td>
-                            <td class="px-3 py-2 text-center font-bold text-emerald-400">${item.pendientes}</td>
+                            <td class="px-3 py-2 text-center text-slate-300">${item.periodo}</td>
+                            <td class="px-3 py-2 text-rose-400 font-medium">${item.estado}</td>
+                            <td class="px-3 py-2 text-slate-400">${item.observacion}</td>
                         </tr>
                     `;
                 });
