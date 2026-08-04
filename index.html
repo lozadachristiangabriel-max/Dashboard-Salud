@@ -34,7 +34,7 @@
         ::-webkit-scrollbar-track { background: #0B1121; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         
-        /* Scrollbar especial para la tabla de personal */
+        /* Scrollbar especial para tablas y checklists */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
@@ -143,16 +143,47 @@
             <div class="glass-card p-4 md:p-6 mt-6 mb-8"><div class="h-72 md:h-80 relative"><canvas id="chartAnual"></canvas></div></div>
         </section>
 
-        <!-- VISTA PERSONAL (AUSENCIAS Y LICENCIAS) -->
+        <!-- VISTA PERSONAL (AUSENCIAS Y LICENCIAS CON CHECKLISTS) -->
         <section id="view-personal" class="hidden">
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40">
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Agente</label><select id="filter-agente" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Agentes</option></select></div>
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label><select id="filter-mes" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Meses</option></select></div>
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40 overflow-visible">
+                
+                <!-- CHECKLIST MULTIPLE: AGENTE -->
+                <div class="relative multi-select-container z-50">
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Personal (Checklist)</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-agente-personal')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-agente-personal" class="truncate font-medium">Todos los Agentes</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-agente-personal" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllPersonal('agente', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllPersonal('agente', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-agente-personal" class="space-y-1.5 text-xs text-slate-200"></div>
+                    </div>
+                </div>
+
+                <!-- CHECKLIST MULTIPLE: MES -->
+                <div class="relative multi-select-container z-50">
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Meses (Checklist)</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-mes-personal')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-mes-personal" class="truncate font-medium">Todos los Meses</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-mes-personal" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllPersonal('mes', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllPersonal('mes', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-mes-personal" class="space-y-1.5 text-xs text-slate-200"></div>
+                    </div>
+                </div>
+
             </div>
             
-            <div id="personal-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-8"></div>
+            <div id="personal-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-8 relative z-10"></div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2">
                         <i data-lucide="bar-chart-2" class="text-cyan-400 w-5 h-5"></i>
@@ -165,7 +196,7 @@
                     <div class="flex justify-between items-end mb-4">
                         <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
                             <i data-lucide="list" class="text-purple-400 w-5 h-5"></i>
-                            Listado Completo de Faltas (Control)
+                            Listado Completo de Faltas (Control de Horas)
                         </h3>
                     </div>
                     
@@ -471,7 +502,7 @@
 
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.multi-select-container')) {
-                ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab'].forEach(id => {
+                ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-personal', 'dropdown-mes-personal'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -481,7 +512,7 @@
         function toggleMultiSelect(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             const isHidden = dropdown.classList.contains('hidden');
-            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab'].forEach(id => {
+            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-personal', 'dropdown-mes-personal'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
@@ -491,6 +522,11 @@
         function selectAllLab(type, state) {
             document.querySelectorAll(`.chk-${type}-lab`).forEach(cb => cb.checked = state);
             processLaboratorioData();
+        }
+
+        function selectAllPersonal(type, state) {
+            document.querySelectorAll(`.chk-${type}-personal`).forEach(cb => cb.checked = state);
+            processPersonalData();
         }
 
         async function fetchAllData() {
@@ -592,50 +628,78 @@
             charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), { type: 'line', data: { labels: sortedYears, datasets: [{ label: 'Vacunación', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }, { label: 'Atenciones', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 }, { label: 'Trámites', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
-        /* ----- PERSONAL (AUSENCIAS Y LICENCIAS) ----- */
+        /* ----- PERSONAL (AUSENCIAS Y LICENCIAS CON CHECKLISTS) ----- */
+        // Detección mejorada y robusta para nombres en cualquier columna de personal
+        const getAgenteName = (row) => {
+            for (let k in row) {
+                let keyUp = k.toUpperCase();
+                if (keyUp.includes('AGENTE') || keyUp.includes('NOMBRE') || keyUp.includes('PERSONAL') || keyUp.includes('APELLIDO') || keyUp.includes('EMPLEADO') || keyUp.includes('TRABAJADOR') || keyUp.includes('LEGAJO')) {
+                    let val = String(row[k] || '').trim();
+                    if (val && val !== 'UNDEFINED' && val !== 'NULL') return val.toUpperCase();
+                }
+            }
+            let firstVal = Object.values(row)[0];
+            if (firstVal && isNaN(firstVal)) return String(firstVal).trim().toUpperCase();
+            return '';
+        };
+
         function initPersonalFilters() {
-            const sAgente = document.getElementById('filter-agente');
-            const sMes = document.getElementById('filter-mes');
+            const containerAgente = document.getElementById('checklist-agente-personal');
+            const containerMes = document.getElementById('checklist-mes-personal');
+            if (!containerAgente || !containerMes) return;
+
+            containerAgente.innerHTML = '';
+            containerMes.innerHTML = '';
+
             let agentes = new Set();
+            ausentismoData.forEach(row => { let ag = getAgenteName(row); if (ag) agentes.add(ag); });
+            licenciasData.forEach(row => { let ag = getAgenteName(row); if (ag) agentes.add(ag); });
             
-            ausentismoData.forEach(row => { for (let k in row) if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) { if (row[k]) agentes.add(String(row[k]).trim().toUpperCase()); } });
-            licenciasData.forEach(row => { for (let k in row) if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) { if (row[k]) agentes.add(String(row[k]).trim().toUpperCase()); } });
-            
-            [...agentes].sort().forEach(ag => { let opt = document.createElement('option'); opt.value = ag; opt.textContent = ag; sAgente.appendChild(opt); });
-            allMonths.forEach(m => { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; sMes.appendChild(opt); });
+            [...agentes].sort().forEach(ag => {
+                containerAgente.innerHTML += `
+                    <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
+                        <input type="checkbox" value="${ag}" checked onchange="processPersonalData()" class="chk-agente-personal rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <span class="font-medium truncate" title="${ag}">${ag}</span>
+                    </label>`;
+            });
+
+            allMonths.forEach(m => {
+                containerMes.innerHTML += `
+                    <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
+                        <input type="checkbox" value="${m}" checked onchange="processPersonalData()" class="chk-mes-personal rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <span class="font-medium">${m}</span>
+                    </label>`;
+            });
         }
 
         function processPersonalData() {
-            const selAgente = document.getElementById('filter-agente').value;
-            const selMes = document.getElementById('filter-mes').value;
+            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-personal:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckAgentes = document.querySelectorAll('.chk-agente-personal').length;
             
+            const checkedMeses = Array.from(document.querySelectorAll('.chk-mes-personal:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckMeses = document.querySelectorAll('.chk-mes-personal').length;
+
+            updateMultiSelectLabel('label-agente-personal', checkedAgentes, totalCheckAgentes, 'Agentes');
+            updateMultiSelectLabel('label-mes-personal', checkedMeses, totalCheckMeses, 'Meses');
+
             let mesesTotales = {}; 
             allMonths.forEach(m => mesesTotales[m] = { ausencias: 0, licencias: 0 });
-            
             let agentesTotales = {}; 
 
-            // Función auxiliar para extraer el nombre del agente
-            const getAgenteName = (row) => {
-                for (let k in row) {
-                    if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) 
-                        return String(row[k] || '').trim().toUpperCase();
-                }
-                return '';
-            };
-
-            // Procesar Ausencias
+            // 1. Procesar Ausencias
             ausentismoData.forEach(row => {
                 let agenteRow = getAgenteName(row);
                 if (!agenteRow) return;
 
-                if (selAgente === 'TODOS' || agenteRow === selAgente) {
+                const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
+                if (matchAgente) {
                     if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, licencias: 0, total: 0 };
                     
                     allMonths.forEach(mes => {
-                        let valMes = 0;
-                        for (let k in row) if (k.includes(mes)) valMes += parseNumberSafe(row[k]);
-                        
-                        if (selMes === 'TODOS' || selMes === mes) {
+                        const matchMes = checkedMeses.includes(mes) || totalCheckMeses === 0;
+                        if (matchMes) {
+                            let valMes = 0;
+                            for (let k in row) if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]);
                             mesesTotales[mes].ausencias += valMes;
                             agentesTotales[agenteRow].ausencias += valMes;
                             agentesTotales[agenteRow].total += valMes;
@@ -644,19 +708,20 @@
                 }
             });
 
-            // Procesar Licencias
+            // 2. Procesar Licencias
             licenciasData.forEach(row => {
                 let agenteRow = getAgenteName(row);
                 if (!agenteRow) return;
 
-                if (selAgente === 'TODOS' || agenteRow === selAgente) {
+                const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
+                if (matchAgente) {
                     if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, licencias: 0, total: 0 };
                     
                     allMonths.forEach(mes => {
-                        let valMes = 0;
-                        for (let k in row) if (k.includes(mes)) valMes += parseNumberSafe(row[k]);
-                        
-                        if (selMes === 'TODOS' || selMes === mes) {
+                        const matchMes = checkedMeses.includes(mes) || totalCheckMeses === 0;
+                        if (matchMes) {
+                            let valMes = 0;
+                            for (let k in row) if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]);
                             mesesTotales[mes].licencias += valMes;
                             agentesTotales[agenteRow].licencias += valMes;
                             agentesTotales[agenteRow].total += valMes;
@@ -665,11 +730,10 @@
                 }
             });
 
-            renderPersonalUI(mesesTotales, agentesTotales);
+            renderPersonalUI(mesesTotales, agentesTotales, checkedMeses);
         }
 
-        function renderPersonalUI(mesesTotales, agentesTotales) {
-            // 1. KPIs
+        function renderPersonalUI(mesesTotales, agentesTotales, checkedMeses) {
             let totalAusencias = 0, totalLicencias = 0;
             let agentesConFaltas = 0;
 
@@ -706,17 +770,19 @@
                 if(window.lucide) window.lucide.createIcons();
             }
 
-            // 2. Gráfico Mensual Apilado (Ausencias + Licencias)
             if(charts.personalMensual) charts.personalMensual.destroy();
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+
+            // Visualizar sólo los meses activos del Checklist
+            const mesesAVisibilizar = checkedMeses.length > 0 ? checkedMeses : allMonths;
 
             charts.personalMensual = new Chart(document.getElementById('chartPersonalMensual').getContext('2d'), {
                 type: 'bar',
                 data: { 
-                    labels: allMonths, 
+                    labels: mesesAVisibilizar, 
                     datasets: [
-                        { label: 'Inasistencias', data: allMonths.map(m => mesesTotales[m].ausencias), backgroundColor: '#F43F5E', borderRadius: 4 },
-                        { label: 'Licencias', data: allMonths.map(m => mesesTotales[m].licencias), backgroundColor: '#F59E0B', borderRadius: 4 }
+                        { label: 'Inasistencias', data: mesesAVisibilizar.map(m => mesesTotales[m].ausencias), backgroundColor: '#F43F5E', borderRadius: 4 },
+                        { label: 'Licencias', data: mesesAVisibilizar.map(m => mesesTotales[m].licencias), backgroundColor: '#F59E0B', borderRadius: 4 }
                     ] 
                 },
                 options: { 
@@ -732,17 +798,15 @@
                 } 
             });
 
-            // 3. Listado Completo en Tabla
             const tbody = document.getElementById('tbody-personal');
             tbody.innerHTML = '';
             
-            // Ordenar por total de faltas (descendente)
             const sortedAgentes = Object.entries(agentesTotales)
-                .filter(item => item[1].total > 0) // Solo mostrar si tienen al menos 1 falta
+                .filter(item => item[1].total > 0)
                 .sort((a, b) => b[1].total - a[1].total);
 
             if (sortedAgentes.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de inasistencias ni licencias para los filtros seleccionados.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de faltas para el personal o los meses seleccionados.</td></tr>`;
             } else {
                 sortedAgentes.forEach(item => {
                     const nombre = item[0];
