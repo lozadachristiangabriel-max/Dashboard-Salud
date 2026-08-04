@@ -34,7 +34,6 @@
         ::-webkit-scrollbar-track { background: #0B1121; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         
-        /* Scrollbar especial para tablas y checklists */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
@@ -146,10 +145,9 @@
         <!-- VISTA PERSONAL (AUSENCIAS Y LICENCIAS CON CHECKLISTS) -->
         <section id="view-personal" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40 overflow-visible">
-                
                 <!-- CHECKLIST MULTIPLE: AGENTE -->
                 <div class="relative multi-select-container z-50">
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Personal (Checklist)</label>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Personal (Checklist por Agente)</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-agente-personal')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
                         <span id="label-agente-personal" class="truncate font-medium">Todos los Agentes</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
@@ -178,7 +176,6 @@
                         <div id="checklist-mes-personal" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
-
             </div>
             
             <div id="personal-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-8 relative z-10"></div>
@@ -196,7 +193,7 @@
                     <div class="flex justify-between items-end mb-4">
                         <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
                             <i data-lucide="list" class="text-purple-400 w-5 h-5"></i>
-                            Listado Completo de Faltas (Control de Horas)
+                            Listado Completo por Agente (Ausentismo y Licencias)
                         </h3>
                     </div>
                     
@@ -211,7 +208,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tbody-personal" class="divide-y divide-slate-800/50">
-                                <!-- Las filas se generan desde JS -->
+                                <!-- Filas generadas por JS por AGENTE -->
                             </tbody>
                         </table>
                     </div>
@@ -399,10 +396,10 @@
     <script>
         const URL_TERRITORIO = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbw7tP5mgS3cfBpXi3-W_0Pks_tnZ7ncbEstZrF649byWy0YTsdmxLao_stLSK27F7Vblw/exec';
-        const URL_LICENCIAS = ''; // <--- PEGA AQUÍ EL LINK DEL SCRIPT DE TU NUEVA HOJA DE LICENCIAS
-        const URL_IRAB = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
+        const URL_LICENCIAS  = 'https://script.google.com/macros/s/AKfycbx-Tzy_-zZIho5p5IomrHfO9VS7V8lDvytmXJhx51oEhF76g5DNgUSXKWuli6KCIXBq/exec'; // <-- VINCULADA TU HOJA OFICIAL
+        const URL_IRAB       = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
         const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzq7DlkN-FHkHXIlzk1xeHeE_zahNaUvozW62nTfrYmA8k0DnG9IO_D2TnMCUKQludD/exec';
-        const URL_HSI = '';
+        const URL_HSI        = '';
         
         let activeTab = 'territorio';
         let territorioData = [], ausentismoData = [], licenciasData = [], irabData = [], laboratorioData = [], hsiData = [], charts = {};
@@ -540,12 +537,12 @@
                     URL_HSI ? fetch(URL_HSI).then(r => r.json()).catch(() => []) : Promise.resolve([])
                 ]);
 
-                territorioData = resT.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
-                ausentismoData = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
-                licenciasData = resLic.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
-                irabData = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                territorioData  = resT.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
+                ausentismoData  = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                licenciasData   = resLic.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                irabData        = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 laboratorioData = resL.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
-                hsiData = resH.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                hsiData         = resH.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
 
                 document.getElementById('loader').classList.add('hidden');
                 switchView('territorio');
@@ -628,18 +625,28 @@
             charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), { type: 'line', data: { labels: sortedYears, datasets: [{ label: 'Vacunación', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }, { label: 'Atenciones', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 }, { label: 'Trámites', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
-        /* ----- PERSONAL (AUSENCIAS Y LICENCIAS CON CHECKLISTS) ----- */
-        // Detección mejorada y robusta para nombres en cualquier columna de personal
+        /* ----- PERSONAL: VINCULACIÓN POR DATO DURO (AGENTE) ----- */
         const getAgenteName = (row) => {
-            for (let k in row) {
-                let keyUp = k.toUpperCase();
-                if (keyUp.includes('AGENTE') || keyUp.includes('NOMBRE') || keyUp.includes('PERSONAL') || keyUp.includes('APELLIDO') || keyUp.includes('EMPLEADO') || keyUp.includes('TRABAJADOR') || keyUp.includes('LEGAJO')) {
-                    let val = String(row[k] || '').trim();
-                    if (val && val !== 'UNDEFINED' && val !== 'NULL') return val.toUpperCase();
+            // Prioridad 1: Buscar exactamente la columna AGENTE, o variaciones explícitas de nombre
+            const keysPriority = ['AGENTE', 'NOMBRE Y APELLIDO', 'APELLIDO Y NOMBRE', 'PERSONAL', 'EMPLEADO', 'TRABAJADOR'];
+            for (let pk of keysPriority) {
+                for (let k in row) {
+                    if (k.toUpperCase().trim() === pk) {
+                        let val = String(row[k] || '').trim();
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL' && val !== 'NAN') {
+                            return val.toUpperCase();
+                        }
+                    }
                 }
             }
-            let firstVal = Object.values(row)[0];
-            if (firstVal && isNaN(firstVal)) return String(firstVal).trim().toUpperCase();
+            // Prioridad 2: Buscar si alguna columna contiene la palabra AGENTE o NOMBRE
+            for (let k in row) {
+                let keyUp = k.toUpperCase();
+                if (keyUp.includes('AGENTE') || keyUp.includes('NOMBRE') || keyUp.includes('PERSONAL') || keyUp.includes('APELLIDO')) {
+                    let val = String(row[k] || '').trim();
+                    if (val && val !== 'UNDEFINED' && val !== 'NULL' && val !== 'NAN') return val.toUpperCase();
+                }
+            }
             return '';
         };
 
@@ -686,7 +693,7 @@
             allMonths.forEach(m => mesesTotales[m] = { ausencias: 0, licencias: 0 });
             let agentesTotales = {}; 
 
-            // 1. Procesar Ausencias
+            // 1. Procesar Ausencias (Vinculado por AGENTE)
             ausentismoData.forEach(row => {
                 let agenteRow = getAgenteName(row);
                 if (!agenteRow) return;
@@ -695,20 +702,30 @@
                 if (matchAgente) {
                     if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, licencias: 0, total: 0 };
                     
-                    allMonths.forEach(mes => {
-                        const matchMes = checkedMeses.includes(mes) || totalCheckMeses === 0;
+                    let mesDeFila = String(row['MES'] || '').trim().toUpperCase();
+                    if (mesDeFila && allMonths.includes(mesDeFila)) {
+                        const matchMes = checkedMeses.includes(mesDeFila) || totalCheckMeses === 0;
                         if (matchMes) {
-                            let valMes = 0;
-                            for (let k in row) if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]);
-                            mesesTotales[mes].ausencias += valMes;
-                            agentesTotales[agenteRow].ausencias += valMes;
-                            agentesTotales[agenteRow].total += valMes;
+                            mesesTotales[mesDeFila].ausencias += 1;
+                            agentesTotales[agenteRow].ausencias += 1;
+                            agentesTotales[agenteRow].total += 1;
                         }
-                    });
+                    } else {
+                        allMonths.forEach(mes => {
+                            const matchMes = checkedMeses.includes(mes) || totalCheckMeses === 0;
+                            if (matchMes) {
+                                let valMes = 0;
+                                for (let k in row) if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]);
+                                mesesTotales[mes].ausencias += valMes;
+                                agentesTotales[agenteRow].ausencias += valMes;
+                                agentesTotales[agenteRow].total += valMes;
+                            }
+                        });
+                    }
                 }
             });
 
-            // 2. Procesar Licencias
+            // 2. Procesar Licencias (Vinculado por AGENTE)
             licenciasData.forEach(row => {
                 let agenteRow = getAgenteName(row);
                 if (!agenteRow) return;
@@ -717,16 +734,30 @@
                 if (matchAgente) {
                     if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, licencias: 0, total: 0 };
                     
-                    allMonths.forEach(mes => {
-                        const matchMes = checkedMeses.includes(mes) || totalCheckMeses === 0;
+                    let diasLicencia = parseNumberSafe(row['DIAS'] || row['CANTIDAD DE DIAS'] || row['DIAS USUFRUCTUADOS'] || row['CANTIDAD'] || 1);
+                    let mesDeFila = String(row['MES'] || '').trim().toUpperCase();
+
+                    if (mesDeFila && allMonths.includes(mesDeFila)) {
+                        const matchMes = checkedMeses.includes(mesDeFila) || totalCheckMeses === 0;
                         if (matchMes) {
-                            let valMes = 0;
-                            for (let k in row) if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]);
-                            mesesTotales[mes].licencias += valMes;
-                            agentesTotales[agenteRow].licencias += valMes;
-                            agentesTotales[agenteRow].total += valMes;
+                            mesesTotales[mesDeFila].licencias += diasLicencia;
+                            agentesTotales[agenteRow].licencias += diasLicencia;
+                            agentesTotales[agenteRow].total += diasLicencia;
                         }
-                    });
+                    } else {
+                        allMonths.forEach(mes => {
+                            const matchMes = checkedMeses.includes(mes) || totalCheckMeses === 0;
+                            if (matchMes) {
+                                let valMes = 0;
+                                for (let k in row) if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]);
+                                if (valMes > 0) {
+                                    mesesTotales[mes].licencias += valMes;
+                                    agentesTotales[agenteRow].licencias += valMes;
+                                    agentesTotales[agenteRow].total += valMes;
+                                }
+                            }
+                        });
+                    }
                 }
             });
 
@@ -734,8 +765,7 @@
         }
 
         function renderPersonalUI(mesesTotales, agentesTotales, checkedMeses) {
-            let totalAusencias = 0, totalLicencias = 0;
-            let agentesConFaltas = 0;
+            let totalAusencias = 0, totalLicencias = 0, agentesConFaltas = 0;
 
             Object.values(agentesTotales).forEach(ag => {
                 if (ag.total > 0) agentesConFaltas++;
@@ -773,7 +803,6 @@
             if(charts.personalMensual) charts.personalMensual.destroy();
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
-            // Visualizar sólo los meses activos del Checklist
             const mesesAVisibilizar = checkedMeses.length > 0 ? checkedMeses : allMonths;
 
             charts.personalMensual = new Chart(document.getElementById('chartPersonalMensual').getContext('2d'), {
@@ -788,13 +817,8 @@
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    scales: {
-                        x: { stacked: true },
-                        y: { stacked: true }
-                    },
-                    plugins: { 
-                        legend: { position: 'top', labels: { boxWidth: 12 } } 
-                    } 
+                    scales: { x: { stacked: true }, y: { stacked: true } },
+                    plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } } 
                 } 
             });
 
@@ -1172,7 +1196,7 @@
             });
         }
 
-        /* ----- HSI (HISTORIA DE SALUD INTEGRADA) ----- */
+        /* ----- HSI ----- */
         function initHsiFilters() {
             const selectAnio = document.getElementById('filter-anio-hsi');
             const selectMes = document.getElementById('filter-mes-hsi');
