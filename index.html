@@ -33,11 +33,14 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0B1121; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        /* Clases para modo PDF */
-        .pdf-export-mode {
-            background-color: #0B1121 !important;
-            padding: 20px !important;
-        }
+        
+        /* Scrollbar especial para la tabla de personal */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748B; }
+
+        .pdf-export-mode { background-color: #0B1121 !important; padding: 20px !important; }
     </style>
 </head>
 <body class="flex min-h-screen antialiased flex-col md:flex-row">
@@ -45,7 +48,6 @@
     <!-- BARRA SUPERIOR MÓVIL -->
     <header class="md:hidden bg-[#0F172A] border-b border-slate-800 p-4 flex items-center justify-between sticky top-0 z-30 shadow-lg">
         <div class="flex items-center gap-2">
-            <!-- Emblema Verde Varela SVG -->
             <svg class="w-7 h-7" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M50 75C35 60 10 45 10 20C20 25 30 35 35 45C35 30 25 15 20 5C35 10 45 25 48 40C50 25 50 10 50 5C50 10 50 25 52 40C55 25 65 10 80 5C75 15 65 30 65 45C70 35 80 25 90 20C90 45 65 60 50 75Z" fill="#16A34A"/>
                 <circle cx="50" cy="55" r="4" fill="#A3E635"/>
@@ -63,7 +65,6 @@
 
     <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col fixed h-full z-40 shadow-2xl transition-transform duration-300 transform -translate-x-full md:translate-x-0">
-        <!-- LOGO INSTITUCIONAL FLORENCIO VARELA -->
         <div class="p-5 border-b border-slate-800/80 flex items-center gap-3">
             <svg class="w-10 h-10 shrink-0" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M50 75C35 60 10 45 10 20C20 25 30 35 35 45C35 30 25 15 20 5C35 10 45 25 48 40C50 25 50 10 50 5C50 10 50 25 52 40C55 25 65 10 80 5C75 15 65 30 65 45C70 35 80 25 90 20C90 45 65 60 50 75Z" fill="#16A34A"/>
@@ -84,8 +85,8 @@
             <button onclick="switchView('territorio')" id="btn-territorio" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="map" class="w-5 h-5"></i> TERRITORIO
             </button>
-            <button onclick="switchView('ausentismo')" id="btn-ausentismo" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
-                <i data-lucide="users" class="w-5 h-5"></i> AUSENTISMO
+            <button onclick="switchView('personal')" id="btn-personal" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                <i data-lucide="users" class="w-5 h-5"></i> PERSONAL (FALTAS)
             </button>
             <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="thermometer" class="w-5 h-5"></i> IRAB 2026
@@ -103,7 +104,6 @@
     <!-- MAIN -->
     <main class="md:ml-64 flex-1 p-4 md:p-8 overflow-x-hidden">
         
-        <!-- HEADER PRINCIPAL CON BOTÓN DE EXPORTACIÓN A PDF -->
         <header class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
             <div>
                 <div class="flex items-center gap-3 mb-1">
@@ -113,8 +113,6 @@
                 <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">SUBSECRETARÍA DE RECURSOS Y LOGÍSTICA</h1>
                 <p class="text-xs md:text-sm text-slate-400">Centro de control y visualización de datos operativos</p>
             </div>
-
-            <!-- BOTÓN EXPORTAR A PDF -->
             <button onclick="exportCurrentViewToPDF()" id="btn-export-pdf" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-900/30 transition-all shrink-0">
                 <i data-lucide="file-down" class="w-4 h-4"></i>
                 <span id="txt-export-pdf">Exportar Hoja a PDF</span>
@@ -145,15 +143,48 @@
             <div class="glass-card p-4 md:p-6 mt-6 mb-8"><div class="h-72 md:h-80 relative"><canvas id="chartAnual"></canvas></div></div>
         </section>
 
-        <!-- VISTA AUSENTISMO -->
-        <section id="view-ausentismo" class="hidden">
+        <!-- VISTA PERSONAL (AUSENCIAS Y LICENCIAS) -->
+        <section id="view-personal" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40">
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Agente</label><select id="filter-agente" onchange="processAusentismoData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Agentes</option></select></div>
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label><select id="filter-mes" onchange="processAusentismoData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Meses</option></select></div>
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Agente</label><select id="filter-agente" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Agentes</option></select></div>
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label><select id="filter-mes" onchange="processPersonalData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Meses</option></select></div>
             </div>
+            
+            <div id="personal-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-8"></div>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 text-sm md:text-base">Inasistencias por Mes</h3><div class="h-64 md:h-72 relative"><canvas id="chartAusentismoMensual"></canvas></div></div>
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 text-sm md:text-base">Top Agentes con más Ausencias</h3><div class="h-64 md:h-72 relative"><canvas id="chartTopAgentes"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="text-cyan-400 w-5 h-5"></i>
+                        Inasistencias y Licencias por Mes
+                    </h3>
+                    <div class="h-64 md:h-72 relative"><canvas id="chartPersonalMensual"></canvas></div>
+                </div>
+                
+                <div class="glass-card p-4 md:p-6 flex flex-col h-full">
+                    <div class="flex justify-between items-end mb-4">
+                        <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
+                            <i data-lucide="list" class="text-purple-400 w-5 h-5"></i>
+                            Listado Completo de Faltas (Control)
+                        </h3>
+                    </div>
+                    
+                    <div class="overflow-y-auto max-h-[19rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
+                        <table class="w-full text-left text-xs text-slate-300 relative">
+                            <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Nombre del Agente</th>
+                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-rose-400">Ausencias</th>
+                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-amber-400">Licencias</th>
+                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Total Faltas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-personal" class="divide-y divide-slate-800/50">
+                                <!-- Las filas se generan desde JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -198,15 +229,13 @@
         <!-- VISTA LABORATORIO -->
         <section id="view-laboratorio" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40 overflow-visible">
-                
-                <!-- CHECKLIST MULTIPLE: AÑO -->
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Filtrar por Año (Checklist)</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-anio-lab')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
                         <span id="label-anio-lab" class="truncate font-medium">Todos los Años</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </button>
-                    <div id="dropdown-anio-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto">
+                    <div id="dropdown-anio-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto custom-scrollbar">
                         <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
                             <button type="button" onclick="selectAllLab('anio', true)" class="hover:underline">Seleccionar Todos</button>
                             <button type="button" onclick="selectAllLab('anio', false)" class="hover:underline text-rose-400">Ninguno</button>
@@ -214,15 +243,13 @@
                         <div id="checklist-anio-lab" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
-
-                <!-- CHECKLIST MULTIPLE: MES -->
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Filtrar por Mes (Checklist)</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-mes-lab')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
                         <span id="label-mes-lab" class="truncate font-medium">Todos los Meses</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </button>
-                    <div id="dropdown-mes-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto">
+                    <div id="dropdown-mes-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto custom-scrollbar">
                         <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
                             <button type="button" onclick="selectAllLab('mes', true)" class="hover:underline">Seleccionar Todos</button>
                             <button type="button" onclick="selectAllLab('mes', false)" class="hover:underline text-rose-400">Ninguno</button>
@@ -230,15 +257,13 @@
                         <div id="checklist-mes-lab" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
-
-                <!-- CHECKLIST MULTIPLE: CAPS / CENTRO -->
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Filtrar por CAPS (Checklist)</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-caps-lab')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
                         <span id="label-caps-lab" class="truncate font-medium">Todos los CAPS</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </button>
-                    <div id="dropdown-caps-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto">
+                    <div id="dropdown-caps-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto custom-scrollbar">
                         <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
                             <button type="button" onclick="selectAllLab('caps', true)" class="hover:underline">Seleccionar Todos</button>
                             <button type="button" onclick="selectAllLab('caps', false)" class="hover:underline text-rose-400">Ninguno</button>
@@ -246,13 +271,11 @@
                         <div id="checklist-caps-lab" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
-
             </div>
 
             <div id="lab-kpi-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8 relative z-10"></div>
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
-                <!-- TOP 10 MENOR ASISTENCIA POR AÑO -->
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="alert-circle" class="text-rose-400 w-5 h-5"></i>
@@ -260,12 +283,10 @@
                     </h3>
                     <div class="h-72 relative"><canvas id="chartLabTopMenorAsistencia"></canvas></div>
                 </div>
-
-                <!-- EVOLUCION COMPARATIVA CON LEYENDAS POR MES -->
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="calendar" class="text-cyan-400 w-5 h-5"></i>
-                        Distribución de Asistencia por Mes (Leyendas de Meses)
+                        Distribución de Asistencia por Mes
                     </h3>
                     <div class="h-72 relative"><canvas id="chartLabEvolucion"></canvas></div>
                 </div>
@@ -275,11 +296,10 @@
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="pie-chart" class="text-emerald-400 w-5 h-5"></i>
-                        Proporción General de Asistencia (Presentes vs. Ausentes)
+                        Proporción General de Asistencia
                     </h3>
                     <div class="h-72 relative"><canvas id="chartLabEstado"></canvas></div>
                 </div>
-
                 <div class="glass-card p-4 md:p-6">
                     <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base">
                         <i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>
@@ -348,12 +368,13 @@
     <script>
         const URL_TERRITORIO = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbw7tP5mgS3cfBpXi3-W_0Pks_tnZ7ncbEstZrF649byWy0YTsdmxLao_stLSK27F7Vblw/exec';
+        const URL_LICENCIAS = ''; // <--- PEGA AQUÍ EL LINK DEL SCRIPT DE TU NUEVA HOJA DE LICENCIAS
         const URL_IRAB = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
         const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzq7DlkN-FHkHXIlzk1xeHeE_zahNaUvozW62nTfrYmA8k0DnG9IO_D2TnMCUKQludD/exec';
         const URL_HSI = '';
         
         let activeTab = 'territorio';
-        let territorioData = [], ausentismoData = [], irabData = [], laboratorioData = [], hsiData = [], charts = {};
+        let territorioData = [], ausentismoData = [], licenciasData = [], irabData = [], laboratorioData = [], hsiData = [], charts = {};
         const kpiConfig = [
             { id: 'MANZ', title: 'MANZANAS', icon: 'map', color: 'text-indigo-400' },
             { id: 'CAL (APLIC)', title: 'CALENDARIO', icon: 'syringe', color: 'text-emerald-400' },
@@ -372,6 +393,7 @@
             'MAYO': '#8B5CF6', 'JUNIO': '#EC4899', 'JULIO': '#06B6D4', 'AGOSTO': '#14B8A6',
             'SEPTIEMBRE': '#F97316', 'OCTUBRE': '#6366F1', 'NOVIEMBRE': '#84CC16', 'DICIEMBRE': '#D946EF'
         };
+        const allMonths = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
 
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
@@ -382,7 +404,7 @@
 
         function switchView(viewId) {
             activeTab = viewId;
-            ['territorio', 'ausentismo', 'irab', 'laboratorio', 'hsi'].forEach(v => {
+            ['territorio', 'personal', 'irab', 'laboratorio', 'hsi'].forEach(v => {
                 const elView = document.getElementById(`view-${v}`);
                 const elBtn = document.getElementById(`btn-${v}`);
                 if (elView) elView.classList.add('hidden');
@@ -402,13 +424,12 @@
             }
 
             if(viewId === 'territorio' && territorioData.length) setTimeout(() => processTerritorioData(), 50);
-            if(viewId === 'ausentismo' && ausentismoData.length) setTimeout(() => processAusentismoData(), 50);
+            if(viewId === 'personal' && (ausentismoData.length || licenciasData.length)) setTimeout(() => processPersonalData(), 50);
             if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
             if(viewId === 'laboratorio' && laboratorioData.length) setTimeout(() => processLaboratorioData(), 50);
             if(viewId === 'hsi' && (hsiData.length || !URL_HSI)) setTimeout(() => processHsiData(), 50);
         }
 
-        // --- SISTEMA DE EXPORTACIÓN A PDF POR HOJA ---
         function exportCurrentViewToPDF() {
             const btn = document.getElementById('btn-export-pdf');
             const txt = document.getElementById('txt-export-pdf');
@@ -416,7 +437,6 @@
             
             if (!element) return;
 
-            // Indicar carga en el botón
             btn.disabled = true;
             btn.classList.add('opacity-50');
             txt.textContent = 'Generando PDF...';
@@ -475,9 +495,10 @@
 
         async function fetchAllData() {
             try {
-                const [resT, resA, resI, resL, resH] = await Promise.all([
+                const [resT, resA, resLic, resI, resL, resH] = await Promise.all([
                     fetch(URL_TERRITORIO).then(r => r.json()).catch(() => []),
                     fetch(URL_AUSENTISMO).then(r => r.json()).catch(() => []),
+                    URL_LICENCIAS ? fetch(URL_LICENCIAS).then(r => r.json()).catch(() => []) : Promise.resolve([]),
                     fetch(URL_IRAB).then(r => r.json()).catch(() => []),
                     fetch(URL_LABORATORIO).then(r => r.json()).catch(() => []),
                     URL_HSI ? fetch(URL_HSI).then(r => r.json()).catch(() => []) : Promise.resolve([])
@@ -485,6 +506,7 @@
 
                 territorioData = resT.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
                 ausentismoData = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                licenciasData = resLic.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 irabData = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 laboratorioData = resL.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 hsiData = resH.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
@@ -493,12 +515,12 @@
                 switchView('territorio');
                 
                 initTerritorioFilters();
-                initAusentismoFilters();
+                initPersonalFilters();
                 initIrabFilters();
                 initLaboratorioFilters();
                 initHsiFilters();
                 processTerritorioData();
-                processAusentismoData();
+                processPersonalData();
                 processIrabData();
                 processLaboratorioData();
                 processHsiData();
@@ -570,38 +592,174 @@
             charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), { type: 'line', data: { labels: sortedYears, datasets: [{ label: 'Vacunación', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }, { label: 'Atenciones', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 }, { label: 'Trámites', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
-        /* ----- AUSENTISMO ----- */
-        function initAusentismoFilters() {
-            const sAgente = document.getElementById('filter-agente'), sMes = document.getElementById('filter-mes');
+        /* ----- PERSONAL (AUSENCIAS Y LICENCIAS) ----- */
+        function initPersonalFilters() {
+            const sAgente = document.getElementById('filter-agente');
+            const sMes = document.getElementById('filter-mes');
             let agentes = new Set();
+            
             ausentismoData.forEach(row => { for (let k in row) if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) { if (row[k]) agentes.add(String(row[k]).trim().toUpperCase()); } });
+            licenciasData.forEach(row => { for (let k in row) if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) { if (row[k]) agentes.add(String(row[k]).trim().toUpperCase()); } });
+            
             [...agentes].sort().forEach(ag => { let opt = document.createElement('option'); opt.value = ag; opt.textContent = ag; sAgente.appendChild(opt); });
-            ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].forEach(m => { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; sMes.appendChild(opt); });
+            allMonths.forEach(m => { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; sMes.appendChild(opt); });
         }
 
-        function processAusentismoData() {
-            const selAgente = document.getElementById('filter-agente').value, selMes = document.getElementById('filter-mes').value;
-            let mesesTotales = { 'ENERO': 0, 'FEBRERO': 0, 'MARZO': 0, 'ABRIL': 0, 'MAYO': 0, 'JUNIO': 0, 'JULIO': 0, 'AGOSTO': 0, 'SEPTIEMBRE': 0, 'OCTUBRE': 0, 'NOVIEMBRE': 0, 'DICIEMBRE': 0 }, agentesTotales = {};
+        function processPersonalData() {
+            const selAgente = document.getElementById('filter-agente').value;
+            const selMes = document.getElementById('filter-mes').value;
+            
+            let mesesTotales = {}; 
+            allMonths.forEach(m => mesesTotales[m] = { ausencias: 0, licencias: 0 });
+            
+            let agentesTotales = {}; 
 
+            // Función auxiliar para extraer el nombre del agente
+            const getAgenteName = (row) => {
+                for (let k in row) {
+                    if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) 
+                        return String(row[k] || '').trim().toUpperCase();
+                }
+                return '';
+            };
+
+            // Procesar Ausencias
             ausentismoData.forEach(row => {
-                let agenteRow = ''; for (let k in row) if (k.includes('AGENTE') || k.includes('NOMBRE') || k.includes('PERSONAL')) agenteRow = String(row[k] || '').trim().toUpperCase();
+                let agenteRow = getAgenteName(row);
+                if (!agenteRow) return;
+
                 if (selAgente === 'TODOS' || agenteRow === selAgente) {
-                    Object.keys(mesesTotales).forEach(mes => { let valMes = 0; for (let k in row) if (k.includes(mes)) valMes = parseNumberSafe(row[k]); if (selMes === 'TODOS' || selMes === mes) mesesTotales[mes] += valMes; });
-                    if (agenteRow) {
-                        if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = 0; let sumaRow = 0;
-                        Object.keys(mesesTotales).forEach(mes => { for (let k in row) if (k.includes(mes)) sumaRow += parseNumberSafe(row[k]); });
-                        agentesTotales[agenteRow] += sumaRow;
-                    }
+                    if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, licencias: 0, total: 0 };
+                    
+                    allMonths.forEach(mes => {
+                        let valMes = 0;
+                        for (let k in row) if (k.includes(mes)) valMes += parseNumberSafe(row[k]);
+                        
+                        if (selMes === 'TODOS' || selMes === mes) {
+                            mesesTotales[mes].ausencias += valMes;
+                            agentesTotales[agenteRow].ausencias += valMes;
+                            agentesTotales[agenteRow].total += valMes;
+                        }
+                    });
                 }
             });
-            renderAusentismoCharts(mesesTotales, agentesTotales);
+
+            // Procesar Licencias
+            licenciasData.forEach(row => {
+                let agenteRow = getAgenteName(row);
+                if (!agenteRow) return;
+
+                if (selAgente === 'TODOS' || agenteRow === selAgente) {
+                    if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, licencias: 0, total: 0 };
+                    
+                    allMonths.forEach(mes => {
+                        let valMes = 0;
+                        for (let k in row) if (k.includes(mes)) valMes += parseNumberSafe(row[k]);
+                        
+                        if (selMes === 'TODOS' || selMes === mes) {
+                            mesesTotales[mes].licencias += valMes;
+                            agentesTotales[agenteRow].licencias += valMes;
+                            agentesTotales[agenteRow].total += valMes;
+                        }
+                    });
+                }
+            });
+
+            renderPersonalUI(mesesTotales, agentesTotales);
         }
 
-        function renderAusentismoCharts(mesesTotales, agentesTotales) {
-            if(charts.ausentismoMensual) charts.ausentismoMensual.destroy(); if(charts.topAgentes) charts.topAgentes.destroy();
-            charts.ausentismoMensual = new Chart(document.getElementById('chartAusentismoMensual').getContext('2d'), { type: 'bar', data: { labels: Object.keys(mesesTotales), datasets: [{ data: Object.values(mesesTotales), backgroundColor: '#EF4444', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            const sortedAgentes = Object.entries(agentesTotales).sort((a,b) => b[1] - a[1]).slice(0, 5);
-            charts.topAgentes = new Chart(document.getElementById('chartTopAgentes').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: sortedAgentes.map(i => i[0]), datasets: [{ data: sortedAgentes.map(i => i[1]), backgroundColor: '#F59E0B', borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        function renderPersonalUI(mesesTotales, agentesTotales) {
+            // 1. KPIs
+            let totalAusencias = 0, totalLicencias = 0;
+            let agentesConFaltas = 0;
+
+            Object.values(agentesTotales).forEach(ag => {
+                if (ag.total > 0) agentesConFaltas++;
+                totalAusencias += ag.ausencias;
+                totalLicencias += ag.licencias;
+            });
+
+            const kpiContainer = document.getElementById('personal-kpi-container');
+            if (kpiContainer) {
+                kpiContainer.innerHTML = `
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                        <i data-lucide="users" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Agentes con Novedades</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${agentesConFaltas}</span>
+                    </div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                        <i data-lucide="user-minus" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Inasistencias</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${totalAusencias}</span>
+                    </div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                        <i data-lucide="file-text" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Licencias</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${totalLicencias}</span>
+                    </div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                        <i data-lucide="calculator" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Suma Gral. de Faltas</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${totalAusencias + totalLicencias}</span>
+                    </div>
+                `;
+                if(window.lucide) window.lucide.createIcons();
+            }
+
+            // 2. Gráfico Mensual Apilado (Ausencias + Licencias)
+            if(charts.personalMensual) charts.personalMensual.destroy();
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+
+            charts.personalMensual = new Chart(document.getElementById('chartPersonalMensual').getContext('2d'), {
+                type: 'bar',
+                data: { 
+                    labels: allMonths, 
+                    datasets: [
+                        { label: 'Inasistencias', data: allMonths.map(m => mesesTotales[m].ausencias), backgroundColor: '#F43F5E', borderRadius: 4 },
+                        { label: 'Licencias', data: allMonths.map(m => mesesTotales[m].licencias), backgroundColor: '#F59E0B', borderRadius: 4 }
+                    ] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true }
+                    },
+                    plugins: { 
+                        legend: { position: 'top', labels: { boxWidth: 12 } } 
+                    } 
+                } 
+            });
+
+            // 3. Listado Completo en Tabla
+            const tbody = document.getElementById('tbody-personal');
+            tbody.innerHTML = '';
+            
+            // Ordenar por total de faltas (descendente)
+            const sortedAgentes = Object.entries(agentesTotales)
+                .filter(item => item[1].total > 0) // Solo mostrar si tienen al menos 1 falta
+                .sort((a, b) => b[1].total - a[1].total);
+
+            if (sortedAgentes.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de inasistencias ni licencias para los filtros seleccionados.</td></tr>`;
+            } else {
+                sortedAgentes.forEach(item => {
+                    const nombre = item[0];
+                    const ausencias = item[1].ausencias;
+                    const licencias = item[1].licencias;
+                    const total = item[1].total;
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-800/80 transition-colors">
+                            <td class="px-4 py-2 font-medium text-slate-200">${nombre}</td>
+                            <td class="px-3 py-2 text-center text-rose-400">${ausencias > 0 ? ausencias : '-'}</td>
+                            <td class="px-3 py-2 text-center text-amber-400">${licencias > 0 ? licencias : '-'}</td>
+                            <td class="px-3 py-2 text-center font-bold text-emerald-400">${total}</td>
+                        </tr>
+                    `;
+                });
+            }
         }
 
         /* ----- IRAB 2026 ----- */
@@ -735,7 +893,7 @@
             });
         }
 
-        /* ----- LABORATORIO INTELIGENTE (TOP 10 + LEYENDAS CON MESES) ----- */
+        /* ----- LABORATORIO INTELIGENTE ----- */
         function initLaboratorioFilters() {
             const containerAnio = document.getElementById('checklist-anio-lab');
             const containerMes = document.getElementById('checklist-mes-lab');
@@ -746,9 +904,7 @@
             containerMes.innerHTML = '';
             containerCaps.innerHTML = '';
 
-            let anios = new Set();
-            let meses = new Set();
-            let capsSet = new Set();
+            let anios = new Set(), meses = new Set(), capsSet = new Set();
 
             laboratorioData.forEach(row => {
                 for (let key in row) {
@@ -776,7 +932,7 @@
                     </label>`;
             });
 
-            ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].forEach(m => {
+            allMonths.forEach(m => {
                 if ([...meses].map(x => x.toUpperCase()).includes(m)) {
                     containerMes.innerHTML += `
                         <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
@@ -787,7 +943,7 @@
             });
             [...meses].sort().forEach(m => {
                 let mUp = m.toUpperCase();
-                if (!['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].includes(mUp)) {
+                if (!allMonths.includes(mUp)) {
                     containerMes.innerHTML += `
                         <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
                             <input type="checkbox" value="${m}" checked onchange="processLaboratorioData()" class="chk-mes-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
@@ -830,10 +986,8 @@
 
             const selectedAnios = Array.from(document.querySelectorAll('.chk-anio-lab:checked')).map(cb => cb.value.toUpperCase());
             const totalAnios = document.querySelectorAll('.chk-anio-lab').length;
-            
             const selectedMeses = Array.from(document.querySelectorAll('.chk-mes-lab:checked')).map(cb => cb.value.toUpperCase());
             const totalMeses = document.querySelectorAll('.chk-mes-lab').length;
-
             const selectedCaps = Array.from(document.querySelectorAll('.chk-caps-lab:checked')).map(cb => cb.value.toUpperCase());
             const totalCaps = document.querySelectorAll('.chk-caps-lab').length;
 
@@ -842,13 +996,10 @@
             updateMultiSelectLabel('label-caps-lab', selectedCaps, totalCaps, 'CAPS');
 
             let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0;
-            let capsStats = {};
-            let monthCapsMap = {};
+            let capsStats = {}, monthCapsMap = {};
 
             laboratorioData.forEach((row, i) => {
-                let rowAnio = '';
-                let rowMes = '';
-                let rowCaps = '';
+                let rowAnio = '', rowMes = '', rowCaps = '';
 
                 for (let key in row) {
                     let k = key.toUpperCase();
@@ -874,18 +1025,14 @@
                         if (k.includes('AUSENTE') || k.includes('FALTA')) ausentes += val;
                     }
 
-                    if (otorgados === 0 && (presentes > 0 || ausentes > 0)) {
-                        otorgados = presentes + ausentes;
-                    }
+                    if (otorgados === 0 && (presentes > 0 || ausentes > 0)) otorgados = presentes + ausentes;
 
                     if (otorgados > 0 || presentes > 0 || ausentes > 0) {
                         totalOtorgados += otorgados;
                         totalPresentes += presentes;
                         totalAusentes += ausentes;
 
-                        if (!capsStats[rowCaps]) {
-                            capsStats[rowCaps] = { otorgados: 0, presentes: 0, ausentes: 0 };
-                        }
+                        if (!capsStats[rowCaps]) capsStats[rowCaps] = { otorgados: 0, presentes: 0, ausentes: 0 };
                         capsStats[rowCaps].otorgados += otorgados;
                         capsStats[rowCaps].presentes += presentes;
                         capsStats[rowCaps].ausentes += ausentes;
@@ -930,107 +1077,34 @@
 
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
-            // --- GRAFICO 1 HORIZONTAL: NOMBRES DE CAPS EN EJE Y, % EN EJE X ---
             let sortedLowestCaps = Object.entries(capsStats)
                 .map(([name, data]) => {
                     let pct = data.otorgados > 0 ? (data.presentes / data.otorgados) * 100 : 0;
                     return { name, pct: parseFloat(pct.toFixed(1)), presentes: data.presentes, otorgados: data.otorgados };
-                })
-                .sort((a,b) => a.pct - b.pct)
-                .slice(0, 10);
+                }).sort((a,b) => a.pct - b.pct).slice(0, 10);
 
             charts.labTopMenorAsistencia = new Chart(document.getElementById('chartLabTopMenorAsistencia').getContext('2d'), {
                 type: 'bar',
-                data: {
-                    labels: sortedLowestCaps.map(item => item.name),
-                    datasets: [{
-                        label: '% Asistencia',
-                        data: sortedLowestCaps.map(item => item.pct),
-                        backgroundColor: '#F43F5E',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Asistencia: ${context.raw}%`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            max: 100,
-                            ticks: { callback: v => v + '%' }
-                        },
-                        y: {
-                            ticks: { font: { size: 10 } }
-                        }
-                    }
-                }
+                data: { labels: sortedLowestCaps.map(item => item.name), datasets: [{ label: '% Asistencia', data: sortedLowestCaps.map(item => item.pct), backgroundColor: '#F43F5E', borderRadius: 4 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return `Asistencia: ${context.raw}%`; } } } }, scales: { x: { max: 100, ticks: { callback: v => v + '%' } }, y: { ticks: { font: { size: 10 } } } } }
             });
 
-            // --- GRAFICO 2: COMPARACIÓN DE CAPS CON LEYENDAS POR MES ---
-            let uniqueCapsList = Object.keys(capsStats);
-            let activeMonths = Object.keys(monthCapsMap);
-            
-            let datasetsByMonth = activeMonths.map(month => {
-                return {
-                    label: month,
-                    data: uniqueCapsList.map(caps => monthCapsMap[month][caps] || 0),
-                    backgroundColor: monthColors[month] || '#3B82F6',
-                    borderRadius: 3
-                };
-            });
+            let uniqueCapsList = Object.keys(capsStats), activeMonths = Object.keys(monthCapsMap);
+            let datasetsByMonth = activeMonths.map(month => { return { label: month, data: uniqueCapsList.map(caps => monthCapsMap[month][caps] || 0), backgroundColor: monthColors[month] || '#3B82F6', borderRadius: 3 }; });
 
             charts.labEvolucion = new Chart(document.getElementById('chartLabEvolucion').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: uniqueCapsList,
-                    datasets: datasetsByMonth
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: { boxWidth: 12, font: { size: 11 } }
-                        }
-                    }
-                }
+                type: 'bar', data: { labels: uniqueCapsList, datasets: datasetsByMonth },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 11 } } } } }
             });
 
-            // --- GRAFICO 3: PROPORCIÓN DOUGHNUT ---
             charts.labEstado = new Chart(document.getElementById('chartLabEstado').getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Presentes', 'Ausentes'],
-                    datasets: [{ data: [totalPresentes, totalAusentes], backgroundColor: ['#10B981', '#F43F5E'], borderWidth: 0 }]
-                },
+                type: 'doughnut', data: { labels: ['Presentes', 'Ausentes'], datasets: [{ data: [totalPresentes, totalAusentes], backgroundColor: ['#10B981', '#F43F5E'], borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
             });
 
-            // --- GRAFICO 4: TOTAL DE TURNOS OTORGADOS POR CAPS ---
             charts.labDetalle = new Chart(document.getElementById('chartLabDetalle').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: uniqueCapsList,
-                    datasets: [{ label: 'Turnos Otorgados', data: uniqueCapsList.map(c => capsStats[c].otorgados), backgroundColor: '#6366F1', borderRadius: 4 }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }
-                }
+                type: 'bar', data: { labels: uniqueCapsList, datasets: [{ label: 'Turnos Otorgados', data: uniqueCapsList.map(c => capsStats[c].otorgados), backgroundColor: '#6366F1', borderRadius: 4 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
@@ -1041,9 +1115,7 @@
             const selectCaps = document.getElementById('filter-caps-hsi');
             if (!selectAnio || !selectMes || !selectCaps) return;
 
-            let anios = new Set();
-            let meses = new Set();
-            let capsSet = new Set();
+            let anios = new Set(), meses = new Set(), capsSet = new Set();
 
             hsiData.forEach(row => {
                 for (let key in row) {
@@ -1063,29 +1135,10 @@
                 }
             });
 
-            [...anios].sort().forEach(anio => {
-                let opt = document.createElement('option'); opt.value = anio; opt.textContent = anio;
-                selectAnio.appendChild(opt);
-            });
-
-            ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].forEach(m => {
-                if ([...meses].map(x => x.toUpperCase()).includes(m)) {
-                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
-                    selectMes.appendChild(opt);
-                }
-            });
-            [...meses].sort().forEach(m => {
-                let mUp = m.toUpperCase();
-                if (!['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'].includes(mUp)) {
-                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
-                    selectMes.appendChild(opt);
-                }
-            });
-
-            [...capsSet].sort().forEach(c => {
-                let opt = document.createElement('option'); opt.value = c; opt.textContent = c;
-                selectCaps.appendChild(opt);
-            });
+            [...anios].sort().forEach(anio => { let opt = document.createElement('option'); opt.value = anio; opt.textContent = anio; selectAnio.appendChild(opt); });
+            allMonths.forEach(m => { if ([...meses].map(x => x.toUpperCase()).includes(m)) { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt); } });
+            [...meses].sort().forEach(m => { let mUp = m.toUpperCase(); if (!allMonths.includes(mUp)) { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt); } });
+            [...capsSet].sort().forEach(c => { let opt = document.createElement('option'); opt.value = c; opt.textContent = c; selectCaps.appendChild(opt); });
         }
 
         function processHsiData() {
@@ -1105,56 +1158,17 @@
             let labelsRow = [], dataVolumen = [];
 
             hsiData.forEach((row, i) => {
-                let matchAnio = true;
-                if (sAnio !== 'TODOS') {
-                    matchAnio = false;
-                    for (let key in row) {
-                        let k = key.toUpperCase();
-                        if ((k.includes('AÑO') || k.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) {
-                            matchAnio = true;
-                        }
-                    }
-                }
-
-                let matchMes = true;
-                if (sMes !== 'TODOS') {
-                    matchMes = false;
-                    for (let key in row) {
-                        let k = key.toUpperCase();
-                        if ((k.includes('MES') || k.includes('PERIODO')) && String(row[key]).trim().toUpperCase() === sMes) {
-                            matchMes = true;
-                        }
-                    }
-                }
-
-                let matchCaps = true;
-                if (sCaps !== 'TODOS') {
-                    matchCaps = false;
-                    for (let key in row) {
-                        let k = key.toUpperCase();
-                        if ((k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) && String(row[key]).trim().toUpperCase() === sCaps) {
-                            matchCaps = true;
-                        }
-                    }
-                }
+                let matchAnio = true, matchMes = true, matchCaps = true;
+                if (sAnio !== 'TODOS') { matchAnio = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('AÑO') || k.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) matchAnio = true; } }
+                if (sMes !== 'TODOS') { matchMes = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('MES') || k.includes('PERIODO')) && String(row[key]).trim().toUpperCase() === sMes) matchMes = true; } }
+                if (sCaps !== 'TODOS') { matchCaps = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) && String(row[key]).trim().toUpperCase() === sCaps) matchCaps = true; } }
 
                 if (matchAnio && matchMes && matchCaps) {
                     let label = row['CAPS'] || row['CENTRO'] || row['ESTABLECIMIENTO'] || row['MES'] || Object.values(row)[0] || (`Reg ${i+1}`);
-                    
                     let sumaFila = 0;
-                    for (let key in row) {
-                        let k = key.toUpperCase();
-                        let val = parseNumberSafe(row[key]);
-                        if (!k.includes('ID') && !k.includes('AÑO') && !k.includes('ANIO') && !k.includes('YEAR') && val > 0) {
-                            sumaFila += val;
-                        }
-                    }
+                    for (let key in row) { let k = key.toUpperCase(); let val = parseNumberSafe(row[key]); if (!k.includes('ID') && !k.includes('AÑO') && !k.includes('ANIO') && !k.includes('YEAR') && val > 0) sumaFila += val; }
 
-                    if (sumaFila > 0) {
-                        labelsRow.push(String(label).trim());
-                        dataVolumen.push(sumaFila);
-                        totalVolumen += sumaFila;
-                    }
+                    if (sumaFila > 0) { labelsRow.push(String(label).trim()); dataVolumen.push(sumaFila); totalVolumen += sumaFila; }
                 }
             });
 
@@ -1193,41 +1207,20 @@
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
             charts.hsiEvolucion = new Chart(document.getElementById('chartHsiEvolucion').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: labelsRow,
-                    datasets: [{ label: 'Registros HSI', data: dataVolumen, backgroundColor: '#10B981', borderRadius: 6 }]
-                },
+                type: 'bar', data: { labels: labelsRow, datasets: [{ label: 'Registros HSI', data: dataVolumen, backgroundColor: '#10B981', borderRadius: 6 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
             let topIndices = dataVolumen.map((val, idx) => ({ val, idx })).sort((a,b) => b.val - a.val).slice(0, 5);
             charts.hsiEstado = new Chart(document.getElementById('chartHsiEstado').getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: topIndices.map(i => labelsRow[i.idx]),
-                    datasets: [{
-                        data: topIndices.map(i => i.val),
-                        backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#A855F7', '#EC4899'],
-                        borderWidth: 0
-                    }]
-                },
+                type: 'doughnut', data: { labels: topIndices.map(i => labelsRow[i.idx]), datasets: [{ data: topIndices.map(i => i.val), backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#A855F7', '#EC4899'], borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
             });
 
             let sortedAll = dataVolumen.map((val, idx) => ({ label: labelsRow[idx], val })).sort((a,b) => b.val - a.val);
             charts.hsiDetalle = new Chart(document.getElementById('chartHsiDetalle').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: sortedAll.map(i => i.label),
-                    datasets: [{ label: 'Registros', data: sortedAll.map(i => i.val), backgroundColor: '#6366F1', borderRadius: 4 }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }
-                }
+                type: 'bar', data: { labels: sortedAll.map(i => i.label), datasets: [{ label: 'Registros', data: sortedAll.map(i => i.val), backgroundColor: '#6366F1', borderRadius: 4 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
