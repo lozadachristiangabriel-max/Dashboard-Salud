@@ -84,8 +84,11 @@
             <button onclick="switchView('territorio')" id="btn-territorio" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="map" class="w-5 h-5"></i> TERRITORIO
             </button>
-            <button onclick="switchView('personal')" id="btn-personal" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
-                <i data-lucide="users" class="w-5 h-5"></i> PERSONAL (FALTAS)
+            <button onclick="switchView('ausentismo')" id="btn-ausentismo" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                <i data-lucide="user-minus" class="w-5 h-5"></i> AUSENTISMO
+            </button>
+            <button onclick="switchView('licencias')" id="btn-licencias" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                <i data-lucide="calendar-days" class="w-5 h-5"></i> LICENCIAS
             </button>
             <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="thermometer" class="w-5 h-5"></i> IRAB 2026
@@ -142,43 +145,43 @@
             <div class="glass-card p-4 md:p-6 mt-6 mb-8"><div class="h-72 md:h-80 relative"><canvas id="chartAnual"></canvas></div></div>
         </section>
 
-        <!-- VISTA PERSONAL (AUSENTISMO CON CHECKLISTS) -->
-        <section id="view-personal" class="hidden">
+        <!-- VISTA AUSENTISMO -->
+        <section id="view-ausentismo" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40 overflow-visible">
                 <!-- CHECKLIST MULTIPLE: AGENTE -->
                 <div class="relative multi-select-container z-50">
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Personal (Checklist por Agente)</label>
-                    <button type="button" onclick="toggleMultiSelect('dropdown-agente-personal')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
-                        <span id="label-agente-personal" class="truncate font-medium">Todos los Agentes</span>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Personal (Ausentismo)</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-agente-aus')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-agente-aus" class="truncate font-medium">Todos los Agentes</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </button>
-                    <div id="dropdown-agente-personal" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
+                    <div id="dropdown-agente-aus" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
                         <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
-                            <button type="button" onclick="selectAllPersonal('agente', true)" class="hover:underline">Seleccionar Todos</button>
-                            <button type="button" onclick="selectAllPersonal('agente', false)" class="hover:underline text-rose-400">Ninguno</button>
+                            <button type="button" onclick="selectAllAusentismo('agente', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllAusentismo('agente', false)" class="hover:underline text-rose-400">Ninguno</button>
                         </div>
-                        <div id="checklist-agente-personal" class="space-y-1.5 text-xs text-slate-200"></div>
+                        <div id="checklist-agente-aus" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
 
                 <!-- CHECKLIST MULTIPLE: MES -->
                 <div class="relative multi-select-container z-50">
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Meses (Checklist)</label>
-                    <button type="button" onclick="toggleMultiSelect('dropdown-mes-personal')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
-                        <span id="label-mes-personal" class="truncate font-medium">Todos los Meses</span>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Meses</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-mes-aus')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-mes-aus" class="truncate font-medium">Todos los Meses</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </button>
-                    <div id="dropdown-mes-personal" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
+                    <div id="dropdown-mes-aus" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
                         <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
-                            <button type="button" onclick="selectAllPersonal('mes', true)" class="hover:underline">Seleccionar Todos</button>
-                            <button type="button" onclick="selectAllPersonal('mes', false)" class="hover:underline text-rose-400">Ninguno</button>
+                            <button type="button" onclick="selectAllAusentismo('mes', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllAusentismo('mes', false)" class="hover:underline text-rose-400">Ninguno</button>
                         </div>
-                        <div id="checklist-mes-personal" class="space-y-1.5 text-xs text-slate-200"></div>
+                        <div id="checklist-mes-aus" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
             </div>
             
-            <div id="personal-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-8 relative z-10"></div>
+            <div id="ausentismo-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-8 relative z-10"></div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
                 <div class="glass-card p-4 md:p-6">
@@ -186,7 +189,7 @@
                         <i data-lucide="bar-chart-2" class="text-cyan-400 w-5 h-5"></i>
                         Inasistencias por Mes
                     </h3>
-                    <div class="h-64 md:h-72 relative"><canvas id="chartPersonalMensual"></canvas></div>
+                    <div class="h-64 md:h-72 relative"><canvas id="chartAusentismoMensual"></canvas></div>
                 </div>
                 
                 <div class="glass-card p-4 md:p-6 flex flex-col h-full">
@@ -206,11 +209,111 @@
                                     <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Total Faltas</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-personal" class="divide-y divide-slate-800/50">
-                                <!-- Filas generadas por JS por AGENTE -->
+                            <tbody id="tbody-ausentismo" class="divide-y divide-slate-800/50">
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA LICENCIAS -->
+        <section id="view-licencias" class="hidden">
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40 overflow-visible">
+                <!-- CHECKLIST MULTIPLE: AGENTE -->
+                <div class="relative multi-select-container z-50">
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Agente (Licencias)</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-agente-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-agente-lic" class="truncate font-medium">Todos los Agentes</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-agente-lic" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllLicencias('agente', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllLicencias('agente', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-agente-lic" class="space-y-1.5 text-xs text-slate-200"></div>
+                    </div>
+                </div>
+
+                <!-- CHECKLIST MULTIPLE: TIPO DE LICENCIA -->
+                <div class="relative multi-select-container z-50">
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Tipo de Licencia</label>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-tipo-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-tipo-lic" class="truncate font-medium">Todos los Tipos</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-tipo-lic" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllLicencias('tipo', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllLicencias('tipo', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-tipo-lic" class="space-y-1.5 text-xs text-slate-200"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILTROS INFERIORES: AÑO (PRIORIDAD 2025/2026), FECHA INICIO, FECHA FINAL, SUSPENSIÓN Y DÍAS PENDIENTES -->
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 relative z-30">
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año (Prioridad 2025/2026)</label>
+                    <select id="filter-anio-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="2025_2026">2025 y 2026 (Prioridad)</option>
+                        <option value="TODOS">Todos los Años</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Fecha Inicio</label>
+                    <select id="filter-inicio-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Fecha Final</label>
+                    <select id="filter-final-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Suspensión</label>
+                    <select id="filter-suspension-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Días Pendientes</label>
+                    <select id="filter-pendientes-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="licencias-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-8 relative z-10"></div>
+
+            <div class="glass-card p-4 md:p-6 flex flex-col relative z-10">
+                <div class="flex justify-between items-end mb-4">
+                    <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
+                        <i data-lucide="file-text" class="text-emerald-400 w-5 h-5"></i>
+                        Licencias Detalladas (Orden Priorizado)
+                    </h3>
+                </div>
+                
+                <div class="overflow-x-auto max-h-[30rem] pr-2 custom-scrollbar border border-slate-800 rounded-lg">
+                    <table class="w-full text-left text-xs text-slate-300 relative whitespace-nowrap">
+                        <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
+                            <tr>
+                                <th class="px-3 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Agente</th>
+                                <th class="px-2 py-3 font-semibold border-b border-slate-700 text-cyan-400">Tipo</th>
+                                <th class="px-2 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400">Días Pend.</th>
+                                <th class="px-2 py-3 font-semibold text-center border-b border-slate-700 text-amber-300">Inicio</th>
+                                <th class="px-2 py-3 font-semibold text-center border-b border-slate-700 text-amber-300">Final</th>
+                                <th class="px-2 py-3 font-semibold text-center border-b border-slate-700">Cant. Días</th>
+                                <th class="px-2 py-3 font-semibold text-center border-b border-slate-700">Año</th>
+                                <th class="px-2 py-3 font-semibold border-b border-slate-700 text-rose-400 rounded-tr-lg">Suspensión</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-licencias" class="divide-y divide-slate-800/50"></tbody>
+                    </table>
                 </div>
             </div>
         </section>
@@ -394,13 +497,19 @@
     <!-- LOGICA JAVASCRIPT Y URLs -->
     <script>
         const URL_TERRITORIO = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
-        const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbw7tP5mgS3cfBpXi3-W_0Pks_tnZ7ncbEstZrF649byWy0YTsdmxLao_stLSK27F7Vblw/exec';
+        
+        // AQUI ESTA TU NUEVA URL DE AUSENTISMO INCORPORADA
+        const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbyjzoW-5wEZE1orJwUH7i_wvT0daeKtN2viqcUsOrqI2kJa-ZUQRPy7l14ge8uU8M4PGA/exec';
+        
+        // ESTA ES LA URL DE LICENCIAS QUE ME PASASTE AL PRINCIPIO
+        const URL_LICENCIAS  = 'https://script.google.com/macros/s/AKfycbx-Tzy_-zZIho5p5IomrHfO9VS7V8lDvytmXJhx51oEhF76g5DNgUSXKWuli6KCIXBq/exec';
+        
         const URL_IRAB       = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
         const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzq7DlkN-FHkHXIlzk1xeHeE_zahNaUvozW62nTfrYmA8k0DnG9IO_D2TnMCUKQludD/exec';
         const URL_HSI        = '';
         
         let activeTab = 'territorio';
-        let territorioData = [], ausentismoData = [], irabData = [], laboratorioData = [], hsiData = [], charts = {};
+        let territorioData = [], ausentismoData = [], licenciasData = [], irabData = [], laboratorioData = [], hsiData = [], charts = {};
         const kpiConfig = [
             { id: 'MANZ', title: 'MANZANAS', icon: 'map', color: 'text-indigo-400' },
             { id: 'CAL (APLIC)', title: 'CALENDARIO', icon: 'syringe', color: 'text-emerald-400' },
@@ -430,7 +539,7 @@
 
         function switchView(viewId) {
             activeTab = viewId;
-            ['territorio', 'personal', 'irab', 'laboratorio', 'hsi'].forEach(v => {
+            ['territorio', 'ausentismo', 'licencias', 'irab', 'laboratorio', 'hsi'].forEach(v => {
                 const elView = document.getElementById(`view-${v}`);
                 const elBtn = document.getElementById(`btn-${v}`);
                 if (elView) elView.classList.add('hidden');
@@ -450,7 +559,8 @@
             }
 
             if(viewId === 'territorio' && territorioData.length) setTimeout(() => processTerritorioData(), 50);
-            if(viewId === 'personal' && ausentismoData.length) setTimeout(() => processPersonalData(), 50);
+            if(viewId === 'ausentismo' && ausentismoData.length) setTimeout(() => processAusentismoData(), 50);
+            if(viewId === 'licencias' && licenciasData.length) setTimeout(() => processLicenciasData(), 50);
             if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
             if(viewId === 'laboratorio' && laboratorioData.length) setTimeout(() => processLaboratorioData(), 50);
             if(viewId === 'hsi' && (hsiData.length || !URL_HSI)) setTimeout(() => processHsiData(), 50);
@@ -497,7 +607,7 @@
 
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.multi-select-container')) {
-                ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-personal', 'dropdown-mes-personal'].forEach(id => {
+                ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -507,7 +617,7 @@
         function toggleMultiSelect(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             const isHidden = dropdown.classList.contains('hidden');
-            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-personal', 'dropdown-mes-personal'].forEach(id => {
+            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
@@ -519,16 +629,22 @@
             processLaboratorioData();
         }
 
-        function selectAllPersonal(type, state) {
-            document.querySelectorAll(`.chk-${type}-personal`).forEach(cb => cb.checked = state);
-            processPersonalData();
+        function selectAllAusentismo(type, state) {
+            document.querySelectorAll(`.chk-${type}-aus`).forEach(cb => cb.checked = state);
+            processAusentismoData();
+        }
+
+        function selectAllLicencias(type, state) {
+            document.querySelectorAll(`.chk-${type}-lic`).forEach(cb => cb.checked = state);
+            processLicenciasData();
         }
 
         async function fetchAllData() {
             try {
-                const [resT, resA, resI, resL, resH] = await Promise.all([
+                const [resT, resA, resLic, resI, resL, resH] = await Promise.all([
                     fetch(URL_TERRITORIO).then(r => r.json()).catch(() => []),
                     fetch(URL_AUSENTISMO).then(r => r.json()).catch(() => []),
+                    URL_LICENCIAS ? fetch(URL_LICENCIAS).then(r => r.json()).catch(() => []) : Promise.resolve([]),
                     fetch(URL_IRAB).then(r => r.json()).catch(() => []),
                     fetch(URL_LABORATORIO).then(r => r.json()).catch(() => []),
                     URL_HSI ? fetch(URL_HSI).then(r => r.json()).catch(() => []) : Promise.resolve([])
@@ -536,6 +652,7 @@
 
                 territorioData  = resT.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
                 ausentismoData  = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                licenciasData   = resLic.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 irabData        = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 laboratorioData = resL.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 hsiData         = resH.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
@@ -544,12 +661,15 @@
                 switchView('territorio');
                 
                 initTerritorioFilters();
-                initPersonalFilters();
+                initAusentismoFilters();
+                initLicenciasFilters();
                 initIrabFilters();
                 initLaboratorioFilters();
                 initHsiFilters();
+                
                 processTerritorioData();
-                processPersonalData();
+                processAusentismoData();
+                processLicenciasData();
                 processIrabData();
                 processLaboratorioData();
                 processHsiData();
@@ -621,7 +741,7 @@
             charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), { type: 'line', data: { labels: sortedYears, datasets: [{ label: 'Vacunación', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }, { label: 'Atenciones', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 }, { label: 'Trámites', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
-        /* ----- PERSONAL: AUSENTISMO ----- */
+        /* ----- HELPERS COMPARTIDOS: AGENTE Y LABELS ----- */
         const getAgenteName = (row) => {
             const keysPriority = ['AGENTE', 'NOMBRE Y APELLIDO', 'APELLIDO Y NOMBRE', 'PERSONAL', 'EMPLEADO', 'TRABAJADOR'];
             for (let pk of keysPriority) {
@@ -642,9 +762,24 @@
             return '';
         };
 
-        function initPersonalFilters() {
-            const containerAgente = document.getElementById('checklist-agente-personal');
-            const containerMes = document.getElementById('checklist-mes-personal');
+        function updateMultiSelectLabel(labelId, selectedArray, totalCount, defaultName) {
+            const label = document.getElementById(labelId);
+            if (!label) return;
+            if (selectedArray.length === totalCount || totalCount === 0) {
+                label.textContent = `Todos los ${defaultName}`;
+            } else if (selectedArray.length === 0) {
+                label.textContent = `Ninguno seleccionado`;
+            } else if (selectedArray.length === 1) {
+                label.textContent = selectedArray[0];
+            } else {
+                label.textContent = `${selectedArray.length} seleccionados`;
+            }
+        }
+
+        /* ----- VISTA AUSENTISMO ----- */
+        function initAusentismoFilters() {
+            const containerAgente = document.getElementById('checklist-agente-aus');
+            const containerMes = document.getElementById('checklist-mes-aus');
             if (!containerAgente || !containerMes) return;
 
             containerAgente.innerHTML = '';
@@ -656,7 +791,7 @@
             [...agentes].sort().forEach(ag => {
                 containerAgente.innerHTML += `
                     <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
-                        <input type="checkbox" value="${ag}" checked onchange="processPersonalData()" class="chk-agente-personal rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <input type="checkbox" value="${ag}" checked onchange="processAusentismoData()" class="chk-agente-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
                         <span class="font-medium truncate" title="${ag}">${ag}</span>
                     </label>`;
             });
@@ -664,21 +799,21 @@
             allMonths.forEach(m => {
                 containerMes.innerHTML += `
                     <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
-                        <input type="checkbox" value="${m}" checked onchange="processPersonalData()" class="chk-mes-personal rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <input type="checkbox" value="${m}" checked onchange="processAusentismoData()" class="chk-mes-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
                         <span class="font-medium">${m}</span>
                     </label>`;
             });
         }
 
-        function processPersonalData() {
-            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-personal:checked')).map(cb => cb.value.toUpperCase());
-            const totalCheckAgentes = document.querySelectorAll('.chk-agente-personal').length;
+        function processAusentismoData() {
+            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-aus:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckAgentes = document.querySelectorAll('.chk-agente-aus').length;
             
-            const checkedMeses = Array.from(document.querySelectorAll('.chk-mes-personal:checked')).map(cb => cb.value.toUpperCase());
-            const totalCheckMeses = document.querySelectorAll('.chk-mes-personal').length;
+            const checkedMeses = Array.from(document.querySelectorAll('.chk-mes-aus:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckMeses = document.querySelectorAll('.chk-mes-aus').length;
 
-            updateMultiSelectLabel('label-agente-personal', checkedAgentes, totalCheckAgentes, 'Agentes');
-            updateMultiSelectLabel('label-mes-personal', checkedMeses, totalCheckMeses, 'Meses');
+            updateMultiSelectLabel('label-agente-aus', checkedAgentes, totalCheckAgentes, 'Agentes');
+            updateMultiSelectLabel('label-mes-aus', checkedMeses, totalCheckMeses, 'Meses');
 
             let mesesTotales = {}; 
             allMonths.forEach(m => mesesTotales[m] = { ausencias: 0 });
@@ -715,10 +850,10 @@
                 }
             });
 
-            renderPersonalUI(mesesTotales, agentesTotales, checkedMeses);
+            renderAusentismoUI(mesesTotales, agentesTotales, checkedMeses);
         }
 
-        function renderPersonalUI(mesesTotales, agentesTotales, checkedMeses) {
+        function renderAusentismoUI(mesesTotales, agentesTotales, checkedMeses) {
             let totalAusencias = 0, agentesConFaltas = 0;
 
             Object.values(agentesTotales).forEach(ag => {
@@ -726,7 +861,7 @@
                 totalAusencias += ag.ausencias;
             });
 
-            const kpiContainer = document.getElementById('personal-kpi-container');
+            const kpiContainer = document.getElementById('ausentismo-kpi-container');
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
                     <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
@@ -748,12 +883,12 @@
                 if(window.lucide) window.lucide.createIcons();
             }
 
-            if(charts.personalMensual) charts.personalMensual.destroy();
+            if(charts.ausentismoMensual) charts.ausentismoMensual.destroy();
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
 
             const mesesAVisibilizar = checkedMeses.length > 0 ? checkedMeses : allMonths;
 
-            charts.personalMensual = new Chart(document.getElementById('chartPersonalMensual').getContext('2d'), {
+            charts.ausentismoMensual = new Chart(document.getElementById('chartAusentismoMensual').getContext('2d'), {
                 type: 'bar',
                 data: { 
                     labels: mesesAVisibilizar, 
@@ -768,7 +903,7 @@
                 } 
             });
 
-            const tbody = document.getElementById('tbody-personal');
+            const tbody = document.getElementById('tbody-ausentismo');
             tbody.innerHTML = '';
             
             const sortedAgentes = Object.entries(agentesTotales)
@@ -788,6 +923,196 @@
                             <td class="px-4 py-2 font-medium text-slate-200">${nombre}</td>
                             <td class="px-3 py-2 text-center text-rose-400">${ausencias > 0 ? ausencias : '-'}</td>
                             <td class="px-3 py-2 text-center font-bold text-emerald-400">${total}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+
+        /* ----- VISTA LICENCIAS ----- */
+        function parseFechasLicencia(row) {
+            let inicio = String(row['INICIO'] || '').trim();
+            let final = String(row['FINAL'] || '').trim();
+
+            if (inicio.includes('-') && (!final || final === 'NAN' || final === 'NULL' || final === '-')) {
+                let partes = inicio.split('-');
+                inicio = partes[0].trim();
+                final = partes[1].trim();
+            }
+            return {
+                inicio: inicio && inicio !== 'NAN' && inicio !== 'NULL' ? inicio : '-',
+                final: final && final !== 'NAN' && final !== 'NULL' ? final : '-'
+            };
+        }
+
+        function initLicenciasFilters() {
+            const containerAgente = document.getElementById('checklist-agente-lic');
+            const containerTipo = document.getElementById('checklist-tipo-lic');
+            const selectAnio = document.getElementById('filter-anio-lic');
+            const selectInicio = document.getElementById('filter-inicio-lic');
+            const selectFinal = document.getElementById('filter-final-lic');
+            const selectSuspension = document.getElementById('filter-suspension-lic');
+            const selectPendientes = document.getElementById('filter-pendientes-lic');
+
+            if (!containerAgente || !containerTipo) return;
+
+            containerAgente.innerHTML = '';
+            containerTipo.innerHTML = '';
+            
+            while (selectAnio.options.length > 2) selectAnio.remove(2);
+            [selectInicio, selectFinal, selectSuspension, selectPendientes].forEach(sel => {
+                if (sel) while (sel.options.length > 1) sel.remove(1);
+            });
+
+            let agentes = new Set(), tipos = new Set(), anios = new Set(), inicios = new Set(), finales = new Set(), suspensiones = new Set(), pendientesSet = new Set();
+
+            licenciasData.forEach(row => {
+                let ag = getAgenteName(row);
+                if (ag && ag !== 'SIN AGENTE') agentes.add(ag);
+                let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || row['TIPO'] || 'ANUAL').trim().toUpperCase();
+                if (tipo && tipo !== 'UNDEFINED') tipos.add(tipo);
+                let anio = String(row['AÑO'] || row['ANIO'] || '').trim();
+                if (anio && anio !== 'UNDEFINED' && anio !== 'NULL') anios.add(anio);
+
+                let fechas = parseFechasLicencia(row);
+                if (fechas.inicio !== '-') inicios.add(fechas.inicio);
+                if (fechas.final !== '-') finales.add(fechas.final);
+
+                let suspension = String(row['F. SUSPENCION'] || row['SUSPENSION LAO'] || row['SUSPENSION'] || '').trim();
+                if (suspension && suspension !== 'UNDEFINED' && suspension !== 'NULL' && suspension !== 'NAN') suspensiones.add(suspension);
+                let pendientes = String(row['DIAS PENDIENTES'] || '').trim();
+                if (pendientes && pendientes !== 'UNDEFINED' && pendientes !== 'NULL' && pendientes !== 'NAN') pendientesSet.add(pendientes);
+            });
+
+            [...agentes].sort().forEach(ag => {
+                containerAgente.innerHTML += `
+                    <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
+                        <input type="checkbox" value="${ag}" checked onchange="processLicenciasData()" class="chk-agente-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <span class="font-medium truncate" title="${ag}">${ag}</span>
+                    </label>`;
+            });
+
+            [...tipos].sort().forEach(t => {
+                containerTipo.innerHTML += `
+                    <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
+                        <input type="checkbox" value="${t}" checked onchange="processLicenciasData()" class="chk-tipo-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <span class="font-medium">${t}</span>
+                    </label>`;
+            });
+
+            [...anios].sort().forEach(val => { 
+                if (val !== '2025' && val !== '2026') {
+                    let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectAnio.appendChild(opt); 
+                }
+            });
+            [...inicios].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectInicio.appendChild(opt); });
+            [...finales].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectFinal.appendChild(opt); });
+            [...suspensiones].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectSuspension.appendChild(opt); });
+            [...pendientesSet].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectPendientes.appendChild(opt); });
+        }
+
+        function processLicenciasData() {
+            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckAgentes = document.querySelectorAll('.chk-agente-lic').length;
+            
+            const checkedTipos = Array.from(document.querySelectorAll('.chk-tipo-lic:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckTipos = document.querySelectorAll('.chk-tipo-lic').length;
+
+            const sAnio = document.getElementById('filter-anio-lic').value;
+            const sInicio = document.getElementById('filter-inicio-lic').value;
+            const sFinal = document.getElementById('filter-final-lic').value;
+            const sSuspension = document.getElementById('filter-suspension-lic').value;
+            const sPendientes = document.getElementById('filter-pendientes-lic').value;
+
+            updateMultiSelectLabel('label-agente-lic', checkedAgentes, totalCheckAgentes, 'Agentes');
+            updateMultiSelectLabel('label-tipo-lic', checkedTipos, totalCheckTipos, 'Tipos');
+
+            let filteredLicencias = [];
+            let totalDiasAcumulados = 0;
+
+            licenciasData.forEach(row => {
+                let agenteRow = getAgenteName(row);
+                let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || row['TIPO'] || 'ANUAL').trim().toUpperCase();
+                let anioRow = String(row['AÑO'] || row['ANIO'] || '').trim();
+                let fechas = parseFechasLicencia(row);
+                let suspensionRow = String(row['F. SUSPENCION'] || row['SUSPENSION LAO'] || row['SUSPENSION'] || '').trim();
+                let pendientesRow = String(row['DIAS PENDIENTES'] || '').trim();
+
+                const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
+                const matchTipo = checkedTipos.includes(tipoRow) || totalCheckTipos === 0;
+                
+                let matchAnio = true;
+                if (sAnio === '2025_2026') {
+                    matchAnio = anioRow.includes('2025') || anioRow.includes('2026') || fechas.inicio.includes('/25') || fechas.inicio.includes('/26') || fechas.inicio.includes('2025') || fechas.inicio.includes('2026') || anioRow === '-' || !anioRow;
+                } else if (sAnio !== 'TODOS') {
+                    matchAnio = anioRow === sAnio;
+                }
+
+                const matchInicio = sInicio === 'TODOS' || fechas.inicio === sInicio;
+                const matchFinal = sFinal === 'TODOS' || fechas.final === sFinal;
+                const matchSuspension = sSuspension === 'TODOS' || suspensionRow === sSuspension;
+                const matchPendientes = sPendientes === 'TODOS' || pendientesRow === sPendientes;
+
+                if (matchAgente && matchTipo && matchAnio && matchInicio && matchFinal && matchSuspension && matchPendientes) {
+                    let dias = parseNumberSafe(row['DIAS'] || row['CANTIDAD DE DIAS'] || row['CANTIDAD'] || 0);
+                    totalDiasAcumulados += dias;
+
+                    filteredLicencias.push({
+                        agente: agenteRow || 'SIN AGENTE',
+                        tipo: tipoRow || 'ANUAL',
+                        pendientes: pendientesRow && pendientesRow !== 'NAN' && pendientesRow !== 'NULL' ? pendientesRow : '-',
+                        inicio: fechas.inicio,
+                        final: fechas.final,
+                        dias: dias > 0 ? dias : '-',
+                        anio: anioRow || '-',
+                        suspension: suspensionRow && suspensionRow !== 'NAN' && suspensionRow !== 'NULL' ? suspensionRow : '-'
+                    });
+                }
+            });
+
+            renderLicenciasUI(filteredLicencias, totalDiasAcumulados);
+        }
+
+        function renderLicenciasUI(filteredLicencias, totalDiasAcumulados) {
+            const kpiContainer = document.getElementById('licencias-kpi-container');
+            if (kpiContainer) {
+                kpiContainer.innerHTML = `
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                        <i data-lucide="file-text" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Licencias Filtradas</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${filteredLicencias.length}</span>
+                    </div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                        <i data-lucide="calendar" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días de Licencia (Total)</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${totalDiasAcumulados}</span>
+                    </div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center">
+                        <i data-lucide="users" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Agentes Únicos</h4>
+                        <span class="text-lg md:text-2xl font-bold text-white">${new Set(filteredLicencias.map(l => l.agente)).size}</span>
+                    </div>
+                `;
+                if(window.lucide) window.lucide.createIcons();
+            }
+
+            const tbodyLic = document.getElementById('tbody-licencias');
+            tbodyLic.innerHTML = '';
+            if (filteredLicencias.length === 0) {
+                tbodyLic.innerHTML = `<tr><td colspan="8" class="px-3 py-4 text-center text-slate-500 italic">No hay licencias con estos filtros.</td></tr>`;
+            } else {
+                filteredLicencias.forEach(item => {
+                    tbodyLic.innerHTML += `
+                        <tr class="hover:bg-slate-800/80 transition-colors">
+                            <td class="px-3 py-2 font-medium text-slate-200">${item.agente}</td>
+                            <td class="px-2 py-2 text-cyan-400">${item.tipo}</td>
+                            <td class="px-2 py-2 text-center font-bold text-emerald-400">${item.pendientes}</td>
+                            <td class="px-2 py-2 text-center text-amber-300">${item.inicio}</td>
+                            <td class="px-2 py-2 text-center text-amber-300">${item.final}</td>
+                            <td class="px-2 py-2 text-center font-bold text-white">${item.dias}</td>
+                            <td class="px-2 py-2 text-center text-slate-300">${item.anio}</td>
+                            <td class="px-2 py-2 text-rose-400">${item.suspension}</td>
                         </tr>
                     `;
                 });
@@ -991,20 +1316,6 @@
                         <span class="font-medium">${c}</span>
                     </label>`;
             });
-        }
-
-        function updateMultiSelectLabel(labelId, selectedArray, totalCount, defaultName) {
-            const label = document.getElementById(labelId);
-            if (!label) return;
-            if (selectedArray.length === totalCount || totalCount === 0) {
-                label.textContent = `Todos los ${defaultName}`;
-            } else if (selectedArray.length === 0) {
-                label.textContent = `Ninguno seleccionado`;
-            } else if (selectedArray.length === 1) {
-                label.textContent = selectedArray[0];
-            } else {
-                label.textContent = `${selectedArray.length} seleccionados`;
-            }
         }
 
         function processLaboratorioData() {
