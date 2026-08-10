@@ -612,7 +612,7 @@
         }
 
         function selectAllLicencias(type, state) {
-            document.querySelectorAll(`.chk-${type}-lic`).forEach(cb => cb.checked = state);
+            document.querySelectorAll(`.chk-${type}-${type === 'agente' ? 'agente' : (type === 'tipo' ? 'tipo' : 'funcion')}-lic`).forEach(cb => cb.checked = state);
             processLicenciasData();
         }
 
@@ -1022,7 +1022,6 @@
         /* ----- FUNCIÓN DE INTERACCIÓN CRUZADA TOTAL (TODOS LOS FILTROS SE RELACIONAN) ----- */
         function updateLicenciasFiltersDynamic(checkedAgentes, totalCheckAgentes, checkedTipos, totalCheckTipos, checkedFunciones, totalCheckFunciones, selectedAnio, selectedMes) {
             
-            // 1. Recolectar opciones válidas cruzando todos los filtros actuales
             let validAgentes = new Set();
             let validTipos = new Set();
             let validFunciones = new Set();
@@ -1038,7 +1037,6 @@
 
                 if (!ag || ag === 'SIN AGENTE') return;
 
-                // Verificamos compatibilidad cruzada para alimentar las listas dinámicas
                 let matchAg = checkedAgentes.includes(ag) || totalCheckAgentes === 0;
                 let matchTp = checkedTipos.includes(tipo) || totalCheckTipos === 0;
                 let matchFn = checkedFunciones.includes(func) || totalCheckFunciones === 0;
@@ -1061,7 +1059,7 @@
                 if (matchAg && matchTp && matchFn && matchAn && mes && mes !== 'UNDEFINED') validMeses.add(mes);
             });
 
-            // Actualizar DOM: Checklist de Agentes
+            // Actualizar DOM: Checklist de Agentes (preservando estado de seleccionados)
             const containerAgente = document.getElementById('checklist-agente-lic');
             if (containerAgente) {
                 const currentChecked = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
@@ -1109,7 +1107,7 @@
                 });
             }
 
-            // Actualizar DOM: Select de Años
+            // Actualizar DOM: Select de Años (Relacionado con Mes, Agente, Tipo, Función)
             const selectAnio = document.getElementById('filter-anio-lic');
             if (selectAnio) {
                 let currentVal = selectAnio.value;
@@ -1119,9 +1117,12 @@
                     if (val === currentVal) opt.selected = true;
                     selectAnio.appendChild(opt);
                 });
+                if (currentVal !== 'TODOS' && !validAnios.has(currentVal)) {
+                    selectAnio.value = 'TODOS';
+                }
             }
 
-            // Actualizar DOM: Select de Meses
+            // Actualizar DOM: Select de Meses (Relacionado con Año, Agente, Tipo, Función)
             const selectMes = document.getElementById('filter-mes-lic');
             if (selectMes) {
                 let currentVal = selectMes.value;
@@ -1133,6 +1134,9 @@
                         selectMes.appendChild(opt);
                     }
                 });
+                if (currentVal !== 'TODOS' && !validMeses.has(currentVal)) {
+                    selectMes.value = 'TODOS';
+                }
             }
         }
 
@@ -1150,7 +1154,7 @@
             const selectMes = document.getElementById('filter-mes-lic');
             const sMes = selectMes ? selectMes.value : 'TODOS';
 
-            // Relacionar y actualizar dinámicamente las opciones disponibles en todos los filtros
+            // Relacionar y actualizar dinámicamente las opciones disponibles en todos los filtros (incluyendo Año y Mes entre sí)
             updateLicenciasFiltersDynamic(checkedAgentesBefore, totalCheckAgentesBefore, checkedTipos, totalCheckTipos, checkedFunciones, totalCheckFunciones, sAnio, sMes);
 
             // Re-capturar agentes actualizados tras el render
@@ -1657,7 +1661,7 @@
             hsiData.forEach((row, i) => {
                 let matchAnio = true, matchMes = true, matchCaps = true;
                 if (sAnio !== 'TODOS') { matchAnio = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('AÑO') || k.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) matchAnio = true; } }
-                if (sMes !== 'TODOS') { matchMes = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('MES') || k.includes('PERIODO')) && String(row[key]).trim().toUpperCase() === sMes) matchMes = true; } }
+                if (sMes !== 'TODOS') { matchMes = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('MES') || k.includes('PERIODE')) && String(row[key]).trim().toUpperCase() === sMes) matchMes = true; } }
                 if (sCaps !== 'TODOS') { matchCaps = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) && String(row[key]).trim().toUpperCase() === sCaps) matchCaps = true; } }
 
                 if (matchAnio && matchMes && matchCaps) {
