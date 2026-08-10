@@ -1019,38 +1019,121 @@
             }
         }
 
-        function refreshAgentChecklist(checkedFunciones, totalCheckFunciones, checkedTipos, totalCheckTipos) {
-            const containerAgente = document.getElementById('checklist-agente-lic');
-            if (!containerAgente) return;
-
-            const currentCheckedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
-            const hadAllOrNone = currentCheckedAgentes.length === 0 || document.querySelectorAll('.chk-agente-lic').length === currentCheckedAgentes.length;
-
+        /* ----- FUNCIÓN DE INTERACCIÓN CRUZADA TOTAL (TODOS LOS FILTROS SE RELACIONAN) ----- */
+        function updateLicenciasFiltersDynamic(checkedAgentes, totalCheckAgentes, checkedTipos, totalCheckTipos, checkedFunciones, totalCheckFunciones, selectedAnio, selectedMes) {
+            
+            // 1. Recolectar opciones válidas cruzando todos los filtros actuales
             let validAgentes = new Set();
+            let validTipos = new Set();
+            let validFunciones = new Set();
+            let validAnios = new Set();
+            let validMeses = new Set();
+
             licenciasData.forEach(row => {
                 let ag = getAgenteName(row);
+                let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
+                let func = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase();
+                let anio = String(row['AÑO'] || row['ANIO'] || '').trim();
+                let mes = String(row['MES'] || '').trim().toUpperCase();
+
                 if (!ag || ag === 'SIN AGENTE') return;
 
-                let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
-                let funcionRow = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase();
+                // Verificamos compatibilidad cruzada para alimentar las listas dinámicas
+                let matchAg = checkedAgentes.includes(ag) || totalCheckAgentes === 0;
+                let matchTp = checkedTipos.includes(tipo) || totalCheckTipos === 0;
+                let matchFn = checkedFunciones.includes(func) || totalCheckFunciones === 0;
+                let matchAn = selectedAnio === 'TODOS' || anio === selectedAnio;
+                let matchMs = selectedMes === 'TODOS' || mes === selectedMes;
 
-                const matchTipo = checkedTipos.includes(tipoRow) || totalCheckTipos === 0;
-                const matchFuncion = checkedFunciones.includes(funcionRow) || totalCheckFunciones === 0;
+                // Para Agentes (afectado por Tipo, Función, Año, Mes)
+                if (matchTp && matchFn && matchAn && matchMs) validAgentes.add(ag);
 
-                if (matchTipo && matchFuncion) {
-                    validAgentes.add(ag);
-                }
+                // Para Tipos (afectado por Agente, Función, Año, Mes)
+                if (matchAg && matchFn && matchAn && matchMs && tipo) validTipos.add(tipo);
+
+                // Para Funciones (afectado por Agente, Tipo, Año, Mes)
+                if (matchAg && matchTp && matchAn && matchMs && func) validFunciones.add(func);
+
+                // Para Años (afectado por Agente, Tipo, Función, Mes)
+                if (matchAg && matchTp && matchFn && matchMs && anio && anio !== 'UNDEFINED') validAnios.add(anio);
+
+                // Para Meses (afectado por Agente, Tipo, Función, Año)
+                if (matchAg && matchTp && matchFn && matchAn && mes && mes !== 'UNDEFINED') validMeses.add(mes);
             });
 
-            containerAgente.innerHTML = '';
-            [...validAgentes].sort().forEach(ag => {
-                let isChecked = hadAllOrNone || currentCheckedAgentes.includes(ag);
-                containerAgente.innerHTML += `
-                    <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
-                        <input type="checkbox" value="${ag}" ${isChecked ? 'checked' : ''} onchange="processLicenciasData()" class="chk-agente-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
-                        <span class="font-medium truncate" title="${ag}">${ag}</span>
-                    </label>`;
-            });
+            // Actualizar DOM: Checklist de Agentes
+            const containerAgente = document.getElementById('checklist-agente-lic');
+            if (containerAgente) {
+                const currentChecked = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
+                const hadAllOrNone = currentChecked.length === 0 || document.querySelectorAll('.chk-agente-lic').length === currentChecked.length;
+                containerAgente.innerHTML = '';
+                [...validAgentes].sort().forEach(ag => {
+                    let isChecked = hadAllOrNone || currentChecked.includes(ag);
+                    containerAgente.innerHTML += `
+                        <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
+                            <input type="checkbox" value="${ag}" ${isChecked ? 'checked' : ''} onchange="processLicenciasData()" class="chk-agente-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span class="font-medium truncate" title="${ag}">${ag}</span>
+                        </label>`;
+                });
+            }
+
+            // Actualizar DOM: Checklist de Tipos
+            const containerTipo = document.getElementById('checklist-tipo-lic');
+            if (containerTipo) {
+                const currentChecked = Array.from(document.querySelectorAll('.chk-tipo-lic:checked')).map(cb => cb.value.toUpperCase());
+                const hadAllOrNone = currentChecked.length === 0 || document.querySelectorAll('.chk-tipo-lic').length === currentChecked.length;
+                containerTipo.innerHTML = '';
+                [...validTipos].sort().forEach(t => {
+                    let isChecked = hadAllOrNone || currentChecked.includes(t);
+                    containerTipo.innerHTML += `
+                        <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
+                            <input type="checkbox" value="${t}" ${isChecked ? 'checked' : ''} onchange="processLicenciasData()" class="chk-tipo-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span class="font-medium">${t}</span>
+                        </label>`;
+                });
+            }
+
+            // Actualizar DOM: Checklist de Funciones
+            const containerFuncion = document.getElementById('checklist-funcion-lic');
+            if (containerFuncion) {
+                const currentChecked = Array.from(document.querySelectorAll('.chk-funcion-lic:checked')).map(cb => cb.value.toUpperCase());
+                const hadAllOrNone = currentChecked.length === 0 || document.querySelectorAll('.chk-funcion-lic').length === currentChecked.length;
+                containerFuncion.innerHTML = '';
+                [...validFunciones].sort().forEach(f => {
+                    let isChecked = hadAllOrNone || currentChecked.includes(f);
+                    containerFuncion.innerHTML += `
+                        <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
+                            <input type="checkbox" value="${f}" ${isChecked ? 'checked' : ''} onchange="processLicenciasData()" class="chk-funcion-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span class="font-medium truncate" title="${f}">${f}</span>
+                        </label>`;
+                });
+            }
+
+            // Actualizar DOM: Select de Años
+            const selectAnio = document.getElementById('filter-anio-lic');
+            if (selectAnio) {
+                let currentVal = selectAnio.value;
+                while (selectAnio.options.length > 1) selectAnio.remove(1);
+                [...validAnios].sort().forEach(val => {
+                    let opt = document.createElement('option'); opt.value = val; opt.textContent = val;
+                    if (val === currentVal) opt.selected = true;
+                    selectAnio.appendChild(opt);
+                });
+            }
+
+            // Actualizar DOM: Select de Meses
+            const selectMes = document.getElementById('filter-mes-lic');
+            if (selectMes) {
+                let currentVal = selectMes.value;
+                while (selectMes.options.length > 1) selectMes.remove(1);
+                allMonths.forEach(m => {
+                    if (validMeses.has(m)) {
+                        let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
+                        if (m === currentVal) opt.selected = true;
+                        selectMes.appendChild(opt);
+                    }
+                });
+            }
         }
 
         function processLicenciasData() {
@@ -1060,15 +1143,19 @@
             const checkedTipos = Array.from(document.querySelectorAll('.chk-tipo-lic:checked')).map(cb => cb.value.toUpperCase());
             const totalCheckTipos = document.querySelectorAll('.chk-tipo-lic').length;
 
-            // Actualizamos dinámicamente la lista de agentes según función y tipo seleccionados
-            refreshAgentChecklist(checkedFunciones, totalCheckFunciones, checkedTipos, totalCheckTipos);
-
-            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
-            const totalCheckAgentes = document.querySelectorAll('.chk-agente-lic').length;
+            const checkedAgentesBefore = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckAgentesBefore = document.querySelectorAll('.chk-agente-lic').length;
 
             const sAnio = document.getElementById('filter-anio-lic').value;
             const selectMes = document.getElementById('filter-mes-lic');
             const sMes = selectMes ? selectMes.value : 'TODOS';
+
+            // Relacionar y actualizar dinámicamente las opciones disponibles en todos los filtros
+            updateLicenciasFiltersDynamic(checkedAgentesBefore, totalCheckAgentesBefore, checkedTipos, totalCheckTipos, checkedFunciones, totalCheckFunciones, sAnio, sMes);
+
+            // Re-capturar agentes actualizados tras el render
+            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckAgentes = document.querySelectorAll('.chk-agente-lic').length;
 
             updateMultiSelectLabel('label-agente-lic', checkedAgentes, totalCheckAgentes, 'Agentes');
             updateMultiSelectLabel('label-tipo-lic', checkedTipos, totalCheckTipos, 'Tipos');
