@@ -252,12 +252,20 @@
                     </div>
                 </div>
 
-                <!-- FILTRO: FUNCION -->
-                <div>
+                <!-- CHECKLIST MULTIPLE: FUNCION -->
+                <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Función</label>
-                    <select id="filter-funcion-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
-                        <option value="TODAS">Todas las Funciones</option>
-                    </select>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-funcion-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-funcion-lic" class="truncate font-medium">Todas las Funciones</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-funcion-lic" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllLicencias('funcion', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllLicencias('funcion', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-funcion-lic" class="space-y-1.5 text-xs text-slate-200"></div>
+                    </div>
                 </div>
             </div>
 
@@ -576,7 +584,7 @@
 
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.multi-select-container')) {
-                ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic'].forEach(id => {
+                ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic', 'dropdown-funcion-lic'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -586,7 +594,7 @@
         function toggleMultiSelect(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             const isHidden = dropdown.classList.contains('hidden');
-            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic'].forEach(id => {
+            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic', 'dropdown-funcion-lic'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
@@ -941,20 +949,20 @@
         function initLicenciasFilters() {
             const containerAgente = document.getElementById('checklist-agente-lic');
             const containerTipo = document.getElementById('checklist-tipo-lic');
+            const containerFuncion = document.getElementById('checklist-funcion-lic');
             const selectAnio = document.getElementById('filter-anio-lic');
             const selectMes = document.getElementById('filter-mes-lic');
-            const selectFuncion = document.getElementById('filter-funcion-lic');
 
-            if (!containerAgente || !containerTipo || !selectAnio) return;
+            if (!containerAgente || !containerTipo || !containerFuncion || !selectAnio) return;
 
             containerAgente.innerHTML = '';
             containerTipo.innerHTML = '';
+            containerFuncion.innerHTML = '';
             
             while (selectAnio.options.length > 1) selectAnio.remove(1);
             if(selectMes) while (selectMes.options.length > 1) selectMes.remove(1);
-            if(selectFuncion) while (selectFuncion.options.length > 1) selectFuncion.remove(1);
 
-            let agentes = new Set(), tipos = new Set(), anios = new Set(), meses = new Set(), funciones = new Set();
+            let agentes = new Set(), tipos = new Set(), funciones = new Set(), anios = new Set(), meses = new Set();
 
             licenciasData.forEach(row => {
                 let ag = getAgenteName(row);
@@ -962,16 +970,15 @@
                 
                 let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
                 if (tipo && tipo !== 'UNDEFINED') tipos.add(tipo);
+
+                let funcion = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase();
+                if (funcion && funcion !== 'UNDEFINED' && funcion !== 'NULL' && funcion !== '-') funciones.add(funcion);
                 
-                // Columna AÑO estándar (primera columna del drive)
                 let anio = String(row['AÑO'] || row['ANIO'] || '').trim();
                 if (anio && anio !== 'UNDEFINED' && anio !== 'NULL' && anio !== '-') anios.add(anio);
 
                 let mes = String(row['MES'] || '').trim().toUpperCase();
                 if (mes && mes !== 'UNDEFINED' && mes !== 'NULL' && mes !== '-') meses.add(mes);
-
-                let funcion = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim();
-                if (funcion && funcion !== 'UNDEFINED' && funcion !== 'NULL' && funcion !== '-') funciones.add(funcion);
             });
 
             [...agentes].sort().forEach(ag => {
@@ -990,6 +997,14 @@
                     </label>`;
             });
 
+            [...funciones].sort().forEach(f => {
+                containerFuncion.innerHTML += `
+                    <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
+                        <input type="checkbox" value="${f}" checked onchange="processLicenciasData()" class="chk-funcion-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <span class="font-medium truncate" title="${f}">${f}</span>
+                    </label>`;
+            });
+
             [...anios].sort().forEach(val => { 
                 let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectAnio.appendChild(opt); 
             });
@@ -1002,29 +1017,62 @@
                     }
                 });
             }
+        }
 
-            if (selectFuncion) {
-                [...funciones].sort().forEach(func => {
-                    let opt = document.createElement('option'); opt.value = func; opt.textContent = func; selectFuncion.appendChild(opt);
-                });
-            }
+        function refreshAgentChecklist(checkedFunciones, totalCheckFunciones, checkedTipos, totalCheckTipos) {
+            const containerAgente = document.getElementById('checklist-agente-lic');
+            if (!containerAgente) return;
+
+            const currentCheckedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
+            const hadAllOrNone = currentCheckedAgentes.length === 0 || document.querySelectorAll('.chk-agente-lic').length === currentCheckedAgentes.length;
+
+            let validAgentes = new Set();
+            licenciasData.forEach(row => {
+                let ag = getAgenteName(row);
+                if (!ag || ag === 'SIN AGENTE') return;
+
+                let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
+                let funcionRow = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase();
+
+                const matchTipo = checkedTipos.includes(tipoRow) || totalCheckTipos === 0;
+                const matchFuncion = checkedFunciones.includes(funcionRow) || totalCheckFunciones === 0;
+
+                if (matchTipo && matchFuncion) {
+                    validAgentes.add(ag);
+                }
+            });
+
+            containerAgente.innerHTML = '';
+            [...validAgentes].sort().forEach(ag => {
+                let isChecked = hadAllOrNone || currentCheckedAgentes.includes(ag);
+                containerAgente.innerHTML += `
+                    <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
+                        <input type="checkbox" value="${ag}" ${isChecked ? 'checked' : ''} onchange="processLicenciasData()" class="chk-agente-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                        <span class="font-medium truncate" title="${ag}">${ag}</span>
+                    </label>`;
+            });
         }
 
         function processLicenciasData() {
-            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
-            const totalCheckAgentes = document.querySelectorAll('.chk-agente-lic').length;
-            
+            const checkedFunciones = Array.from(document.querySelectorAll('.chk-funcion-lic:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckFunciones = document.querySelectorAll('.chk-funcion-lic').length;
+
             const checkedTipos = Array.from(document.querySelectorAll('.chk-tipo-lic:checked')).map(cb => cb.value.toUpperCase());
             const totalCheckTipos = document.querySelectorAll('.chk-tipo-lic').length;
+
+            // Actualizamos dinámicamente la lista de agentes según función y tipo seleccionados
+            refreshAgentChecklist(checkedFunciones, totalCheckFunciones, checkedTipos, totalCheckTipos);
+
+            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckAgentes = document.querySelectorAll('.chk-agente-lic').length;
 
             const sAnio = document.getElementById('filter-anio-lic').value;
             const selectMes = document.getElementById('filter-mes-lic');
             const sMes = selectMes ? selectMes.value : 'TODOS';
-            const selectFuncion = document.getElementById('filter-funcion-lic');
-            const sFuncion = selectFuncion ? selectFuncion.value : 'TODAS';
 
             updateMultiSelectLabel('label-agente-lic', checkedAgentes, totalCheckAgentes, 'Agentes');
             updateMultiSelectLabel('label-tipo-lic', checkedTipos, totalCheckTipos, 'Tipos');
+            updateMultiSelectLabel('label-funcion-lic', checkedFunciones, totalCheckFunciones, 'Funciones');
 
             let filteredLicencias = [];
             let totalDias = 0;
@@ -1037,21 +1085,21 @@
             licenciasData.forEach(row => {
                 let agenteRow = getAgenteName(row);
                 let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
+                let funcionRow = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase();
                 
                 let anioRow = String(row['AÑO'] || row['ANIO'] || '').trim();
                 let mesRow = String(row['MES'] || '').trim().toUpperCase();
-                let funcionRow = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim();
                 let anioLicRow = String(row['AÑO DE LICENCIA'] || '').trim();
 
                 let fechas = parseFechasLicencia(row);
 
                 const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
                 const matchTipo = checkedTipos.includes(tipoRow) || totalCheckTipos === 0;
+                const matchFuncion = checkedFunciones.includes(funcionRow) || totalCheckFunciones === 0;
                 const matchAnio = sAnio === 'TODOS' || anioRow === sAnio;
                 const matchMes = sMes === 'TODOS' || mesRow === sMes;
-                const matchFuncion = sFuncion === 'TODAS' || funcionRow === sFuncion;
 
-                if (matchAgente && matchTipo && matchAnio && matchMes && matchFuncion) {
+                if (matchAgente && matchTipo && matchFuncion && matchAnio && matchMes) {
                     let dias = parseNumberSafe(row['DIAS']);
                     let usufructuados = parseNumberSafe(row['DIAS USUFRUCTUADOS']);
                     let pendientes = parseNumberSafe(row['DIAS PENDIENTES']);
