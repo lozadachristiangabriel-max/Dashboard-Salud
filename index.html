@@ -253,12 +253,18 @@
                 </div>
             </div>
 
-            <!-- FILTRO DE AÑO (NORMAL) -->
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 relative z-30">
+            <!-- FILTROS DE AÑO Y MES -->
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 relative z-30">
                 <div>
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Filtrar por Año</label>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año de Licencia</label>
                     <select id="filter-anio-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
                         <option value="TODOS">Todos los Años</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Mes (Usufructo)</label>
+                    <select id="filter-mes-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los Meses</option>
                     </select>
                 </div>
             </div>
@@ -886,18 +892,41 @@
 
 
         /* ----- VISTA LICENCIAS (VERSION KPIs) ----- */
+        function formatDate(dateStr) {
+            if (!dateStr || dateStr === 'NAN' || dateStr === 'NULL' || dateStr === '-') return '-';
+            if (dateStr.includes('T') && dateStr.includes('Z')) {
+                let d = new Date(dateStr);
+                if (!isNaN(d)) {
+                    let day = String(d.getUTCDate()).padStart(2, '0');
+                    let month = String(d.getUTCMonth() + 1).padStart(2, '0');
+                    let year = d.getUTCFullYear();
+                    return `${day}/${month}/${year}`;
+                }
+            }
+            if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+                let parts = dateStr.substring(0, 10).split('-');
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
         function parseFechasLicencia(row) {
             let inicio = String(row['INICIO'] || '').trim();
             let final = String(row['FINAL'] || '').trim();
 
-            if (inicio.includes('-') && (!final || final === 'NAN' || final === 'NULL' || final === '-')) {
+            let isIsoDate = /^\d{4}-/.test(inicio);
+            
+            if (inicio.includes('-') && !isIsoDate && (!final || final === 'NAN' || final === 'NULL' || final === '-')) {
                 let partes = inicio.split('-');
-                inicio = partes[0].trim();
-                final = partes[1].trim();
+                if(partes.length >= 2) {
+                    inicio = partes[0].trim();
+                    final = partes[1].trim();
+                }
             }
+            
             return {
-                inicio: inicio && inicio !== 'NAN' && inicio !== 'NULL' ? inicio : '-',
-                final: final && final !== 'NAN' && final !== 'NULL' ? final : '-'
+                inicio: formatDate(inicio),
+                final: formatDate(final)
             };
         }
 
@@ -905,6 +934,7 @@
             const containerAgente = document.getElementById('checklist-agente-lic');
             const containerTipo = document.getElementById('checklist-tipo-lic');
             const selectAnio = document.getElementById('filter-anio-lic');
+            const selectMes = document.getElementById('filter-mes-lic');
 
             if (!containerAgente || !containerTipo || !selectAnio) return;
 
@@ -912,16 +942,23 @@
             containerTipo.innerHTML = '';
             
             while (selectAnio.options.length > 1) selectAnio.remove(1);
+            if(selectMes) while (selectMes.options.length > 1) selectMes.remove(1);
 
-            let agentes = new Set(), tipos = new Set(), anios = new Set();
+            let agentes = new Set(), tipos = new Set(), anios = new Set(), meses = new Set();
 
             licenciasData.forEach(row => {
                 let ag = getAgenteName(row);
                 if (ag && ag !== 'SIN AGENTE') agentes.add(ag);
-                let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || row['TIPO'] || 'ANUAL').trim().toUpperCase();
+                
+                let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
                 if (tipo && tipo !== 'UNDEFINED') tipos.add(tipo);
-                let anio = String(row['AÑO'] || row['ANIO'] || '').trim();
-                if (anio && anio !== 'UNDEFINED' && anio !== 'NULL') anios.add(anio);
+                
+                // Lee EXCLUSIVAMENTE la columna "AÑO DE LICENCIA"
+                let anio = String(row['AÑO DE LICENCIA'] || '').trim();
+                if (anio && anio !== 'UNDEFINED' && anio !== 'NULL' && anio !== '-') anios.add(anio);
+
+                let mes = String(row['MES'] || '').trim().toUpperCase();
+                if (mes && mes !== 'UNDEFINED' && mes !== 'NULL' && mes !== '-') meses.add(mes);
             });
 
             [...agentes].sort().forEach(ag => {
@@ -943,6 +980,15 @@
             [...anios].sort().forEach(val => { 
                 let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectAnio.appendChild(opt); 
             });
+
+            if (selectMes) {
+                const allMonths = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+                allMonths.forEach(m => {
+                    if (meses.has(m)) {
+                        let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt);
+                    }
+                });
+            }
         }
 
         function processLicenciasData() {
@@ -953,33 +999,42 @@
             const totalCheckTipos = document.querySelectorAll('.chk-tipo-lic').length;
 
             const sAnio = document.getElementById('filter-anio-lic').value;
+            const selectMes = document.getElementById('filter-mes-lic');
+            const sMes = selectMes ? selectMes.value : 'TODOS';
 
             updateMultiSelectLabel('label-agente-lic', checkedAgentes, totalCheckAgentes, 'Agentes');
             updateMultiSelectLabel('label-tipo-lic', checkedTipos, totalCheckTipos, 'Tipos');
 
             let filteredLicencias = [];
-            let totalDiasAcumulados = 0;
+            let totalDias = 0;
+            let totalUsufructuados = 0;
             let totalPendientes = 0;
             let ultimaInicio = '-';
             let ultimaFinal = '-';
 
             licenciasData.forEach(row => {
                 let agenteRow = getAgenteName(row);
-                let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || row['TIPO'] || 'ANUAL').trim().toUpperCase();
-                let anioRow = String(row['AÑO'] || row['ANIO'] || '').trim();
+                let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
+                
+                // Filtramos por las columnas exactas de tu Google Sheets
+                let anioRow = String(row['AÑO DE LICENCIA'] || '').trim();
+                let mesRow = String(row['MES'] || '').trim().toUpperCase();
                 let fechas = parseFechasLicencia(row);
-                let pendientesRow = String(row['DIAS PENDIENTES'] || '').trim();
 
                 const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
                 const matchTipo = checkedTipos.includes(tipoRow) || totalCheckTipos === 0;
                 const matchAnio = sAnio === 'TODOS' || anioRow === sAnio;
+                const matchMes = sMes === 'TODOS' || mesRow === sMes;
 
-                if (matchAgente && matchTipo && matchAnio) {
-                    let dias = parseNumberSafe(row['DIAS'] || row['CANTIDAD DE DIAS'] || row['CANTIDAD'] || 0);
-                    let numPendientes = parseNumberSafe(pendientesRow);
+                if (matchAgente && matchTipo && matchAnio && matchMes) {
+                    // Lee las columnas exactas de tu Excel
+                    let dias = parseNumberSafe(row['DIAS']);
+                    let usufructuados = parseNumberSafe(row['DIAS USUFRUCTUADOS']);
+                    let pendientes = parseNumberSafe(row['DIAS PENDIENTES']);
                     
-                    totalDiasAcumulados += dias;
-                    totalPendientes += numPendientes;
+                    totalDias += dias;
+                    totalUsufructuados += usufructuados;
+                    totalPendientes += pendientes;
 
                     if (fechas.inicio !== '-' && fechas.inicio !== '') ultimaInicio = fechas.inicio;
                     if (fechas.final !== '-' && fechas.final !== '') ultimaFinal = fechas.final;
@@ -988,10 +1043,10 @@
                 }
             });
 
-            renderLicenciasUI(filteredLicencias, totalDiasAcumulados, totalPendientes, ultimaInicio, ultimaFinal);
+            renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, ultimaInicio, ultimaFinal);
         }
 
-        function renderLicenciasUI(filteredLicencias, totalDiasAcumulados, totalPendientes, ultimaInicio, ultimaFinal) {
+        function renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, ultimaInicio, ultimaFinal) {
             const kpiContainer = document.getElementById('licencias-kpi-container');
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
@@ -1003,12 +1058,12 @@
                     <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
                         <i data-lucide="calendar-days" class="text-cyan-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
                         <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Otorgados</h4>
-                        <span class="text-2xl md:text-4xl font-bold text-white">${totalDiasAcumulados}</span>
+                        <span class="text-2xl md:text-4xl font-bold text-white">${totalDias}</span>
                     </div>
                     <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
-                        <i data-lucide="users" class="text-purple-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
-                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Agentes Únicos</h4>
-                        <span class="text-2xl md:text-4xl font-bold text-white">${new Set(filteredLicencias.map(l => l.agente)).size}</span>
+                        <i data-lucide="calendar-check" class="text-purple-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
+                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Usufructuados</h4>
+                        <span class="text-2xl md:text-4xl font-bold text-white">${totalUsufructuados}</span>
                     </div>
                     <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
                         <i data-lucide="clock" class="text-amber-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
