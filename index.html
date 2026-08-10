@@ -219,7 +219,7 @@
 
         <!-- VISTA LICENCIAS (SOLO KPIs, SIN TABLA) -->
         <section id="view-licencias" class="hidden">
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40 overflow-visible">
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 relative z-40 overflow-visible">
                 <!-- CHECKLIST MULTIPLE: AGENTE -->
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Agente (Licencias)</label>
@@ -251,12 +251,20 @@
                         <div id="checklist-tipo-lic" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
+
+                <!-- FILTRO: FUNCION -->
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Función</label>
+                    <select id="filter-funcion-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODAS">Todas las Funciones</option>
+                    </select>
+                </div>
             </div>
 
             <!-- FILTROS DE AÑO Y MES -->
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 relative z-30">
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-30">
                 <div>
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año de Licencia</label>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año (Columna AÑO)</label>
                     <select id="filter-anio-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
                         <option value="TODOS">Todos los Años</option>
                     </select>
@@ -270,7 +278,7 @@
             </div>
             
             <!-- CONTENEDOR DE KPIs AMPLIADO -->
-            <div id="licencias-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6 mb-8 relative z-10"></div>
+            <div id="licencias-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6 mb-8 relative z-10"></div>
 
             <!-- GRAFICO DE TIPOS DE LICENCIA EN LUGAR DE TABLA -->
             <div class="grid grid-cols-1 gap-6 mb-8 relative z-10">
@@ -935,6 +943,7 @@
             const containerTipo = document.getElementById('checklist-tipo-lic');
             const selectAnio = document.getElementById('filter-anio-lic');
             const selectMes = document.getElementById('filter-mes-lic');
+            const selectFuncion = document.getElementById('filter-funcion-lic');
 
             if (!containerAgente || !containerTipo || !selectAnio) return;
 
@@ -943,8 +952,9 @@
             
             while (selectAnio.options.length > 1) selectAnio.remove(1);
             if(selectMes) while (selectMes.options.length > 1) selectMes.remove(1);
+            if(selectFuncion) while (selectFuncion.options.length > 1) selectFuncion.remove(1);
 
-            let agentes = new Set(), tipos = new Set(), anios = new Set(), meses = new Set();
+            let agentes = new Set(), tipos = new Set(), anios = new Set(), meses = new Set(), funciones = new Set();
 
             licenciasData.forEach(row => {
                 let ag = getAgenteName(row);
@@ -953,12 +963,15 @@
                 let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
                 if (tipo && tipo !== 'UNDEFINED') tipos.add(tipo);
                 
-                // Lee EXCLUSIVAMENTE la columna "AÑO DE LICENCIA"
-                let anio = String(row['AÑO DE LICENCIA'] || '').trim();
+                // Columna AÑO estándar (primera columna del drive)
+                let anio = String(row['AÑO'] || row['ANIO'] || '').trim();
                 if (anio && anio !== 'UNDEFINED' && anio !== 'NULL' && anio !== '-') anios.add(anio);
 
                 let mes = String(row['MES'] || '').trim().toUpperCase();
                 if (mes && mes !== 'UNDEFINED' && mes !== 'NULL' && mes !== '-') meses.add(mes);
+
+                let funcion = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim();
+                if (funcion && funcion !== 'UNDEFINED' && funcion !== 'NULL' && funcion !== '-') funciones.add(funcion);
             });
 
             [...agentes].sort().forEach(ag => {
@@ -989,6 +1002,12 @@
                     }
                 });
             }
+
+            if (selectFuncion) {
+                [...funciones].sort().forEach(func => {
+                    let opt = document.createElement('option'); opt.value = func; opt.textContent = func; selectFuncion.appendChild(opt);
+                });
+            }
         }
 
         function processLicenciasData() {
@@ -1001,6 +1020,8 @@
             const sAnio = document.getElementById('filter-anio-lic').value;
             const selectMes = document.getElementById('filter-mes-lic');
             const sMes = selectMes ? selectMes.value : 'TODOS';
+            const selectFuncion = document.getElementById('filter-funcion-lic');
+            const sFuncion = selectFuncion ? selectFuncion.value : 'TODAS';
 
             updateMultiSelectLabel('label-agente-lic', checkedAgentes, totalCheckAgentes, 'Agentes');
             updateMultiSelectLabel('label-tipo-lic', checkedTipos, totalCheckTipos, 'Tipos');
@@ -1009,6 +1030,7 @@
             let totalDias = 0;
             let totalUsufructuados = 0;
             let totalPendientes = 0;
+            let aniosLicSet = new Set();
             let ultimaInicio = '-';
             let ultimaFinal = '-';
 
@@ -1016,18 +1038,20 @@
                 let agenteRow = getAgenteName(row);
                 let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
                 
-                // Filtramos por las columnas exactas de tu Google Sheets
-                let anioRow = String(row['AÑO DE LICENCIA'] || '').trim();
+                let anioRow = String(row['AÑO'] || row['ANIO'] || '').trim();
                 let mesRow = String(row['MES'] || '').trim().toUpperCase();
+                let funcionRow = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim();
+                let anioLicRow = String(row['AÑO DE LICENCIA'] || '').trim();
+
                 let fechas = parseFechasLicencia(row);
 
                 const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
                 const matchTipo = checkedTipos.includes(tipoRow) || totalCheckTipos === 0;
                 const matchAnio = sAnio === 'TODOS' || anioRow === sAnio;
                 const matchMes = sMes === 'TODOS' || mesRow === sMes;
+                const matchFuncion = sFuncion === 'TODAS' || funcionRow === sFuncion;
 
-                if (matchAgente && matchTipo && matchAnio && matchMes) {
-                    // Lee las columnas exactas de tu Excel
+                if (matchAgente && matchTipo && matchAnio && matchMes && matchFuncion) {
                     let dias = parseNumberSafe(row['DIAS']);
                     let usufructuados = parseNumberSafe(row['DIAS USUFRUCTUADOS']);
                     let pendientes = parseNumberSafe(row['DIAS PENDIENTES']);
@@ -1036,6 +1060,8 @@
                     totalUsufructuados += usufructuados;
                     totalPendientes += pendientes;
 
+                    if (anioLicRow && anioLicRow !== 'UNDEFINED' && anioLicRow !== '-') aniosLicSet.add(anioLicRow);
+
                     if (fechas.inicio !== '-' && fechas.inicio !== '') ultimaInicio = fechas.inicio;
                     if (fechas.final !== '-' && fechas.final !== '') ultimaFinal = fechas.final;
 
@@ -1043,10 +1069,12 @@
                 }
             });
 
-            renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, ultimaInicio, ultimaFinal);
+            let aniosLicText = aniosLicSet.size > 0 ? [...aniosLicSet].sort().join(', ') : '-';
+
+            renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, aniosLicText, ultimaInicio, ultimaFinal);
         }
 
-        function renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, ultimaInicio, ultimaFinal) {
+        function renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, aniosLicText, ultimaInicio, ultimaFinal) {
             const kpiContainer = document.getElementById('licencias-kpi-container');
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
@@ -1069,6 +1097,11 @@
                         <i data-lucide="clock" class="text-amber-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
                         <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Pendientes</h4>
                         <span class="text-2xl md:text-4xl font-bold text-white">${totalPendientes}</span>
+                    </div>
+                    <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
+                        <i data-lucide="calendar" class="text-indigo-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
+                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Año de Licencia</h4>
+                        <span class="text-sm md:text-lg font-bold text-white mt-auto truncate max-w-[140px]" title="${aniosLicText}">${aniosLicText}</span>
                     </div>
                     <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
                         <i data-lucide="calendar-arrow-up" class="text-blue-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
