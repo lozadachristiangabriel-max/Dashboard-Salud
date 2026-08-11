@@ -39,7 +39,15 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748B; }
 
+        /* Ajustes clave para impresión de PDF: Expande las tablas con scroll para que salgan completas */
         .pdf-export-mode { background-color: #0B1121 !important; padding: 20px !important; }
+        .pdf-export-mode .max-h-[19rem], .pdf-export-mode .max-h-[24rem], .pdf-export-mode .max-h-60 {
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        .pdf-export-mode .overflow-y-auto {
+            overflow: visible !important;
+        }
     </style>
 </head>
 <body class="flex min-h-screen antialiased flex-col md:flex-row">
@@ -217,12 +225,14 @@
             </div>
         </section>
 
-        <!-- VISTA LICENCIAS (SOLO KPIs, SIN TABLA) -->
+        <!-- VISTA LICENCIAS -->
         <section id="view-licencias" class="hidden">
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 relative z-40 overflow-visible">
+            <!-- FILTROS PRINCIPALES -->
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 relative z-40 overflow-visible">
+                
                 <!-- CHECKLIST MULTIPLE: AGENTE -->
                 <div class="relative multi-select-container z-50">
-                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Agente (Licencias)</label>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Agente</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-agente-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
                         <span id="label-agente-lic" class="truncate font-medium">Todos los Agentes</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
@@ -267,35 +277,60 @@
                         <div id="checklist-funcion-lic" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- FILTROS DE AÑO Y MES -->
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-30">
-                <div>
+                <!-- SELECT SIMPLE: AÑO -->
+                <div class="relative z-40">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año (Columna AÑO)</label>
-                    <select id="filter-anio-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                    <select id="filter-anio-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none transition-all">
                         <option value="TODOS">Todos los Años</option>
                     </select>
                 </div>
-                <div>
+
+                <!-- SELECT SIMPLE: MES -->
+                <div class="relative z-40">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Mes (Usufructo)</label>
-                    <select id="filter-mes-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                    <select id="filter-mes-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none transition-all">
                         <option value="TODOS">Todos los Meses</option>
                     </select>
                 </div>
             </div>
             
-            <!-- CONTENEDOR DE KPIs AMPLIADO -->
-            <div id="licencias-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6 mb-8 relative z-10"></div>
+            <!-- CONTENEDOR DE KPIs -->
+            <div id="licencias-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 md:gap-4 mb-8 relative z-10"></div>
 
-            <!-- GRAFICO DE TIPOS DE LICENCIA EN LUGAR DE TABLA -->
-            <div class="grid grid-cols-1 gap-6 mb-8 relative z-10">
-                <div class="glass-card p-4 md:p-6">
+            <!-- TABLA COMPLETA Y GRÁFICO (Vuelve la tabla para el listado de horas extras) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 relative z-10">
+                
+                <div class="glass-card p-4 md:p-6 lg:col-span-2 flex flex-col h-full">
+                    <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2">
+                        <i data-lucide="list-checks" class="text-purple-400 w-5 h-5"></i>
+                        Listado de Personal (Licencias)
+                    </h3>
+                    
+                    <div class="overflow-y-auto max-h-[24rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
+                        <table class="w-full text-left text-xs text-slate-300 relative">
+                            <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Agente</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Tipo</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Función</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Inicio</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Final</th>
+                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Días</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-licencias" class="divide-y divide-slate-800/50">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 md:p-6 flex flex-col">
                     <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2">
                         <i data-lucide="pie-chart" class="text-emerald-400 w-5 h-5"></i>
-                        Distribución por Tipo de Licencia
+                        Distribución por Tipo
                     </h3>
-                    <div class="h-80 relative"><canvas id="chartLicenciasTipos"></canvas></div>
+                    <div class="h-64 md:h-80 relative mt-auto mb-auto"><canvas id="chartLicenciasTipos"></canvas></div>
                 </div>
             </div>
         </section>
@@ -543,6 +578,7 @@
             if(viewId === 'hsi' && (hsiData.length || !URL_HSI)) setTimeout(() => processHsiData(), 50);
         }
 
+        // Se agregó una clase PDF a la página para que la tabla se expanda completa antes de tomar el PDF
         function exportCurrentViewToPDF() {
             const btn = document.getElementById('btn-export-pdf');
             const txt = document.getElementById('txt-export-pdf');
@@ -553,12 +589,15 @@
             btn.disabled = true;
             btn.classList.add('opacity-50');
             txt.textContent = 'Generando PDF...';
+            
+            // Expandimos el scroll temporalmente
+            document.body.classList.add('pdf-export-mode');
 
             const opt = {
                 margin:       0.3,
                 filename:     `Reporte_Salud_${activeTab.toUpperCase()}_Varela.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0B1121' },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0B1121', windowWidth: 1600 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
             };
 
@@ -566,6 +605,9 @@
                 btn.disabled = false;
                 btn.classList.remove('opacity-50');
                 txt.textContent = 'Exportar Hoja a PDF';
+                document.body.classList.remove('pdf-export-mode');
+            }).catch(() => {
+                document.body.classList.remove('pdf-export-mode');
             });
         }
 
@@ -612,7 +654,7 @@
         }
 
         function selectAllLicencias(type, state) {
-            document.querySelectorAll(`.chk-${type}-${type === 'agente' ? 'agente' : (type === 'tipo' ? 'tipo' : 'funcion')}-lic`).forEach(cb => cb.checked = state);
+            document.querySelectorAll(`.chk-${type}-lic`).forEach(cb => cb.checked = state);
             processLicenciasData();
         }
 
@@ -907,7 +949,7 @@
         }
 
 
-        /* ----- VISTA LICENCIAS (VERSION KPIs) ----- */
+        /* ----- VISTA LICENCIAS ----- */
         function formatDate(dateStr) {
             if (!dateStr || dateStr === 'NAN' || dateStr === 'NULL' || dateStr === '-') return '-';
             if (dateStr.includes('T') && dateStr.includes('Z')) {
@@ -939,13 +981,11 @@
                     final = partes[1].trim();
                 }
             }
-            
-            return {
-                inicio: formatDate(inicio),
-                final: formatDate(final)
-            };
+            return { inicio: formatDate(inicio), final: formatDate(final) };
         }
 
+        // ELIMINADA la función de dependencias dinámicas que borraba las opciones.
+        // Ahora las opciones se cargan una vez y siempre estarán disponibles.
         function initLicenciasFilters() {
             const containerAgente = document.getElementById('checklist-agente-lic');
             const containerTipo = document.getElementById('checklist-tipo-lic');
@@ -953,14 +993,14 @@
             const selectAnio = document.getElementById('filter-anio-lic');
             const selectMes = document.getElementById('filter-mes-lic');
 
-            if (!containerAgente || !containerTipo || !containerFuncion || !selectAnio) return;
+            if (!containerAgente || !containerTipo || !containerFuncion || !selectAnio || !selectMes) return;
 
             containerAgente.innerHTML = '';
             containerTipo.innerHTML = '';
             containerFuncion.innerHTML = '';
             
             while (selectAnio.options.length > 1) selectAnio.remove(1);
-            if(selectMes) while (selectMes.options.length > 1) selectMes.remove(1);
+            while (selectMes.options.length > 1) selectMes.remove(1);
 
             let agentes = new Set(), tipos = new Set(), funciones = new Set(), anios = new Set(), meses = new Set();
 
@@ -1009,157 +1049,28 @@
                 let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectAnio.appendChild(opt); 
             });
 
-            if (selectMes) {
-                const allMonths = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-                allMonths.forEach(m => {
-                    if (meses.has(m)) {
-                        let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt);
-                    }
-                });
-            }
-        }
-
-        /* ----- FUNCIÓN DE INTERACCIÓN CRUZADA TOTAL (TODOS LOS FILTROS SE RELACIONAN) ----- */
-        function updateLicenciasFiltersDynamic(checkedAgentes, totalCheckAgentes, checkedTipos, totalCheckTipos, checkedFunciones, totalCheckFunciones, selectedAnio, selectedMes) {
-            
-            let validAgentes = new Set();
-            let validTipos = new Set();
-            let validFunciones = new Set();
-            let validAnios = new Set();
-            let validMeses = new Set();
-
-            licenciasData.forEach(row => {
-                let ag = getAgenteName(row);
-                let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase();
-                let func = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase();
-                let anio = String(row['AÑO'] || row['ANIO'] || '').trim();
-                let mes = String(row['MES'] || '').trim().toUpperCase();
-
-                if (!ag || ag === 'SIN AGENTE') return;
-
-                let matchAg = checkedAgentes.includes(ag) || totalCheckAgentes === 0;
-                let matchTp = checkedTipos.includes(tipo) || totalCheckTipos === 0;
-                let matchFn = checkedFunciones.includes(func) || totalCheckFunciones === 0;
-                let matchAn = selectedAnio === 'TODOS' || anio === selectedAnio;
-                let matchMs = selectedMes === 'TODOS' || mes === selectedMes;
-
-                // Para Agentes (afectado por Tipo, Función, Año, Mes)
-                if (matchTp && matchFn && matchAn && matchMs) validAgentes.add(ag);
-
-                // Para Tipos (afectado por Agente, Función, Año, Mes)
-                if (matchAg && matchFn && matchAn && matchMs && tipo) validTipos.add(tipo);
-
-                // Para Funciones (afectado por Agente, Tipo, Año, Mes)
-                if (matchAg && matchTp && matchAn && matchMs && func) validFunciones.add(func);
-
-                // Para Años (afectado por Agente, Tipo, Función, Mes)
-                if (matchAg && matchTp && matchFn && matchMs && anio && anio !== 'UNDEFINED') validAnios.add(anio);
-
-                // Para Meses (afectado por Agente, Tipo, Función, Año)
-                if (matchAg && matchTp && matchFn && matchAn && mes && mes !== 'UNDEFINED') validMeses.add(mes);
+            allMonths.forEach(m => {
+                if (meses.has(m)) {
+                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt);
+                }
             });
-
-            // Actualizar DOM: Checklist de Agentes (preservando estado de seleccionados)
-            const containerAgente = document.getElementById('checklist-agente-lic');
-            if (containerAgente) {
-                const currentChecked = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
-                const hadAllOrNone = currentChecked.length === 0 || document.querySelectorAll('.chk-agente-lic').length === currentChecked.length;
-                containerAgente.innerHTML = '';
-                [...validAgentes].sort().forEach(ag => {
-                    let isChecked = hadAllOrNone || currentChecked.includes(ag);
-                    containerAgente.innerHTML += `
-                        <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
-                            <input type="checkbox" value="${ag}" ${isChecked ? 'checked' : ''} onchange="processLicenciasData()" class="chk-agente-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
-                            <span class="font-medium truncate" title="${ag}">${ag}</span>
-                        </label>`;
-                });
-            }
-
-            // Actualizar DOM: Checklist de Tipos
-            const containerTipo = document.getElementById('checklist-tipo-lic');
-            if (containerTipo) {
-                const currentChecked = Array.from(document.querySelectorAll('.chk-tipo-lic:checked')).map(cb => cb.value.toUpperCase());
-                const hadAllOrNone = currentChecked.length === 0 || document.querySelectorAll('.chk-tipo-lic').length === currentChecked.length;
-                containerTipo.innerHTML = '';
-                [...validTipos].sort().forEach(t => {
-                    let isChecked = hadAllOrNone || currentChecked.includes(t);
-                    containerTipo.innerHTML += `
-                        <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
-                            <input type="checkbox" value="${t}" ${isChecked ? 'checked' : ''} onchange="processLicenciasData()" class="chk-tipo-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
-                            <span class="font-medium">${t}</span>
-                        </label>`;
-                });
-            }
-
-            // Actualizar DOM: Checklist de Funciones
-            const containerFuncion = document.getElementById('checklist-funcion-lic');
-            if (containerFuncion) {
-                const currentChecked = Array.from(document.querySelectorAll('.chk-funcion-lic:checked')).map(cb => cb.value.toUpperCase());
-                const hadAllOrNone = currentChecked.length === 0 || document.querySelectorAll('.chk-funcion-lic').length === currentChecked.length;
-                containerFuncion.innerHTML = '';
-                [...validFunciones].sort().forEach(f => {
-                    let isChecked = hadAllOrNone || currentChecked.includes(f);
-                    containerFuncion.innerHTML += `
-                        <label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer">
-                            <input type="checkbox" value="${f}" ${isChecked ? 'checked' : ''} onchange="processLicenciasData()" class="chk-funcion-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
-                            <span class="font-medium truncate" title="${f}">${f}</span>
-                        </label>`;
-                });
-            }
-
-            // Actualizar DOM: Select de Años (Relacionado con Mes, Agente, Tipo, Función)
-            const selectAnio = document.getElementById('filter-anio-lic');
-            if (selectAnio) {
-                let currentVal = selectAnio.value;
-                while (selectAnio.options.length > 1) selectAnio.remove(1);
-                [...validAnios].sort().forEach(val => {
-                    let opt = document.createElement('option'); opt.value = val; opt.textContent = val;
-                    if (val === currentVal) opt.selected = true;
-                    selectAnio.appendChild(opt);
-                });
-                if (currentVal !== 'TODOS' && !validAnios.has(currentVal)) {
-                    selectAnio.value = 'TODOS';
-                }
-            }
-
-            // Actualizar DOM: Select de Meses (Relacionado con Año, Agente, Tipo, Función)
-            const selectMes = document.getElementById('filter-mes-lic');
-            if (selectMes) {
-                let currentVal = selectMes.value;
-                while (selectMes.options.length > 1) selectMes.remove(1);
-                allMonths.forEach(m => {
-                    if (validMeses.has(m)) {
-                        let opt = document.createElement('option'); opt.value = m; opt.textContent = m;
-                        if (m === currentVal) opt.selected = true;
-                        selectMes.appendChild(opt);
-                    }
-                });
-                if (currentVal !== 'TODOS' && !validMeses.has(currentVal)) {
-                    selectMes.value = 'TODOS';
-                }
-            }
         }
 
         function processLicenciasData() {
-            const checkedFunciones = Array.from(document.querySelectorAll('.chk-funcion-lic:checked')).map(cb => cb.value.toUpperCase());
-            const totalCheckFunciones = document.querySelectorAll('.chk-funcion-lic').length;
+            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckAgentes = document.querySelectorAll('.chk-agente-lic').length;
 
             const checkedTipos = Array.from(document.querySelectorAll('.chk-tipo-lic:checked')).map(cb => cb.value.toUpperCase());
             const totalCheckTipos = document.querySelectorAll('.chk-tipo-lic').length;
 
-            const checkedAgentesBefore = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
-            const totalCheckAgentesBefore = document.querySelectorAll('.chk-agente-lic').length;
+            const checkedFunciones = Array.from(document.querySelectorAll('.chk-funcion-lic:checked')).map(cb => cb.value.toUpperCase());
+            const totalCheckFunciones = document.querySelectorAll('.chk-funcion-lic').length;
 
-            const sAnio = document.getElementById('filter-anio-lic').value;
+            const selectAnio = document.getElementById('filter-anio-lic');
+            const sAnio = selectAnio ? selectAnio.value : 'TODOS';
+            
             const selectMes = document.getElementById('filter-mes-lic');
             const sMes = selectMes ? selectMes.value : 'TODOS';
-
-            // Relacionar y actualizar dinámicamente las opciones disponibles en todos los filtros (incluyendo Año y Mes entre sí)
-            updateLicenciasFiltersDynamic(checkedAgentesBefore, totalCheckAgentesBefore, checkedTipos, totalCheckTipos, checkedFunciones, totalCheckFunciones, sAnio, sMes);
-
-            // Re-capturar agentes actualizados tras el render
-            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase());
-            const totalCheckAgentes = document.querySelectorAll('.chk-agente-lic').length;
 
             updateMultiSelectLabel('label-agente-lic', checkedAgentes, totalCheckAgentes, 'Agentes');
             updateMultiSelectLabel('label-tipo-lic', checkedTipos, totalCheckTipos, 'Tipos');
@@ -1184,9 +1095,10 @@
 
                 let fechas = parseFechasLicencia(row);
 
-                const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
-                const matchTipo = checkedTipos.includes(tipoRow) || totalCheckTipos === 0;
-                const matchFuncion = checkedFunciones.includes(funcionRow) || totalCheckFunciones === 0;
+                // Si checkedAgentes está vacío, .includes() es falso, por lo que arroja 0 registros.
+                const matchAgente = checkedAgentes.includes(agenteRow);
+                const matchTipo = checkedTipos.includes(tipoRow);
+                const matchFuncion = checkedFunciones.includes(funcionRow);
                 const matchAnio = sAnio === 'TODOS' || anioRow === sAnio;
                 const matchMes = sMes === 'TODOS' || mesRow === sMes;
 
@@ -1204,12 +1116,18 @@
                     if (fechas.inicio !== '-' && fechas.inicio !== '') ultimaInicio = fechas.inicio;
                     if (fechas.final !== '-' && fechas.final !== '') ultimaFinal = fechas.final;
 
-                    filteredLicencias.push({ tipo: tipoRow, agente: agenteRow });
+                    filteredLicencias.push({ 
+                        agente: agenteRow, 
+                        tipo: tipoRow, 
+                        funcion: funcionRow,
+                        inicio: fechas.inicio,
+                        final: fechas.final,
+                        dias: dias 
+                    });
                 }
             });
 
             let aniosLicText = aniosLicSet.size > 0 ? [...aniosLicSet].sort().join(', ') : '-';
-
             renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, aniosLicText, ultimaInicio, ultimaFinal);
         }
 
@@ -1217,43 +1135,64 @@
             const kpiContainer = document.getElementById('licencias-kpi-container');
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
-                    <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
-                        <i data-lucide="file-check-2" class="text-emerald-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
-                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Licencias Totales</h4>
-                        <span class="text-2xl md:text-4xl font-bold text-white">${filteredLicencias.length}</span>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="file-check-2" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Licencias Totales</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${filteredLicencias.length}</span>
                     </div>
-                    <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
-                        <i data-lucide="calendar-days" class="text-cyan-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
-                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Otorgados</h4>
-                        <span class="text-2xl md:text-4xl font-bold text-white">${totalDias}</span>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="calendar-days" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Otorgados</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalDias}</span>
                     </div>
-                    <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
-                        <i data-lucide="calendar-check" class="text-purple-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
-                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Usufructuados</h4>
-                        <span class="text-2xl md:text-4xl font-bold text-white">${totalUsufructuados}</span>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="calendar-check" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Usufructuados</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalUsufructuados}</span>
                     </div>
-                    <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
-                        <i data-lucide="clock" class="text-amber-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
-                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Pendientes</h4>
-                        <span class="text-2xl md:text-4xl font-bold text-white">${totalPendientes}</span>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="clock" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Pendientes</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalPendientes}</span>
                     </div>
-                    <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
-                        <i data-lucide="calendar" class="text-indigo-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
-                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Año de Licencia</h4>
-                        <span class="text-sm md:text-lg font-bold text-white mt-auto truncate max-w-[140px]" title="${aniosLicText}">${aniosLicText}</span>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="calendar" class="text-indigo-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Año de Licencia</h4>
+                        <span class="text-sm font-bold text-white mt-auto truncate max-w-[100px]" title="${aniosLicText}">${aniosLicText}</span>
                     </div>
-                    <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
-                        <i data-lucide="calendar-arrow-up" class="text-blue-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
-                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Última Fecha Inicio</h4>
-                        <span class="text-sm md:text-lg font-bold text-white mt-auto">${ultimaInicio}</span>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="calendar-arrow-up" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Última Fecha Inicio</h4>
+                        <span class="text-sm font-bold text-white mt-auto">${ultimaInicio}</span>
                     </div>
-                    <div class="glass-card p-4 md:p-6 flex flex-col items-center text-center">
-                        <i data-lucide="calendar-arrow-down" class="text-rose-400 w-8 h-8 md:w-10 md:h-10 mb-3"></i>
-                        <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Última Fecha Final</h4>
-                        <span class="text-sm md:text-lg font-bold text-white mt-auto">${ultimaFinal}</span>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="calendar-arrow-down" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Última Fecha Final</h4>
+                        <span class="text-sm font-bold text-white mt-auto">${ultimaFinal}</span>
                     </div>
                 `;
                 if(window.lucide) window.lucide.createIcons();
+            }
+
+            const tbody = document.getElementById('tbody-licencias');
+            if (tbody) {
+                tbody.innerHTML = '';
+                if (filteredLicencias.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500 italic">No hay registros para los filtros seleccionados. Presiona "Seleccionar Todos" en los filtros superiores para ver el listado.</td></tr>`;
+                } else {
+                    filteredLicencias.forEach(l => {
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-800/80 transition-colors border-b border-slate-800/50 last:border-0">
+                                <td class="px-4 py-2.5 font-medium text-slate-200">${l.agente}</td>
+                                <td class="px-3 py-2.5 text-cyan-400 text-[11px] font-semibold tracking-wide uppercase">${l.tipo}</td>
+                                <td class="px-3 py-2.5 text-slate-400">${l.funcion}</td>
+                                <td class="px-3 py-2.5 text-slate-300">${l.inicio}</td>
+                                <td class="px-3 py-2.5 text-slate-300">${l.final}</td>
+                                <td class="px-3 py-2.5 text-center font-bold text-emerald-400">${l.dias > 0 ? l.dias : '-'}</td>
+                            </tr>
+                        `;
+                    });
+                }
             }
 
             if(charts.licenciasTipos) charts.licenciasTipos.destroy();
@@ -1661,7 +1600,7 @@
             hsiData.forEach((row, i) => {
                 let matchAnio = true, matchMes = true, matchCaps = true;
                 if (sAnio !== 'TODOS') { matchAnio = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('AÑO') || k.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) matchAnio = true; } }
-                if (sMes !== 'TODOS') { matchMes = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('MES') || k.includes('PERIODE')) && String(row[key]).trim().toUpperCase() === sMes) matchMes = true; } }
+                if (sMes !== 'TODOS') { matchMes = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('MES') || k.includes('PERIODO')) && String(row[key]).trim().toUpperCase() === sMes) matchMes = true; } }
                 if (sCaps !== 'TODOS') { matchCaps = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) && String(row[key]).trim().toUpperCase() === sCaps) matchCaps = true; } }
 
                 if (matchAnio && matchMes && matchCaps) {
