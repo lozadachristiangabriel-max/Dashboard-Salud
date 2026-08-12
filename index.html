@@ -92,12 +92,27 @@
             <button onclick="switchView('territorio')" id="btn-territorio" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="map" class="w-5 h-5"></i> TERRITORIO
             </button>
-            <button onclick="switchView('ausentismo')" id="btn-ausentismo" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
-                <i data-lucide="user-minus" class="w-5 h-5"></i> AUSENTISMO
-            </button>
-            <button onclick="switchView('licencias')" id="btn-licencias" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
-                <i data-lucide="calendar-days" class="w-5 h-5"></i> LICENCIAS
-            </button>
+            
+            <!-- SECCIÓN DESPLEGABLE PERSONAL -->
+            <div class="border-y border-slate-800/60 my-2 py-2">
+                <button onclick="toggleSubmenu('submenu-personal', 'icon-personal')" class="w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-bold tracking-wide text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="users" class="w-5 h-5 text-emerald-500/80"></i>
+                        <span>PERSONAL</span>
+                    </div>
+                    <i data-lucide="chevron-up" id="icon-personal" class="w-4 h-4 transition-transform duration-300"></i>
+                </button>
+                <div id="submenu-personal" class="pl-4 pr-1 space-y-1 mt-2">
+                    <button onclick="switchView('ausentismo')" id="btn-ausentismo" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                        <i data-lucide="user-minus" class="w-4 h-4"></i> Ausentismo
+                    </button>
+                    <button onclick="switchView('licencias')" id="btn-licencias" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                        <i data-lucide="calendar-days" class="w-4 h-4"></i> Licencias
+                    </button>
+                </div>
+            </div>
+            <!-- FIN SECCIÓN PERSONAL -->
+
             <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="thermometer" class="w-5 h-5"></i> IRAB 2026
             </button>
@@ -549,6 +564,14 @@
             overlay.classList.toggle('hidden');
         }
 
+        // NUEVA FUNCIÓN para abrir/cerrar menús desplegables en el panel lateral
+        function toggleSubmenu(menuId, iconId) {
+            const menu = document.getElementById(menuId);
+            const icon = document.getElementById(iconId);
+            menu.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
         function switchView(viewId) {
             activeTab = viewId;
             ['territorio', 'ausentismo', 'licencias', 'irab', 'laboratorio', 'hsi'].forEach(v => {
@@ -984,8 +1007,6 @@
             return { inicio: formatDate(inicio), final: formatDate(final) };
         }
 
-        // ELIMINADA la función de dependencias dinámicas que borraba las opciones.
-        // Ahora las opciones se cargan una vez y siempre estarán disponibles.
         function initLicenciasFilters() {
             const containerAgente = document.getElementById('checklist-agente-lic');
             const containerTipo = document.getElementById('checklist-tipo-lic');
@@ -1095,7 +1116,6 @@
 
                 let fechas = parseFechasLicencia(row);
 
-                // Si checkedAgentes está vacío, .includes() es falso, por lo que arroja 0 registros.
                 const matchAgente = checkedAgentes.includes(agenteRow);
                 const matchTipo = checkedTipos.includes(tipoRow);
                 const matchFuncion = checkedFunciones.includes(funcionRow);
