@@ -10,13 +10,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- html2pdf.js para exportar a PDF -->
+    <!-- html2pdf.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0B1121; color: #94A3B8; }
+        
         .glass-card {
             background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
             backdrop-filter: blur(10px);
@@ -24,12 +25,22 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
             border-radius: 16px;
         }
-        .nav-item.active { background: rgba(16, 185, 129, 0.1); color: #10B981; border-left: 4px solid #10B981; }
+        
+        .nav-item.active { 
+            background: rgba(16, 185, 129, 0.1); 
+            color: #10B981; 
+            border-left: 4px solid #10B981; 
+        }
+        
         select {
             appearance: none;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em;
+            background-repeat: no-repeat; 
+            background-position: right 1rem center; 
+            background-size: 1em;
         }
+        
+        /* Scrollbars personalizados */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0B1121; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
@@ -39,6 +50,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748B; }
 
+        /* Ajustes para la exportación PDF */
         .pdf-export-mode { background-color: #0B1121 !important; padding: 20px !important; }
         .pdf-export-mode .max-h-[19rem], .pdf-export-mode .max-h-[24rem], .pdf-export-mode .max-h-60 {
             max-height: none !important;
@@ -67,6 +79,7 @@
         </button>
     </header>
 
+    <!-- OVERLAY MÓVIL -->
     <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 z-30 hidden md:hidden"></div>
 
     <!-- SIDEBAR -->
@@ -89,7 +102,7 @@
         
         <nav class="flex-1 mt-4 px-3 space-y-1 overflow-y-auto custom-scrollbar">
             
-            <!-- SECCIÓN DESPLEGABLE TERRITORIO -->
+            <!-- DESPLEGABLE TERRITORIO -->
             <div class="border-y border-slate-800/60 my-2 py-2">
                 <button onclick="toggleSubmenu('submenu-territorio', 'icon-territorio')" class="w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-bold tracking-wide text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors">
                     <div class="flex items-center gap-3">
@@ -108,7 +121,7 @@
                 </div>
             </div>
             
-            <!-- SECCIÓN DESPLEGABLE PERSONAL -->
+            <!-- DESPLEGABLE PERSONAL -->
             <div class="border-b border-slate-800/60 mb-2 pb-2">
                 <button onclick="toggleSubmenu('submenu-personal', 'icon-personal')" class="w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-bold tracking-wide text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors">
                     <div class="flex items-center gap-3">
@@ -127,6 +140,7 @@
                 </div>
             </div>
 
+            <!-- OTROS MÓDULOS -->
             <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="thermometer" class="w-5 h-5"></i> IRAB 2026
             </button>
@@ -137,10 +151,13 @@
                 <i data-lucide="folder-plus" class="w-5 h-5"></i> HSI (HISTORIA DE SALUD)
             </button>
         </nav>
-        <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">SS Recursos y Logística</div>
+        
+        <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
+            SS Recursos y Logística
+        </div>
     </aside>
 
-    <!-- MAIN -->
+    <!-- ÁREA PRINCIPAL -->
     <main class="md:ml-64 flex-1 p-4 md:p-8 overflow-x-hidden">
         
         <header class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
@@ -164,18 +181,29 @@
             <p class="text-slate-400 text-sm">Sincronizando bases de datos...</p>
         </div>
 
-        <!-- VISTA OPERATIVOS (ANTES TERRITORIO) -->
+        <!-- ======================= VISTA OPERATIVOS ======================= -->
         <section id="view-operativos" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 relative z-40">
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Año</label><select id="filter-anio-op" onchange="processOperativosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select></div>
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Tipo de Operativo</label><select id="filter-operativo-op" onchange="processOperativosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Tipos</option></select></div>
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Localidad</label><select id="filter-localidad-op" onchange="processOperativosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todas las Localidades</option></select></div>
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Barrio</label><select id="filter-barrio-op" onchange="processOperativosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Barrios</option></select></div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Año</label>
+                    <select id="filter-anio-op" onchange="processOperativosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Tipo de Operativo</label>
+                    <select id="filter-operativo-op" onchange="processOperativosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Tipos</option></select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Localidad</label>
+                    <select id="filter-localidad-op" onchange="processOperativosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todas las Localidades</option></select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Barrio</label>
+                    <select id="filter-barrio-op" onchange="processOperativosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Barrios</option></select>
+                </div>
             </div>
             
             <div id="operativos-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 mb-8"></div>
             
-            <!-- GRÁFICOS: OPERATIVOS -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <div class="glass-card p-4 md:p-6 lg:col-span-1">
                     <h3 class="text-white font-medium mb-4 text-sm flex items-center gap-2"><i data-lucide="pie-chart" class="text-indigo-400 w-5 h-5"></i>Operativos por Tipo</h3>
@@ -186,6 +214,7 @@
                     <div class="h-64 relative"><canvas id="chartVacunacion"></canvas></div>
                 </div>
             </div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <div class="glass-card p-4 md:p-6 lg:col-span-1">
                     <h3 class="text-white font-medium mb-4 text-sm flex items-center gap-2"><i data-lucide="activity" class="text-amber-400 w-5 h-5"></i>Asistencia y AUH</h3>
@@ -200,10 +229,13 @@
                     <div class="h-64 relative"><canvas id="chartTerritorio"></canvas></div>
                 </div>
             </div>
-            <div class="glass-card p-4 md:p-6 mt-6 mb-8"><div class="h-72 md:h-80 relative"><canvas id="chartAnual"></canvas></div></div>
+            
+            <div class="glass-card p-4 md:p-6 mt-6 mb-8">
+                <div class="h-72 md:h-80 relative"><canvas id="chartAnual"></canvas></div>
+            </div>
         </section>
 
-        <!-- VISTA BLOQUEOS (NUEVA) -->
+        <!-- ======================= VISTA BLOQUEOS ======================= -->
         <section id="view-bloqueos" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 relative z-40">
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Año</label><select id="filter-anio-bloq" onchange="processBloqueosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select></div>
@@ -237,7 +269,7 @@
             </div>
         </section>
 
-        <!-- VISTA AUSENTISMO -->
+        <!-- ======================= VISTA AUSENTISMO ======================= -->
         <section id="view-ausentismo" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40 overflow-visible">
                 <div class="relative multi-select-container z-50">
@@ -254,6 +286,7 @@
                         <div id="checklist-agente-aus" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
+                
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Meses</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-mes-aus')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
@@ -274,15 +307,20 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
                 <div class="glass-card p-4 md:p-6">
-                    <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2"><i data-lucide="bar-chart-2" class="text-cyan-400 w-5 h-5"></i>Inasistencias por Mes</h3>
+                    <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="text-cyan-400 w-5 h-5"></i>
+                        Inasistencias por Mes
+                    </h3>
                     <div class="h-64 md:h-72 relative"><canvas id="chartAusentismoMensual"></canvas></div>
                 </div>
                 
                 <div class="glass-card p-4 md:p-6 flex flex-col h-full">
                     <div class="flex justify-between items-end mb-4">
-                        <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2"><i data-lucide="list" class="text-purple-400 w-5 h-5"></i>Listado Completo por Agente</h3>
+                        <h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2">
+                            <i data-lucide="list" class="text-purple-400 w-5 h-5"></i>
+                            Listado Completo por Agente
+                        </h3>
                     </div>
-                    
                     <div class="overflow-y-auto max-h-[19rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
                         <table class="w-full text-left text-xs text-slate-300 relative">
                             <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
@@ -299,9 +337,10 @@
             </div>
         </section>
 
-        <!-- VISTA LICENCIAS -->
+        <!-- ======================= VISTA LICENCIAS ======================= -->
         <section id="view-licencias" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 relative z-40 overflow-visible">
+                
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Agente</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-agente-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
@@ -316,6 +355,7 @@
                         <div id="checklist-agente-lic" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
+
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Tipo de Licencia</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-tipo-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
@@ -330,6 +370,7 @@
                         <div id="checklist-tipo-lic" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
+
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Función</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-funcion-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
@@ -344,13 +385,19 @@
                         <div id="checklist-funcion-lic" class="space-y-1.5 text-xs text-slate-200"></div>
                     </div>
                 </div>
+
                 <div class="relative z-40">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año (Columna AÑO)</label>
-                    <select id="filter-anio-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none transition-all"><option value="TODOS">Todos los Años</option></select>
+                    <select id="filter-anio-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none transition-all">
+                        <option value="TODOS">Todos los Años</option>
+                    </select>
                 </div>
+
                 <div class="relative z-40">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Mes (Usufructo)</label>
-                    <select id="filter-mes-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none transition-all"><option value="TODOS">Todos los Meses</option></select>
+                    <select id="filter-mes-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none transition-all">
+                        <option value="TODOS">Todos los Meses</option>
+                    </select>
                 </div>
             </div>
             
@@ -358,7 +405,9 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 relative z-10">
                 <div class="glass-card p-4 md:p-6 lg:col-span-2 flex flex-col h-full">
-                    <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2"><i data-lucide="list-checks" class="text-purple-400 w-5 h-5"></i>Listado de Personal (Licencias)</h3>
+                    <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2">
+                        <i data-lucide="list-checks" class="text-purple-400 w-5 h-5"></i>Listado de Personal (Licencias)
+                    </h3>
                     <div class="overflow-y-auto max-h-[24rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
                         <table class="w-full text-left text-xs text-slate-300 relative">
                             <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
@@ -376,72 +425,162 @@
                     </div>
                 </div>
                 <div class="glass-card p-4 md:p-6 flex flex-col">
-                    <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2"><i data-lucide="pie-chart" class="text-emerald-400 w-5 h-5"></i>Distribución por Tipo</h3>
+                    <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="text-emerald-400 w-5 h-5"></i>Distribución por Tipo
+                    </h3>
                     <div class="h-64 md:h-80 relative mt-auto mb-auto"><canvas id="chartLicenciasTipos"></canvas></div>
                 </div>
             </div>
         </section>
 
-        <!-- VISTA IRAB 2026 -->
+        <!-- ======================= VISTA IRAB 2026 ======================= -->
         <section id="view-irab" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40">
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Semana</label><select id="filter-semana-irab" onchange="processIrabData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODAS">Todas las Semanas</option></select></div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Semana</label>
+                    <select id="filter-semana-irab" onchange="processIrabData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODAS">Todas las Semanas</option>
+                    </select>
+                </div>
             </div>
+            
             <div id="irab-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4 mb-8"></div>
+            
             <div class="grid grid-cols-1 gap-6 mb-8">
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base"><i data-lucide="trending-up" class="text-cyan-400 w-5 h-5"></i>Evolución Semanal</h3><div class="h-72 md:h-80 relative"><canvas id="chartIrabEvolucion"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base"><i data-lucide="trending-up" class="text-cyan-400 w-5 h-5"></i>Evolución Semanal</h3>
+                    <div class="h-72 md:h-80 relative"><canvas id="chartIrabEvolucion"></canvas></div>
+                </div>
             </div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base"><i data-lucide="pill" class="text-emerald-400 w-5 h-5"></i>Medicación Utilizada</h3><div class="h-64 relative"><canvas id="chartIrabMedicacion"></canvas></div></div>
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base"><i data-lucide="calendar-clock" class="text-purple-400 w-5 h-5"></i>Turnos Programados</h3><div class="h-64 relative"><canvas id="chartIrabTurnos"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base"><i data-lucide="pill" class="text-emerald-400 w-5 h-5"></i>Medicación Utilizada</h3>
+                    <div class="h-64 relative"><canvas id="chartIrabMedicacion"></canvas></div>
+                </div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2 text-sm md:text-base"><i data-lucide="calendar-clock" class="text-purple-400 w-5 h-5"></i>Turnos Programados</h3>
+                    <div class="h-64 relative"><canvas id="chartIrabTurnos"></canvas></div>
+                </div>
             </div>
         </section>
 
-        <!-- VISTA LABORATORIO -->
+        <!-- ======================= VISTA LABORATORIO ======================= -->
         <section id="view-laboratorio" class="hidden">
-            <!-- (El código de filtros de Laboratorio se mantiene igual, abreviado por espacio) -->
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40 overflow-visible">
+                
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Filtrar por Año (Checklist)</label>
-                    <button type="button" onclick="toggleMultiSelect('dropdown-anio-lab')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all"><span id="label-anio-lab" class="truncate font-medium">Todos los Años</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i></button>
-                    <div id="dropdown-anio-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto custom-scrollbar"><div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400"><button type="button" onclick="selectAllLab('anio', true)" class="hover:underline">Seleccionar Todos</button><button type="button" onclick="selectAllLab('anio', false)" class="hover:underline text-rose-400">Ninguno</button></div><div id="checklist-anio-lab" class="space-y-1.5 text-xs text-slate-200"></div></div>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-anio-lab')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-anio-lab" class="truncate font-medium">Todos los Años</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-anio-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto custom-scrollbar">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllLab('anio', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllLab('anio', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-anio-lab" class="space-y-1.5 text-xs text-slate-200"></div>
+                    </div>
                 </div>
+                
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Filtrar por Mes (Checklist)</label>
-                    <button type="button" onclick="toggleMultiSelect('dropdown-mes-lab')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all"><span id="label-mes-lab" class="truncate font-medium">Todos los Meses</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i></button>
-                    <div id="dropdown-mes-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto custom-scrollbar"><div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400"><button type="button" onclick="selectAllLab('mes', true)" class="hover:underline">Seleccionar Todos</button><button type="button" onclick="selectAllLab('mes', false)" class="hover:underline text-rose-400">Ninguno</button></div><div id="checklist-mes-lab" class="space-y-1.5 text-xs text-slate-200"></div></div>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-mes-lab')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-mes-lab" class="truncate font-medium">Todos los Meses</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-mes-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto custom-scrollbar">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllLab('mes', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllLab('mes', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-mes-lab" class="space-y-1.5 text-xs text-slate-200"></div>
+                    </div>
                 </div>
+                
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Filtrar por CAPS (Checklist)</label>
-                    <button type="button" onclick="toggleMultiSelect('dropdown-caps-lab')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all"><span id="label-caps-lab" class="truncate font-medium">Todos los CAPS</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i></button>
-                    <div id="dropdown-caps-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto custom-scrollbar"><div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400"><button type="button" onclick="selectAllLab('caps', true)" class="hover:underline">Seleccionar Todos</button><button type="button" onclick="selectAllLab('caps', false)" class="hover:underline text-rose-400">Ninguno</button></div><div id="checklist-caps-lab" class="space-y-1.5 text-xs text-slate-200"></div></div>
+                    <button type="button" onclick="toggleMultiSelect('dropdown-caps-lab')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all">
+                        <span id="label-caps-lab" class="truncate font-medium">Todos los CAPS</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </button>
+                    <div id="dropdown-caps-lab" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-56 overflow-y-auto custom-scrollbar">
+                        <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400">
+                            <button type="button" onclick="selectAllLab('caps', true)" class="hover:underline">Seleccionar Todos</button>
+                            <button type="button" onclick="selectAllLab('caps', false)" class="hover:underline text-rose-400">Ninguno</button>
+                        </div>
+                        <div id="checklist-caps-lab" class="space-y-1.5 text-xs text-slate-200"></div>
+                    </div>
                 </div>
             </div>
+            
             <div id="lab-kpi-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8 relative z-10"></div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="alert-circle" class="text-rose-400 w-5 h-5"></i>Top 10 Menor Asistencia</h3><div class="h-72 relative"><canvas id="chartLabTopMenorAsistencia"></canvas></div></div>
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="calendar" class="text-cyan-400 w-5 h-5"></i>Distribución Asistencia</h3><div class="h-72 relative"><canvas id="chartLabEvolucion"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="alert-circle" class="text-rose-400 w-5 h-5"></i>Top 10 Menor Asistencia</h3>
+                    <div class="h-72 relative"><canvas id="chartLabTopMenorAsistencia"></canvas></div>
+                </div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="calendar" class="text-cyan-400 w-5 h-5"></i>Distribución Asistencia</h3>
+                    <div class="h-72 relative"><canvas id="chartLabEvolucion"></canvas></div>
+                </div>
             </div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="text-emerald-400 w-5 h-5"></i>Proporción General</h3><div class="h-72 relative"><canvas id="chartLabEstado"></canvas></div></div>
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>Turnos por CAPS</h3><div class="h-72 relative"><canvas id="chartLabDetalle"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="text-emerald-400 w-5 h-5"></i>Proporción General</h3>
+                    <div class="h-72 relative"><canvas id="chartLabEstado"></canvas></div>
+                </div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>Turnos por CAPS</h3>
+                    <div class="h-72 relative"><canvas id="chartLabDetalle"></canvas></div>
+                </div>
             </div>
         </section>
 
-        <!-- VISTA HSI (HISTORIA DE SALUD INTEGRADA) -->
+        <!-- ======================= VISTA HSI ======================= -->
         <section id="view-hsi" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40">
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año</label><select id="filter-anio-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select></div>
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label><select id="filter-mes-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Meses</option></select></div>
-                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por CAPS / Centro</label><select id="filter-caps-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los CAPS / Centros</option></select></div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año</label>
+                    <select id="filter-anio-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los Años</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Mes</label>
+                    <select id="filter-mes-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los Meses</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por CAPS / Centro</label>
+                    <select id="filter-caps-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none">
+                        <option value="TODOS">Todos los CAPS / Centros</option>
+                    </select>
+                </div>
             </div>
+            
             <div id="hsi-kpi-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8"></div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="folder-plus" class="text-emerald-400 w-5 h-5"></i>Volumen por Período</h3><div class="h-72 relative"><canvas id="chartHsiEvolucion"></canvas></div></div>
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="text-cyan-400 w-5 h-5"></i>Distribución (Top Centros)</h3><div class="h-72 relative"><canvas id="chartHsiEstado"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="folder-plus" class="text-emerald-400 w-5 h-5"></i>Volumen por Período</h3>
+                    <div class="h-72 relative"><canvas id="chartHsiEvolucion"></canvas></div>
+                </div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="text-cyan-400 w-5 h-5"></i>Distribución (Top Centros)</h3>
+                    <div class="h-72 relative"><canvas id="chartHsiEstado"></canvas></div>
+                </div>
             </div>
+            
             <div class="grid grid-cols-1 gap-6 mb-8">
-                <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>Ranking Detallado HSI</h3><div class="h-80 relative"><canvas id="chartHsiDetalle"></canvas></div></div>
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>Ranking Detallado HSI</h3>
+                    <div class="h-80 relative"><canvas id="chartHsiDetalle"></canvas></div>
+                </div>
             </div>
         </section>
     </main>
@@ -449,7 +588,7 @@
     <!-- LOGICA JAVASCRIPT Y URLs -->
     <script>
         const URL_OPERATIVOS = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
-        const URL_BLOQUEOS   = ''; // <--- PEGA AQUÍ EL ENLACE PARA BLOQUEOS
+        const URL_BLOQUEOS   = ''; // <--- PEGA AQUÍ TU ENLACE PARA BLOQUEOS
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbyjzoW-5wEZE1orJwUH7i_wvT0daeKtN2viqcUsOrqI2kJa-ZUQRPy7l14ge8uU8M4PGA/exec';
         const URL_LICENCIAS  = 'https://script.google.com/macros/s/AKfycbx-Tzy_-zZIho5p5IomrHfO9VS7V8lDvytmXJhx51oEhF76g5DNgUSXKWuli6KCIXBq/exec';
         const URL_IRAB       = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
@@ -479,18 +618,15 @@
         };
         const allMonths = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
 
+        // Funciones UI Generales
         function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('mobile-overlay').classList.toggle('hidden');
         }
 
         function toggleSubmenu(menuId, iconId) {
-            const menu = document.getElementById(menuId);
-            const icon = document.getElementById(iconId);
-            menu.classList.toggle('hidden');
-            icon.classList.toggle('rotate-180');
+            document.getElementById(menuId).classList.toggle('hidden');
+            document.getElementById(iconId).classList.toggle('rotate-180');
         }
 
         function switchView(viewId) {
@@ -509,9 +645,7 @@
 
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
-                if (!sidebar.classList.contains('-translate-x-full')) {
-                    toggleMobileMenu();
-                }
+                if (!sidebar.classList.contains('-translate-x-full')) toggleMobileMenu();
             }
 
             if(viewId === 'operativos' && operativosData.length) setTimeout(() => processOperativosData(), 50);
@@ -529,28 +663,45 @@
             const element = document.getElementById(`view-${activeTab}`);
             
             if (!element) return;
-            btn.disabled = true; btn.classList.add('opacity-50'); txt.textContent = 'Generando PDF...';
+            btn.disabled = true; 
+            btn.classList.add('opacity-50'); 
+            txt.textContent = 'Generando PDF...';
             document.body.classList.add('pdf-export-mode');
 
-            const opt = { margin: 0.3, filename: `Reporte_Salud_${activeTab.toUpperCase()}_Varela.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0B1121', windowWidth: 1600 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } };
+            const opt = { 
+                margin: 0.3, 
+                filename: `Reporte_Salud_${activeTab.toUpperCase()}_Varela.pdf`, 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0B1121', windowWidth: 1600 }, 
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } 
+            };
+            
             html2pdf().set(opt).from(element).save().then(() => {
-                btn.disabled = false; btn.classList.remove('opacity-50'); txt.textContent = 'Exportar Hoja a PDF';
+                btn.disabled = false; 
+                btn.classList.remove('opacity-50'); 
+                txt.textContent = 'Exportar Hoja a PDF';
                 document.body.classList.remove('pdf-export-mode');
-            }).catch(() => { document.body.classList.remove('pdf-export-mode'); });
+            }).catch(() => { 
+                document.body.classList.remove('pdf-export-mode'); 
+            });
         }
 
         function parseNumberSafe(val) {
             if (val === undefined || val === null || val === '') return 0;
             if (typeof val === 'number') return isNaN(val) ? 0 : val;
             let str = String(val).trim().replace(/\s+/g, '').replace(/\$/g, '').replace(/%/g, '');
-            if (str.includes(',') && str.includes('.')) { str = str.replace(/\./g, '').replace(',', '.'); } else if (str.includes(',')) { str = str.replace(',', '.'); }
-            let num = parseFloat(str); return isNaN(num) ? 0 : num;
+            if (str.includes(',') && str.includes('.')) { str = str.replace(/\./g, '').replace(',', '.'); } 
+            else if (str.includes(',')) { str = str.replace(',', '.'); }
+            let num = parseFloat(str); 
+            return isNaN(num) ? 0 : num;
         }
 
+        // Cierre de menús desplegables al clickear fuera
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.multi-select-container')) {
                 ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic', 'dropdown-funcion-lic'].forEach(id => {
-                    const el = document.getElementById(id); if (el) el.classList.add('hidden');
+                    const el = document.getElementById(id); 
+                    if (el) el.classList.add('hidden');
                 });
             }
         });
@@ -559,15 +710,52 @@
             const dropdown = document.getElementById(dropdownId);
             const isHidden = dropdown.classList.contains('hidden');
             ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic', 'dropdown-funcion-lic'].forEach(id => {
-                const el = document.getElementById(id); if (el) el.classList.add('hidden');
+                const el = document.getElementById(id); 
+                if (el) el.classList.add('hidden');
             });
             if (isHidden) dropdown.classList.remove('hidden');
         }
 
+        // Helpers de Multi-Selects
+        function updateMultiSelectLabel(labelId, selectedArray, totalCount, defaultName) {
+            const label = document.getElementById(labelId);
+            if (!label) return;
+            if (selectedArray.length === totalCount || totalCount === 0) { 
+                label.textContent = `Todos los ${defaultName}`; 
+            } else if (selectedArray.length === 0) { 
+                label.textContent = `Ninguno seleccionado`; 
+            } else if (selectedArray.length === 1) { 
+                label.textContent = selectedArray[0]; 
+            } else { 
+                label.textContent = `${selectedArray.length} seleccionados`; 
+            }
+        }
+        
         function selectAllLab(type, state) { document.querySelectorAll(`.chk-${type}-lab`).forEach(cb => cb.checked = state); processLaboratorioData(); }
         function selectAllAusentismo(type, state) { document.querySelectorAll(`.chk-${type}-aus`).forEach(cb => cb.checked = state); processAusentismoData(); }
         function selectAllLicencias(type, state) { document.querySelectorAll(`.chk-${type}-lic`).forEach(cb => cb.checked = state); processLicenciasData(); }
 
+        const getAgenteName = (row) => {
+            const keysPriority = ['AGENTE', 'NOMBRE Y APELLIDO', 'APELLIDO Y NOMBRE', 'PERSONAL', 'EMPLEADO', 'TRABAJADOR'];
+            for (let pk of keysPriority) {
+                for (let k in row) { 
+                    if (k.toUpperCase().trim() === pk) { 
+                        let val = String(row[k] || '').trim(); 
+                        if (val && val !== 'UNDEFINED' && val !== 'NULL' && val !== 'NAN') return val.toUpperCase(); 
+                    } 
+                }
+            }
+            for (let k in row) {
+                let keyUp = k.toUpperCase();
+                if (keyUp.includes('AGENTE') || keyUp.includes('NOMBRE') || keyUp.includes('PERSONAL') || keyUp.includes('APELLIDO')) { 
+                    let val = String(row[k] || '').trim(); 
+                    if (val && val !== 'UNDEFINED' && val !== 'NULL' && val !== 'NAN') return val.toUpperCase(); 
+                }
+            }
+            return '';
+        };
+
+        // Fetch Principal
         async function fetchAllData() {
             try {
                 const [resO, resB, resA, resLic, resI, resL, resH] = await Promise.all([
@@ -612,21 +800,29 @@
             }
         }
 
-        /* ----- OPERATIVOS (TERRITORIO) ----- */
+        /* ==================== OPERATIVOS ==================== */
         function initOperativosFilters() {
             const map = { 'anio-op': 'AÑO', 'operativo-op': 'OPERATIVO tipo', 'localidad-op': 'LOCALIDAD', 'barrio-op': 'BARRIO' };
             for (const [id, key] of Object.entries(map)) {
                 const select = document.getElementById(`filter-${id}`);
                 const values = [...new Set(operativosData.map(item => item[key] ? String(item[key]).trim().toUpperCase() : null))].filter(v => v && v !== 'NULL' && v !== 'NAN').sort();
-                values.forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; select.appendChild(opt); });
+                values.forEach(val => { 
+                    let opt = document.createElement('option'); 
+                    opt.value = val; 
+                    opt.textContent = val; 
+                    select.appendChild(opt); 
+                });
             }
         }
 
         function processOperativosData() {
-            const sAnio = document.getElementById('filter-anio-op').value, sOp = document.getElementById('filter-operativo-op').value;
-            const sLoc = document.getElementById('filter-localidad-op').value, sBar = document.getElementById('filter-barrio-op').value;
+            const sAnio = document.getElementById('filter-anio-op').value;
+            const sOp = document.getElementById('filter-operativo-op').value;
+            const sLoc = document.getElementById('filter-localidad-op').value;
+            const sBar = document.getElementById('filter-barrio-op').value;
             
-            let sums = {}; kpiConfig.forEach(k => sums[k.id] = 0); 
+            let sums = {}; 
+            kpiConfig.forEach(k => sums[k.id] = 0); 
             let yearlyData = {};
             let totalOperativos = 0;
             let tiposOpCount = {};
@@ -641,7 +837,6 @@
                     totalOperativos++;
                     let tipoOp = String(row['OPERATIVO tipo'] || 'OTRO').trim().toUpperCase();
                     tiposOpCount[tipoOp] = (tiposOpCount[tipoOp] || 0) + 1;
-                    
                     kpiConfig.forEach(k => { let v = parseNumberSafe(row[k.id]); sums[k.id] += v; }); 
                 }
                 
@@ -690,7 +885,8 @@
             if(charts.territorio) charts.territorio.destroy(); 
             if(charts.anual) charts.anual.destroy();
             
-            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+            Chart.defaults.color = '#94A3B8'; 
+            Chart.defaults.font.family = 'Inter';
 
             const tiposKeys = Object.keys(tiposOpCount).sort((a,b) => tiposOpCount[b] - tiposOpCount[a]);
             charts.opTipos = new Chart(document.getElementById('chartOperativosTipos').getContext('2d'), {
@@ -715,14 +911,19 @@
             charts.anual = new Chart(document.getElementById('chartAnual').getContext('2d'), { type: 'line', data: { labels: sortedYears, datasets: [{ label: 'Vacunación', data: sortedYears.map(y => yearlyData[y].vacunas), borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }, { label: 'Atenciones', data: sortedYears.map(y => yearlyData[y].atenciones), borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.4 }, { label: 'Trámites', data: sortedYears.map(y => yearlyData[y].tramites), borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
-        /* ----- BLOQUEOS ----- */
+        /* ==================== BLOQUEOS ==================== */
         function initBloqueosFilters() {
             const map = { 'anio-bloq': 'AÑO', 'mes-bloq': 'MES', 'tipo-bloq': 'BLOQUEO', 'loc-bloq': 'LOCALIDAD', 'barrio-bloq': 'BARRIO' };
             for (const [id, key] of Object.entries(map)) {
                 const select = document.getElementById(`filter-${id}`);
                 if(!select) continue;
                 const values = [...new Set(bloqueosData.map(item => item[key] ? String(item[key]).trim().toUpperCase() : null))].filter(v => v && v !== 'NULL' && v !== 'NAN').sort();
-                values.forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; select.appendChild(opt); });
+                values.forEach(val => { 
+                    let opt = document.createElement('option'); 
+                    opt.value = val; 
+                    opt.textContent = val; 
+                    select.appendChild(opt); 
+                });
             }
         }
 
@@ -773,41 +974,13 @@
 
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
-                    <div class="glass-card p-3 flex flex-col items-center text-center">
-                        <i data-lucide="shield-alert" class="text-rose-500 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Bloqueos</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${totalBloqueos}</span>
-                    </div>
-                    <div class="glass-card p-3 flex flex-col items-center text-center">
-                        <i data-lucide="home" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">C. Relevadas</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${sumRelevadas}</span>
-                    </div>
-                    <div class="glass-card p-3 flex flex-col items-center text-center">
-                        <i data-lucide="door-open" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">C. Abiertas</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${sumAbiertas}</span>
-                    </div>
-                    <div class="glass-card p-3 flex flex-col items-center text-center">
-                        <i data-lucide="users" class="text-indigo-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Personas</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${sumPersonas}</span>
-                    </div>
-                    <div class="glass-card p-3 flex flex-col items-center text-center">
-                        <i data-lucide="map" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Manzanas</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${sumManzanas}</span>
-                    </div>
-                    <div class="glass-card p-3 flex flex-col items-center text-center">
-                        <i data-lucide="search" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Sospechosos</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${sumSospechosos}</span>
-                    </div>
-                    <div class="glass-card p-3 flex flex-col items-center text-center">
-                        <i data-lucide="activity" class="text-red-500 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Positivos</h4>
-                        <span class="text-lg md:text-2xl font-bold text-white">${sumPositivos}</span>
-                    </div>
+                    <div class="glass-card p-3 flex flex-col items-center text-center"><i data-lucide="shield-alert" class="text-rose-500 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Bloqueos</h4><span class="text-lg md:text-2xl font-bold text-white">${totalBloqueos}</span></div>
+                    <div class="glass-card p-3 flex flex-col items-center text-center"><i data-lucide="home" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">C. Relevadas</h4><span class="text-lg md:text-2xl font-bold text-white">${sumRelevadas}</span></div>
+                    <div class="glass-card p-3 flex flex-col items-center text-center"><i data-lucide="door-open" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">C. Abiertas</h4><span class="text-lg md:text-2xl font-bold text-white">${sumAbiertas}</span></div>
+                    <div class="glass-card p-3 flex flex-col items-center text-center"><i data-lucide="users" class="text-indigo-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Personas</h4><span class="text-lg md:text-2xl font-bold text-white">${sumPersonas}</span></div>
+                    <div class="glass-card p-3 flex flex-col items-center text-center"><i data-lucide="map" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Manzanas</h4><span class="text-lg md:text-2xl font-bold text-white">${sumManzanas}</span></div>
+                    <div class="glass-card p-3 flex flex-col items-center text-center"><i data-lucide="search" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Sospechosos</h4><span class="text-lg md:text-2xl font-bold text-white">${sumSospechosos}</span></div>
+                    <div class="glass-card p-3 flex flex-col items-center text-center"><i data-lucide="activity" class="text-red-500 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Positivos</h4><span class="text-lg md:text-2xl font-bold text-white">${sumPositivos}</span></div>
                 `;
                 if(window.lucide) window.lucide.createIcons();
             }
@@ -857,66 +1030,92 @@
             });
         }
 
-        /* ----- AYUDANTES RESTANTES ----- */
-        const getAgenteName = (row) => {
-            const keysPriority = ['AGENTE', 'NOMBRE Y APELLIDO', 'APELLIDO Y NOMBRE', 'PERSONAL', 'EMPLEADO', 'TRABAJADOR'];
-            for (let pk of keysPriority) {
-                for (let k in row) { if (k.toUpperCase().trim() === pk) { let val = String(row[k] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL' && val !== 'NAN') return val.toUpperCase(); } }
-            }
-            for (let k in row) {
-                let keyUp = k.toUpperCase();
-                if (keyUp.includes('AGENTE') || keyUp.includes('NOMBRE') || keyUp.includes('PERSONAL') || keyUp.includes('APELLIDO')) { let val = String(row[k] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL' && val !== 'NAN') return val.toUpperCase(); }
-            }
-            return '';
-        };
-
-        function updateMultiSelectLabel(labelId, selectedArray, totalCount, defaultName) {
-            const label = document.getElementById(labelId);
-            if (!label) return;
-            if (selectedArray.length === totalCount || totalCount === 0) { label.textContent = `Todos los ${defaultName}`; } else if (selectedArray.length === 0) { label.textContent = `Ninguno seleccionado`; } else if (selectedArray.length === 1) { label.textContent = selectedArray[0]; } else { label.textContent = `${selectedArray.length} seleccionados`; }
-        }
-
-        /* (Se conservan intactas las funciones init y process de Ausentismo, Licencias, IRAB, Laboratorio, y HSI por límite de caracteres) */
-
-        /* ----- VISTA AUSENTISMO ----- */
+        /* ==================== AUSENTISMO ==================== */
         function initAusentismoFilters() {
-            const containerAgente = document.getElementById('checklist-agente-aus');
+            const containerAgente = document.getElementById('checklist-agente-aus'); 
             const containerMes = document.getElementById('checklist-mes-aus');
             if (!containerAgente || !containerMes) return;
-            containerAgente.innerHTML = ''; containerMes.innerHTML = '';
-            let agentes = new Set(); ausentismoData.forEach(row => { let ag = getAgenteName(row); if (ag) agentes.add(ag); });
-            [...agentes].sort().forEach(ag => { containerAgente.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${ag}" checked onchange="processAusentismoData()" class="chk-agente-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium truncate" title="${ag}">${ag}</span></label>`; });
-            allMonths.forEach(m => { containerMes.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${m}" checked onchange="processAusentismoData()" class="chk-mes-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${m}</span></label>`; });
+            
+            containerAgente.innerHTML = ''; 
+            containerMes.innerHTML = '';
+            
+            let agentes = new Set(); 
+            ausentismoData.forEach(row => { 
+                let ag = getAgenteName(row); 
+                if (ag) agentes.add(ag); 
+            });
+            
+            [...agentes].sort().forEach(ag => { 
+                containerAgente.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${ag}" checked onchange="processAusentismoData()" class="chk-agente-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium truncate" title="${ag}">${ag}</span></label>`; 
+            });
+            
+            allMonths.forEach(m => { 
+                containerMes.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${m}" checked onchange="processAusentismoData()" class="chk-mes-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${m}</span></label>`; 
+            });
         }
+
         function processAusentismoData() {
             const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-aus:checked')).map(cb => cb.value.toUpperCase());
             const totalCheckAgentes = document.querySelectorAll('.chk-agente-aus').length;
+            
             const checkedMeses = Array.from(document.querySelectorAll('.chk-mes-aus:checked')).map(cb => cb.value.toUpperCase());
             const totalCheckMeses = document.querySelectorAll('.chk-mes-aus').length;
-            updateMultiSelectLabel('label-agente-aus', checkedAgentes, totalCheckAgentes, 'Agentes'); updateMultiSelectLabel('label-mes-aus', checkedMeses, totalCheckMeses, 'Meses');
-            let mesesTotales = {}; allMonths.forEach(m => mesesTotales[m] = { ausencias: 0 }); let agentesTotales = {}; 
+            
+            updateMultiSelectLabel('label-agente-aus', checkedAgentes, totalCheckAgentes, 'Agentes'); 
+            updateMultiSelectLabel('label-mes-aus', checkedMeses, totalCheckMeses, 'Meses');
+            
+            let mesesTotales = {}; 
+            allMonths.forEach(m => mesesTotales[m] = { ausencias: 0 }); 
+            let agentesTotales = {}; 
+            
+            const fallbackAgente = totalCheckAgentes === 0 || checkedAgentes.length === totalCheckAgentes;
+            const fallbackMes = totalCheckMeses === 0 || checkedMeses.length === totalCheckMeses;
+            
             ausentismoData.forEach(row => {
-                let agenteRow = getAgenteName(row); if (!agenteRow) return;
-                const matchAgente = checkedAgentes.includes(agenteRow) || totalCheckAgentes === 0;
+                let agenteRow = getAgenteName(row); 
+                if (!agenteRow) return;
+                
+                const matchAgente = fallbackAgente || checkedAgentes.includes(agenteRow);
+                
                 if (matchAgente) {
                     if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, total: 0 };
+                    
                     let mesDeFila = String(row['MES'] || '').trim().toUpperCase();
+                    
                     if (mesDeFila && allMonths.includes(mesDeFila)) {
-                        const matchMes = checkedMeses.includes(mesDeFila) || totalCheckMeses === 0;
-                        if (matchMes) { mesesTotales[mesDeFila].ausencias += 1; agentesTotales[agenteRow].ausencias += 1; agentesTotales[agenteRow].total += 1; }
+                        const matchMes = fallbackMes || checkedMeses.includes(mesDeFila);
+                        if (matchMes) { 
+                            mesesTotales[mesDeFila].ausencias += 1; 
+                            agentesTotales[agenteRow].ausencias += 1; 
+                            agentesTotales[agenteRow].total += 1; 
+                        }
                     } else {
                         allMonths.forEach(mes => {
-                            const matchMes = checkedMeses.includes(mes) || totalCheckMeses === 0;
-                            if (matchMes) { let valMes = 0; for (let k in row) if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]); mesesTotales[mes].ausencias += valMes; agentesTotales[agenteRow].ausencias += valMes; agentesTotales[agenteRow].total += valMes; }
+                            const matchMes = fallbackMes || checkedMeses.includes(mes);
+                            if (matchMes) { 
+                                let valMes = 0; 
+                                for (let k in row) {
+                                    if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]); 
+                                }
+                                mesesTotales[mes].ausencias += valMes; 
+                                agentesTotales[agenteRow].ausencias += valMes; 
+                                agentesTotales[agenteRow].total += valMes; 
+                            }
                         });
                     }
                 }
             });
             renderAusentismoUI(mesesTotales, agentesTotales, checkedMeses);
         }
+
         function renderAusentismoUI(mesesTotales, agentesTotales, checkedMeses) {
             let totalAusencias = 0, agentesConFaltas = 0;
-            Object.values(agentesTotales).forEach(ag => { if (ag.total > 0) agentesConFaltas++; totalAusencias += ag.ausencias; });
+            
+            Object.values(agentesTotales).forEach(ag => { 
+                if (ag.total > 0) agentesConFaltas++; 
+                totalAusencias += ag.ausencias; 
+            });
+            
             const kpiContainer = document.getElementById('ausentismo-kpi-container');
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
@@ -926,168 +1125,613 @@
                 `;
                 if(window.lucide) window.lucide.createIcons();
             }
-            if(charts.ausentismoMensual) charts.ausentismoMensual.destroy(); Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+            
+            if(charts.ausentismoMensual) charts.ausentismoMensual.destroy(); 
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+            
             const mesesAVisibilizar = checkedMeses.length > 0 ? checkedMeses : allMonths;
-            charts.ausentismoMensual = new Chart(document.getElementById('chartAusentismoMensual').getContext('2d'), { type: 'bar', data: { labels: mesesAVisibilizar, datasets: [ { label: 'Inasistencias', data: mesesAVisibilizar.map(m => mesesTotales[m].ausencias), backgroundColor: '#F43F5E', borderRadius: 4 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            const tbody = document.getElementById('tbody-ausentismo'); tbody.innerHTML = '';
+            charts.ausentismoMensual = new Chart(document.getElementById('chartAusentismoMensual').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: mesesAVisibilizar, datasets: [ { label: 'Inasistencias', data: mesesAVisibilizar.map(m => mesesTotales[m].ausencias), backgroundColor: '#F43F5E', borderRadius: 4 } ] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
+            });
+            
+            const tbody = document.getElementById('tbody-ausentismo'); 
+            tbody.innerHTML = '';
+            
             const sortedAgentes = Object.entries(agentesTotales).filter(item => item[1].total > 0).sort((a, b) => b[1].total - a[1].total);
-            if (sortedAgentes.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de faltas para el personal o los meses seleccionados.</td></tr>`; } else { sortedAgentes.forEach(item => { const nombre = item[0]; const ausencias = item[1].ausencias; const total = item[1].total; tbody.innerHTML += `<tr class="hover:bg-slate-800/80 transition-colors"><td class="px-4 py-2 font-medium text-slate-200">${nombre}</td><td class="px-3 py-2 text-center text-rose-400">${ausencias > 0 ? ausencias : '-'}</td><td class="px-3 py-2 text-center font-bold text-emerald-400">${total}</td></tr>`; }); }
+            
+            if (sortedAgentes.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de faltas para el personal o los meses seleccionados.</td></tr>`; 
+            } else { 
+                sortedAgentes.forEach(item => { 
+                    const nombre = item[0]; const ausencias = item[1].ausencias; const total = item[1].total; 
+                    tbody.innerHTML += `<tr class="hover:bg-slate-800/80 transition-colors"><td class="px-4 py-2 font-medium text-slate-200">${nombre}</td><td class="px-3 py-2 text-center text-rose-400">${ausencias > 0 ? ausencias : '-'}</td><td class="px-3 py-2 text-center font-bold text-emerald-400">${total}</td></tr>`; 
+                }); 
+            }
         }
 
-        /* ----- VISTA LICENCIAS ----- */
+        /* ==================== LICENCIAS ==================== */
         function formatDate(dateStr) {
             if (!dateStr || dateStr === 'NAN' || dateStr === 'NULL' || dateStr === '-') return '-';
-            if (dateStr.includes('T') && dateStr.includes('Z')) { let d = new Date(dateStr); if (!isNaN(d)) { let day = String(d.getUTCDate()).padStart(2, '0'); let month = String(d.getUTCMonth() + 1).padStart(2, '0'); let year = d.getUTCFullYear(); return `${day}/${month}/${year}`; } }
-            if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) { let parts = dateStr.substring(0, 10).split('-'); return `${parts[2]}/${parts[1]}/${parts[0]}`; }
+            if (dateStr.includes('T') && dateStr.includes('Z')) { 
+                let d = new Date(dateStr); 
+                if (!isNaN(d)) { 
+                    let day = String(d.getUTCDate()).padStart(2, '0'); 
+                    let month = String(d.getUTCMonth() + 1).padStart(2, '0'); 
+                    let year = d.getUTCFullYear(); 
+                    return `${day}/${month}/${year}`; 
+                } 
+            }
+            if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) { 
+                let parts = dateStr.substring(0, 10).split('-'); 
+                return `${parts[2]}/${parts[1]}/${parts[0]}`; 
+            }
             return dateStr;
         }
-        function parseFechasLicencia(row) { let inicio = String(row['INICIO'] || '').trim(); let final = String(row['FINAL'] || '').trim(); let isIsoDate = /^\d{4}-/.test(inicio); if (inicio.includes('-') && !isIsoDate && (!final || final === 'NAN' || final === 'NULL' || final === '-')) { let partes = inicio.split('-'); if(partes.length >= 2) { inicio = partes[0].trim(); final = partes[1].trim(); } } return { inicio: formatDate(inicio), final: formatDate(final) }; }
-        function initLicenciasFilters() {
-            const containerAgente = document.getElementById('checklist-agente-lic'); const containerTipo = document.getElementById('checklist-tipo-lic'); const containerFuncion = document.getElementById('checklist-funcion-lic'); const selectAnio = document.getElementById('filter-anio-lic'); const selectMes = document.getElementById('filter-mes-lic');
-            if (!containerAgente || !containerTipo || !containerFuncion || !selectAnio || !selectMes) return;
-            containerAgente.innerHTML = ''; containerTipo.innerHTML = ''; containerFuncion.innerHTML = '';
-            while (selectAnio.options.length > 1) selectAnio.remove(1); while (selectMes.options.length > 1) selectMes.remove(1);
-            let agentes = new Set(), tipos = new Set(), funciones = new Set(), anios = new Set(), meses = new Set();
-            licenciasData.forEach(row => {
-                let ag = getAgenteName(row); if (ag && ag !== 'SIN AGENTE') agentes.add(ag);
-                let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase(); if (tipo && tipo !== 'UNDEFINED') tipos.add(tipo);
-                let funcion = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase(); if (funcion && funcion !== 'UNDEFINED' && funcion !== 'NULL' && funcion !== '-') funciones.add(funcion);
-                let anio = String(row['AÑO'] || row['ANIO'] || '').trim(); if (anio && anio !== 'UNDEFINED' && anio !== 'NULL' && anio !== '-') anios.add(anio);
-                let mes = String(row['MES'] || '').trim().toUpperCase(); if (mes && mes !== 'UNDEFINED' && mes !== 'NULL' && mes !== '-') meses.add(mes);
-            });
-            [...agentes].sort().forEach(ag => { containerAgente.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${ag}" checked onchange="processLicenciasData()" class="chk-agente-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium truncate" title="${ag}">${ag}</span></label>`; });
-            [...tipos].sort().forEach(t => { containerTipo.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${t}" checked onchange="processLicenciasData()" class="chk-tipo-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${t}</span></label>`; });
-            [...funciones].sort().forEach(f => { containerFuncion.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${f}" checked onchange="processLicenciasData()" class="chk-funcion-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium truncate" title="${f}">${f}</span></label>`; });
-            [...anios].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectAnio.appendChild(opt); });
-            allMonths.forEach(m => { if (meses.has(m)) { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt); } });
-        }
-        function processLicenciasData() {
-            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase()); const totalCheckAgentes = document.querySelectorAll('.chk-agente-lic').length;
-            const checkedTipos = Array.from(document.querySelectorAll('.chk-tipo-lic:checked')).map(cb => cb.value.toUpperCase()); const totalCheckTipos = document.querySelectorAll('.chk-tipo-lic').length;
-            const checkedFunciones = Array.from(document.querySelectorAll('.chk-funcion-lic:checked')).map(cb => cb.value.toUpperCase()); const totalCheckFunciones = document.querySelectorAll('.chk-funcion-lic').length;
-            const selectAnio = document.getElementById('filter-anio-lic'); const sAnio = selectAnio ? selectAnio.value : 'TODOS';
-            const selectMes = document.getElementById('filter-mes-lic'); const sMes = selectMes ? selectMes.value : 'TODOS';
-            updateMultiSelectLabel('label-agente-lic', checkedAgentes, totalCheckAgentes, 'Agentes'); updateMultiSelectLabel('label-tipo-lic', checkedTipos, totalCheckTipos, 'Tipos'); updateMultiSelectLabel('label-funcion-lic', checkedFunciones, totalCheckFunciones, 'Funciones');
-            let filteredLicencias = []; let totalDias = 0; let totalUsufructuados = 0; let totalPendientes = 0; let aniosLicSet = new Set(); let ultimaInicio = '-'; let ultimaFinal = '-';
-            licenciasData.forEach(row => {
-                let agenteRow = getAgenteName(row); let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase(); let funcionRow = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase(); let anioRow = String(row['AÑO'] || row['ANIO'] || '').trim(); let mesRow = String(row['MES'] || '').trim().toUpperCase(); let anioLicRow = String(row['AÑO DE LICENCIA'] || '').trim(); let fechas = parseFechasLicencia(row);
-                const matchAgente = checkedAgentes.includes(agenteRow); const matchTipo = checkedTipos.includes(tipoRow); const matchFuncion = checkedFunciones.includes(funcionRow); const matchAnio = sAnio === 'TODOS' || anioRow === sAnio; const matchMes = sMes === 'TODOS' || mesRow === sMes;
-                if (matchAgente && matchTipo && matchFuncion && matchAnio && matchMes) { let dias = parseNumberSafe(row['DIAS']); let usufructuados = parseNumberSafe(row['DIAS USUFRUCTUADOS']); let pendientes = parseNumberSafe(row['DIAS PENDIENTES']); totalDias += dias; totalUsufructuados += usufructuados; totalPendientes += pendientes; if (anioLicRow && anioLicRow !== 'UNDEFINED' && anioLicRow !== '-') aniosLicSet.add(anioLicRow); if (fechas.inicio !== '-' && fechas.inicio !== '') ultimaInicio = fechas.inicio; if (fechas.final !== '-' && fechas.final !== '') ultimaFinal = fechas.final; filteredLicencias.push({ agente: agenteRow, tipo: tipoRow, funcion: funcionRow, inicio: fechas.inicio, final: fechas.final, dias: dias }); }
-            });
-            let aniosLicText = aniosLicSet.size > 0 ? [...aniosLicSet].sort().join(', ') : '-'; renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, aniosLicText, ultimaInicio, ultimaFinal);
-        }
-        function renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, aniosLicText, ultimaInicio, ultimaFinal) {
-            const kpiContainer = document.getElementById('licencias-kpi-container');
-            if (kpiContainer) { kpiContainer.innerHTML = `<div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="file-check-2" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Licencias Totales</h4><span class="text-xl md:text-2xl font-bold text-white">${filteredLicencias.length}</span></div><div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-days" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Otorgados</h4><span class="text-xl md:text-2xl font-bold text-white">${totalDias}</span></div><div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-check" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Usufructuados</h4><span class="text-xl md:text-2xl font-bold text-white">${totalUsufructuados}</span></div><div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="clock" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Pendientes</h4><span class="text-xl md:text-2xl font-bold text-white">${totalPendientes}</span></div><div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar" class="text-indigo-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Año de Licencia</h4><span class="text-sm font-bold text-white mt-auto truncate max-w-[100px]" title="${aniosLicText}">${aniosLicText}</span></div><div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-arrow-up" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Última Fecha Inicio</h4><span class="text-sm font-bold text-white mt-auto">${ultimaInicio}</span></div><div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-arrow-down" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Última Fecha Final</h4><span class="text-sm font-bold text-white mt-auto">${ultimaFinal}</span></div>`; if(window.lucide) window.lucide.createIcons(); }
-            const tbody = document.getElementById('tbody-licencias');
-            if (tbody) { tbody.innerHTML = ''; if (filteredLicencias.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500 italic">No hay registros para los filtros seleccionados.</td></tr>`; } else { filteredLicencias.forEach(l => { tbody.innerHTML += `<tr class="hover:bg-slate-800/80 transition-colors border-b border-slate-800/50 last:border-0"><td class="px-4 py-2.5 font-medium text-slate-200">${l.agente}</td><td class="px-3 py-2.5 text-cyan-400 text-[11px] font-semibold tracking-wide uppercase">${l.tipo}</td><td class="px-3 py-2.5 text-slate-400">${l.funcion}</td><td class="px-3 py-2.5 text-slate-300">${l.inicio}</td><td class="px-3 py-2.5 text-slate-300">${l.final}</td><td class="px-3 py-2.5 text-center font-bold text-emerald-400">${l.dias > 0 ? l.dias : '-'}</td></tr>`; }); } }
-            if(charts.licenciasTipos) charts.licenciasTipos.destroy(); Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
-            const typeCounts = {}; filteredLicencias.forEach(l => { typeCounts[l.tipo] = (typeCounts[l.tipo] || 0) + 1; }); const sortedTypes = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
-            charts.licenciasTipos = new Chart(document.getElementById('chartLicenciasTipos').getContext('2d'), { type: 'doughnut', data: { labels: sortedTypes.map(t => t[0]), datasets: [{ data: sortedTypes.map(t => t[1]), backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#A855F7', '#EC4899', '#06B6D4', '#F43F5E'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: window.innerWidth > 768 ? 'right' : 'bottom' } } } });
+
+        function parseFechasLicencia(row) { 
+            let inicio = String(row['INICIO'] || '').trim(); 
+            let final = String(row['FINAL'] || '').trim(); 
+            let isIsoDate = /^\d{4}-/.test(inicio); 
+            
+            if (inicio.includes('-') && !isIsoDate && (!final || final === 'NAN' || final === 'NULL' || final === '-')) { 
+                let partes = inicio.split('-'); 
+                if(partes.length >= 2) { 
+                    inicio = partes[0].trim(); 
+                    final = partes[1].trim(); 
+                } 
+            } 
+            return { inicio: formatDate(inicio), final: formatDate(final) }; 
         }
 
-        /* ----- IRAB 2026 ----- */
-        function initIrabFilters() {
-            const sSemana = document.getElementById('filter-semana-irab'); if (!sSemana) return; let semanas = new Set();
-            irabData.forEach(row => { let sem = row['SEMANA EPIDEMIOLOGICA'] || row['SEMANA'] || ''; if (sem && !isNaN(parseFloat(sem))) semanas.add(String(sem).trim()); });
-            [...semanas].sort((a,b) => parseFloat(a) - parseFloat(b)).forEach(sem => { let opt = document.createElement('option'); opt.value = sem; opt.textContent = 'Semana ' + sem; sSemana.appendChild(opt); });
+        function initLicenciasFilters() {
+            const containerAgente = document.getElementById('checklist-agente-lic'); 
+            const containerTipo = document.getElementById('checklist-tipo-lic'); 
+            const containerFuncion = document.getElementById('checklist-funcion-lic'); 
+            const selectAnio = document.getElementById('filter-anio-lic'); 
+            const selectMes = document.getElementById('filter-mes-lic');
+            
+            if (!containerAgente || !containerTipo || !containerFuncion || !selectAnio || !selectMes) return;
+            
+            containerAgente.innerHTML = ''; 
+            containerTipo.innerHTML = ''; 
+            containerFuncion.innerHTML = '';
+            
+            while (selectAnio.options.length > 1) selectAnio.remove(1); 
+            while (selectMes.options.length > 1) selectMes.remove(1);
+            
+            let agentes = new Set(), tipos = new Set(), funciones = new Set(), anios = new Set(), meses = new Set();
+            
+            licenciasData.forEach(row => {
+                let ag = getAgenteName(row); 
+                if (ag && ag !== 'SIN AGENTE') agentes.add(ag);
+                
+                let tipo = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase(); 
+                if (tipo && tipo !== 'UNDEFINED') tipos.add(tipo);
+                
+                let funcion = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase(); 
+                if (funcion && funcion !== 'UNDEFINED' && funcion !== 'NULL' && funcion !== '-') funciones.add(funcion);
+                
+                let anio = String(row['AÑO'] || row['ANIO'] || '').trim(); 
+                if (anio && anio !== 'UNDEFINED' && anio !== 'NULL' && anio !== '-') anios.add(anio);
+                
+                let mes = String(row['MES'] || '').trim().toUpperCase(); 
+                if (mes && mes !== 'UNDEFINED' && mes !== 'NULL' && mes !== '-') meses.add(mes);
+            });
+            
+            [...agentes].sort().forEach(ag => { 
+                containerAgente.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${ag}" checked onchange="processLicenciasData()" class="chk-agente-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium truncate" title="${ag}">${ag}</span></label>`; 
+            });
+            
+            [...tipos].sort().forEach(t => { 
+                containerTipo.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${t}" checked onchange="processLicenciasData()" class="chk-tipo-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${t}</span></label>`; 
+            });
+            
+            [...funciones].sort().forEach(f => { 
+                containerFuncion.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${f}" checked onchange="processLicenciasData()" class="chk-funcion-lic rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium truncate" title="${f}">${f}</span></label>`; 
+            });
+            
+            [...anios].sort().forEach(val => { 
+                let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectAnio.appendChild(opt); 
+            });
+            
+            allMonths.forEach(m => { 
+                if (meses.has(m)) { 
+                    let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt); 
+                } 
+            });
         }
-        function processIrabData() {
-            if (irabData.length === 0) return; const selSemana = document.getElementById('filter-semana-irab').value;
-            let totalExternados = 0, totalVisitas = 0, totalMedicacion = 0, totalReinternacion = 0, totalTurnos = 0; let semanas = [], dataExternados = [], dataVisitas = [], dataTurnos = []; let medicacionesTotales = {}; const columnasNoMedicamento = [ 'SEMANA EPIDEMIOLOGICA', 'SEMANA', 'NIÑOS/AS EXTERNADOS', 'VISITAS REALIZADAS', 'ENTREGA DE MEDICACION', 'REINTERNACION', 'TURNOS PROGRAMADOS', 'CANTIDAD', 'AÑO', 'ID' ];
-            irabData.forEach(row => {
-                let semana = String(row['SEMANA EPIDEMIOLOGICA'] || row['SEMANA'] || '').trim(); const matchSemana = selSemana === 'TODAS' || semana === selSemana;
-                if (matchSemana) {
-                    let ext = parseNumberSafe(row['NIÑOS/AS EXTERNADOS']); let vis = parseNumberSafe(row['VISITAS REALIZADAS']); let med = parseNumberSafe(row['ENTREGA DE MEDICACION']); let rein = parseNumberSafe(row['REINTERNACION']); let turn = parseNumberSafe(row['TURNOS PROGRAMADOS']);
-                    if (semana && !isNaN(parseFloat(semana))) { semanas.push('Sem. ' + semana); dataExternados.push(ext); dataVisitas.push(vis); dataTurnos.push(turn); }
-                    totalExternados += ext; totalVisitas += vis; totalMedicacion += med; totalReinternacion += rein; totalTurnos += turn;
-                    for (let key in row) { if (!columnasNoMedicamento.includes(key.toUpperCase())) { let val = parseNumberSafe(row[key]); if (val > 0) { if (!medicacionesTotales[key]) medicacionesTotales[key] = 0; medicacionesTotales[key] += val; } } }
+
+        function processLicenciasData() {
+            const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-lic:checked')).map(cb => cb.value.toUpperCase()); 
+            const totalCheckAgentes = document.querySelectorAll('.chk-agente-lic').length;
+            
+            const checkedTipos = Array.from(document.querySelectorAll('.chk-tipo-lic:checked')).map(cb => cb.value.toUpperCase()); 
+            const totalCheckTipos = document.querySelectorAll('.chk-tipo-lic').length;
+            
+            const checkedFunciones = Array.from(document.querySelectorAll('.chk-funcion-lic:checked')).map(cb => cb.value.toUpperCase()); 
+            const totalCheckFunciones = document.querySelectorAll('.chk-funcion-lic').length;
+            
+            const selectAnio = document.getElementById('filter-anio-lic'); 
+            const sAnio = selectAnio ? selectAnio.value : 'TODOS';
+            
+            const selectMes = document.getElementById('filter-mes-lic'); 
+            const sMes = selectMes ? selectMes.value : 'TODOS';
+            
+            updateMultiSelectLabel('label-agente-lic', checkedAgentes, totalCheckAgentes, 'Agentes'); 
+            updateMultiSelectLabel('label-tipo-lic', checkedTipos, totalCheckTipos, 'Tipos'); 
+            updateMultiSelectLabel('label-funcion-lic', checkedFunciones, totalCheckFunciones, 'Funciones');
+            
+            let filteredLicencias = []; 
+            let totalDias = 0; 
+            let totalUsufructuados = 0; 
+            let totalPendientes = 0; 
+            let aniosLicSet = new Set(); 
+            let ultimaInicio = '-'; 
+            let ultimaFinal = '-';
+
+            // SOLUCIÓN AL BUG: Si seleccionan "Todos" (o si no hay filtros aplicables), que muestre todo, incluidas las celdas vacías.
+            const fallbackAgente = totalCheckAgentes === 0 || checkedAgentes.length === totalCheckAgentes;
+            const fallbackTipo = totalCheckTipos === 0 || checkedTipos.length === totalCheckTipos;
+            const fallbackFuncion = totalCheckFunciones === 0 || checkedFunciones.length === totalCheckFunciones;
+            
+            licenciasData.forEach(row => {
+                let agenteRow = getAgenteName(row); 
+                let tipoRow = String(row['TIPO LIC'] || row['TIPO DE LICENCIA'] || 'ANUAL').trim().toUpperCase(); 
+                let funcionRow = String(row['FUNCION'] || row['FUNCIÓN'] || '').trim().toUpperCase(); 
+                let anioRow = String(row['AÑO'] || row['ANIO'] || '').trim(); 
+                let mesRow = String(row['MES'] || '').trim().toUpperCase(); 
+                let anioLicRow = String(row['AÑO DE LICENCIA'] || '').trim(); 
+                let fechas = parseFechasLicencia(row);
+                
+                const matchAgente = fallbackAgente || checkedAgentes.includes(agenteRow); 
+                const matchTipo = fallbackTipo || checkedTipos.includes(tipoRow); 
+                const matchFuncion = fallbackFuncion || checkedFunciones.includes(funcionRow); 
+                const matchAnio = sAnio === 'TODOS' || anioRow === sAnio; 
+                const matchMes = sMes === 'TODOS' || mesRow === sMes;
+                
+                if (matchAgente && matchTipo && matchFuncion && matchAnio && matchMes) { 
+                    let dias = parseNumberSafe(row['DIAS']); 
+                    let usufructuados = parseNumberSafe(row['DIAS USUFRUCTUADOS']); 
+                    let pendientes = parseNumberSafe(row['DIAS PENDIENTES']); 
+                    
+                    totalDias += dias; 
+                    totalUsufructuados += usufructuados; 
+                    totalPendientes += pendientes; 
+                    
+                    if (anioLicRow && anioLicRow !== 'UNDEFINED' && anioLicRow !== '-') aniosLicSet.add(anioLicRow); 
+                    if (fechas.inicio !== '-' && fechas.inicio !== '') ultimaInicio = fechas.inicio; 
+                    if (fechas.final !== '-' && fechas.final !== '') ultimaFinal = fechas.final; 
+                    
+                    filteredLicencias.push({ agente: agenteRow, tipo: tipoRow, funcion: funcionRow, inicio: fechas.inicio, final: fechas.final, dias: dias }); 
                 }
             });
-            const kpiContainer = document.getElementById('irab-kpi-container');
-            kpiContainer.innerHTML = `<div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="baby" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Niños Externados</h4><span class="text-lg md:text-2xl font-bold text-white">${totalExternados}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="footprints" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Visitas Realizadas</h4><span class="text-lg md:text-2xl font-bold text-white">${totalVisitas}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="pill" class="text-orange-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Entrega Medicación</h4><span class="text-lg md:text-2xl font-bold text-white">${totalMedicacion}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="alert-triangle" class="text-red-500 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Reinternaciones</h4><span class="text-lg md:text-2xl font-bold text-white">${totalReinternacion}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center sm:col-span-1 md:col-span-1 col-span-2"><i data-lucide="calendar-check" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Programados</h4><span class="text-lg md:text-2xl font-bold text-white">${totalTurnos}</span></div>`;
-            if(window.lucide) window.lucide.createIcons();
-            if(charts.irabEvolucion) charts.irabEvolucion.destroy(); if(charts.irabMedicacion) charts.irabMedicacion.destroy(); if(charts.irabTurnos) charts.irabTurnos.destroy(); Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
-            charts.irabEvolucion = new Chart(document.getElementById('chartIrabEvolucion').getContext('2d'), { type: 'line', data: { labels: semanas, datasets: [ { label: 'Niños Externados', data: dataExternados, borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4 }, { label: 'Visitas Realizadas', data: dataVisitas, borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 } ] }, options: { responsive: true, maintainAspectRatio: false } });
-            const topMedicamentos = Object.entries(medicacionesTotales).sort((a,b) => b[1] - a[1]).slice(0, 10);
-            charts.irabMedicacion = new Chart(document.getElementById('chartIrabMedicacion').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: topMedicamentos.length > 0 ? topMedicamentos.map(m => m[0]) : ['Total General Entregado'], datasets: [{ label: 'Unidades', data: topMedicamentos.length > 0 ? topMedicamentos.map(m => m[1]) : [totalMedicacion], backgroundColor: '#10B981', borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            charts.irabTurnos = new Chart(document.getElementById('chartIrabTurnos').getContext('2d'), { type: 'bar', data: { labels: semanas, datasets: [{ label: 'Turnos Programados', data: dataTurnos, backgroundColor: '#A855F7', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            
+            let aniosLicText = aniosLicSet.size > 0 ? [...aniosLicSet].sort().join(', ') : '-'; 
+            renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, aniosLicText, ultimaInicio, ultimaFinal);
         }
 
-        /* ----- LABORATORIO INTELIGENTE ----- */
-        function initLaboratorioFilters() {
-            const containerAnio = document.getElementById('checklist-anio-lab'); const containerMes = document.getElementById('checklist-mes-lab'); const containerCaps = document.getElementById('checklist-caps-lab'); if (!containerAnio || !containerMes || !containerCaps) return;
-            containerAnio.innerHTML = ''; containerMes.innerHTML = ''; containerCaps.innerHTML = ''; let anios = new Set(), meses = new Set(), capsSet = new Set();
-            laboratorioData.forEach(row => { for (let key in row) { let k = key.toUpperCase(); if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') anios.add(val); } if (k.includes('MES') || k.includes('PERIODO')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') meses.add(val); } if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') capsSet.add(val); } } });
-            [...anios].sort().forEach(anio => { containerAnio.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${anio}" checked onchange="processLaboratorioData()" class="chk-anio-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${anio}</span></label>`; });
-            allMonths.forEach(m => { if ([...meses].map(x => x.toUpperCase()).includes(m)) { containerMes.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${m}" checked onchange="processLaboratorioData()" class="chk-mes-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${m}</span></label>`; } });
-            [...meses].sort().forEach(m => { let mUp = m.toUpperCase(); if (!allMonths.includes(mUp)) { containerMes.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${m}" checked onchange="processLaboratorioData()" class="chk-mes-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${m}</span></label>`; } });
-            [...capsSet].sort().forEach(c => { containerCaps.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${c}" checked onchange="processLaboratorioData()" class="chk-caps-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${c}</span></label>`; });
+        function renderLicenciasUI(filteredLicencias, totalDias, totalUsufructuados, totalPendientes, aniosLicText, ultimaInicio, ultimaFinal) {
+            const kpiContainer = document.getElementById('licencias-kpi-container');
+            if (kpiContainer) { 
+                kpiContainer.innerHTML = `
+                    <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="file-check-2" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Licencias Totales</h4><span class="text-xl md:text-2xl font-bold text-white">${filteredLicencias.length}</span></div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-days" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Otorgados</h4><span class="text-xl md:text-2xl font-bold text-white">${totalDias}</span></div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-check" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Usufructuados</h4><span class="text-xl md:text-2xl font-bold text-white">${totalUsufructuados}</span></div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="clock" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Pendientes</h4><span class="text-xl md:text-2xl font-bold text-white">${totalPendientes}</span></div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar" class="text-indigo-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Año de Licencia</h4><span class="text-sm font-bold text-white mt-auto truncate max-w-[100px]" title="${aniosLicText}">${aniosLicText}</span></div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-arrow-up" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Última Fecha Inicio</h4><span class="text-sm font-bold text-white mt-auto">${ultimaInicio}</span></div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-arrow-down" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Última Fecha Final</h4><span class="text-sm font-bold text-white mt-auto">${ultimaFinal}</span></div>
+                `; 
+                if(window.lucide) window.lucide.createIcons(); 
+            }
+            
+            const tbody = document.getElementById('tbody-licencias');
+            if (tbody) { 
+                tbody.innerHTML = ''; 
+                if (filteredLicencias.length === 0) { 
+                    tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500 italic">No hay registros para los filtros seleccionados.</td></tr>`; 
+                } else { 
+                    filteredLicencias.forEach(l => { 
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-800/80 transition-colors border-b border-slate-800/50 last:border-0">
+                                <td class="px-4 py-2.5 font-medium text-slate-200">${l.agente}</td>
+                                <td class="px-3 py-2.5 text-cyan-400 text-[11px] font-semibold tracking-wide uppercase">${l.tipo}</td>
+                                <td class="px-3 py-2.5 text-slate-400">${l.funcion}</td>
+                                <td class="px-3 py-2.5 text-slate-300">${l.inicio}</td>
+                                <td class="px-3 py-2.5 text-slate-300">${l.final}</td>
+                                <td class="px-3 py-2.5 text-center font-bold text-emerald-400">${l.dias > 0 ? l.dias : '-'}</td>
+                            </tr>
+                        `; 
+                    }); 
+                } 
+            }
+            
+            if(charts.licenciasTipos) charts.licenciasTipos.destroy(); 
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+            
+            const typeCounts = {}; 
+            filteredLicencias.forEach(l => { typeCounts[l.tipo] = (typeCounts[l.tipo] || 0) + 1; }); 
+            const sortedTypes = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
+            
+            charts.licenciasTipos = new Chart(document.getElementById('chartLicenciasTipos').getContext('2d'), { 
+                type: 'doughnut', 
+                data: { 
+                    labels: sortedTypes.map(t => t[0]), 
+                    datasets: [{ 
+                        data: sortedTypes.map(t => t[1]), 
+                        backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#A855F7', '#EC4899', '#06B6D4', '#F43F5E'], 
+                        borderWidth: 0 
+                    }] 
+                }, 
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: window.innerWidth > 768 ? 'right' : 'bottom' } } } 
+            });
         }
-        function processLaboratorioData() {
-            const kpiContainer = document.getElementById('lab-kpi-container'); if (!kpiContainer) return;
-            if (laboratorioData.length === 0) { kpiContainer.innerHTML = `<div class="col-span-4 glass-card p-6 text-center text-amber-400 text-sm font-medium">Sincronizando datos de Laboratorio...</div>`; return; }
-            const selectedAnios = Array.from(document.querySelectorAll('.chk-anio-lab:checked')).map(cb => cb.value.toUpperCase()); const totalAnios = document.querySelectorAll('.chk-anio-lab').length;
-            const selectedMeses = Array.from(document.querySelectorAll('.chk-mes-lab:checked')).map(cb => cb.value.toUpperCase()); const totalMeses = document.querySelectorAll('.chk-mes-lab').length;
-            const selectedCaps = Array.from(document.querySelectorAll('.chk-caps-lab:checked')).map(cb => cb.value.toUpperCase()); const totalCaps = document.querySelectorAll('.chk-caps-lab').length;
-            updateMultiSelectLabel('label-anio-lab', selectedAnios, totalAnios, 'Años'); updateMultiSelectLabel('label-mes-lab', selectedMeses, totalMeses, 'Meses'); updateMultiSelectLabel('label-caps-lab', selectedCaps, totalCaps, 'CAPS');
-            let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0; let capsStats = {}, monthCapsMap = {};
-            laboratorioData.forEach((row, i) => {
-                let rowAnio = '', rowMes = '', rowCaps = '';
-                for (let key in row) { let k = key.toUpperCase(); if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) rowAnio = String(row[key] || '').trim().toUpperCase(); if (k.includes('MES') || k.includes('PERIODO')) rowMes = String(row[key] || '').trim().toUpperCase(); if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) rowCaps = String(row[key] || '').trim().toUpperCase(); }
-                if (!rowCaps) rowCaps = row['CAPS'] || row['CENTRO'] || row['EFECTOR'] || Object.values(row)[0] || (`Reg ${i+1}`); if (!rowMes) rowMes = 'GENERAL';
-                const matchAnio = selectedAnios.includes(rowAnio) || totalAnios === 0; const matchMes = selectedMeses.includes(rowMes) || totalMeses === 0; const matchCaps = selectedCaps.includes(rowCaps) || totalCaps === 0;
-                if (matchAnio && matchMes && matchCaps) {
-                    let otorgados = 0, presentes = 0, ausentes = 0;
-                    for (let key in row) { let k = key.toUpperCase(); let val = parseNumberSafe(row[key]); if (k.includes('OTORGADO') || k.includes('TURNO')) otorgados += val; if (k.includes('PRESENTE') || k.includes('ATENDIDO')) presentes += val; if (k.includes('AUSENTE') || k.includes('FALTA')) ausentes += val; }
-                    if (otorgados === 0 && (presentes > 0 || ausentes > 0)) otorgados = presentes + ausentes;
-                    if (otorgados > 0 || presentes > 0 || ausentes > 0) {
-                        totalOtorgados += otorgados; totalPresentes += presentes; totalAusentes += ausentes;
-                        if (!capsStats[rowCaps]) capsStats[rowCaps] = { otorgados: 0, presentes: 0, ausentes: 0 }; capsStats[rowCaps].otorgados += otorgados; capsStats[rowCaps].presentes += presentes; capsStats[rowCaps].ausentes += ausentes;
-                        if (!monthCapsMap[rowMes]) monthCapsMap[rowMes] = {}; if (!monthCapsMap[rowMes][rowCaps]) monthCapsMap[rowMes][rowCaps] = 0; monthCapsMap[rowMes][rowCaps] += presentes;
+
+        /* ==================== IRAB 2026 ==================== */
+        function initIrabFilters() {
+            const sSemana = document.getElementById('filter-semana-irab'); 
+            if (!sSemana) return; 
+            let semanas = new Set();
+            irabData.forEach(row => { 
+                let sem = row['SEMANA EPIDEMIOLOGICA'] || row['SEMANA'] || ''; 
+                if (sem && !isNaN(parseFloat(sem))) semanas.add(String(sem).trim()); 
+            });
+            [...semanas].sort((a,b) => parseFloat(a) - parseFloat(b)).forEach(sem => { 
+                let opt = document.createElement('option'); opt.value = sem; opt.textContent = 'Semana ' + sem; sSemana.appendChild(opt); 
+            });
+        }
+
+        function processIrabData() {
+            if (irabData.length === 0) return; 
+            const selSemana = document.getElementById('filter-semana-irab').value;
+            
+            let totalExternados = 0, totalVisitas = 0, totalMedicacion = 0, totalReinternacion = 0, totalTurnos = 0; 
+            let semanas = [], dataExternados = [], dataVisitas = [], dataTurnos = []; 
+            let medicacionesTotales = {}; 
+            const colEx = ['SEMANA EPIDEMIOLOGICA', 'SEMANA', 'NIÑOS/AS EXTERNADOS', 'VISITAS REALIZADAS', 'ENTREGA DE MEDICACION', 'REINTERNACION', 'TURNOS PROGRAMADOS', 'CANTIDAD', 'AÑO', 'ID'];
+            
+            irabData.forEach(row => {
+                let semana = String(row['SEMANA EPIDEMIOLOGICA'] || row['SEMANA'] || '').trim(); 
+                const matchSemana = selSemana === 'TODAS' || semana === selSemana;
+                
+                if (matchSemana) {
+                    let ext = parseNumberSafe(row['NIÑOS/AS EXTERNADOS']); 
+                    let vis = parseNumberSafe(row['VISITAS REALIZADAS']); 
+                    let med = parseNumberSafe(row['ENTREGA DE MEDICACION']); 
+                    let rein = parseNumberSafe(row['REINTERNACION']); 
+                    let turn = parseNumberSafe(row['TURNOS PROGRAMADOS']);
+                    
+                    if (semana && !isNaN(parseFloat(semana))) { 
+                        semanas.push('Sem. ' + semana); 
+                        dataExternados.push(ext); 
+                        dataVisitas.push(vis); 
+                        dataTurnos.push(turn); 
+                    }
+                    
+                    totalExternados += ext; 
+                    totalVisitas += vis; 
+                    totalMedicacion += med; 
+                    totalReinternacion += rein; 
+                    totalTurnos += turn;
+                    
+                    for (let key in row) { 
+                        if (!colEx.includes(key.toUpperCase())) { 
+                            let val = parseNumberSafe(row[key]); 
+                            if (val > 0) { 
+                                if (!medicacionesTotales[key]) medicacionesTotales[key] = 0; 
+                                medicacionesTotales[key] += val; 
+                            } 
+                        } 
                     }
                 }
             });
-            let efectividad = totalOtorgados > 0 ? ((totalPresentes / totalOtorgados) * 100).toFixed(1) : '0.0';
-            kpiContainer.innerHTML = `<div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="calendar-check" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Otorgados</h4><span class="text-lg md:text-2xl font-bold text-white">${totalOtorgados.toLocaleString('es-AR')}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="user-check" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Presentes</h4><span class="text-lg md:text-2xl font-bold text-white">${totalPresentes.toLocaleString('es-AR')}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="user-x" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Ausentes</h4><span class="text-lg md:text-2xl font-bold text-white">${totalAusentes.toLocaleString('es-AR')}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="activity" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">% Asistencia</h4><span class="text-lg md:text-2xl font-bold text-white">${efectividad}%</span></div>`; if(window.lucide) window.lucide.createIcons();
-            if(charts.labTopMenorAsistencia) charts.labTopMenorAsistencia.destroy(); if(charts.labEvolucion) charts.labEvolucion.destroy(); if(charts.labEstado) charts.labEstado.destroy(); if(charts.labDetalle) charts.labDetalle.destroy(); Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
-            let sortedLowestCaps = Object.entries(capsStats).map(([name, data]) => { let pct = data.otorgados > 0 ? (data.presentes / data.otorgados) * 100 : 0; return { name, pct: parseFloat(pct.toFixed(1)), presentes: data.presentes, otorgados: data.otorgados }; }).sort((a,b) => a.pct - b.pct).slice(0, 10);
-            charts.labTopMenorAsistencia = new Chart(document.getElementById('chartLabTopMenorAsistencia').getContext('2d'), { type: 'bar', data: { labels: sortedLowestCaps.map(item => item.name), datasets: [{ label: '% Asistencia', data: sortedLowestCaps.map(item => item.pct), backgroundColor: '#F43F5E', borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return `Asistencia: ${context.raw}%`; } } } }, scales: { x: { max: 100, ticks: { callback: v => v + '%' } }, y: { ticks: { font: { size: 10 } } } } } });
-            let uniqueCapsList = Object.keys(capsStats), activeMonths = Object.keys(monthCapsMap); let datasetsByMonth = activeMonths.map(month => { return { label: month, data: uniqueCapsList.map(caps => monthCapsMap[month][caps] || 0), backgroundColor: monthColors[month] || '#3B82F6', borderRadius: 3 }; });
-            charts.labEvolucion = new Chart(document.getElementById('chartLabEvolucion').getContext('2d'), { type: 'bar', data: { labels: uniqueCapsList, datasets: datasetsByMonth }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 11 } } } } } });
-            charts.labEstado = new Chart(document.getElementById('chartLabEstado').getContext('2d'), { type: 'doughnut', data: { labels: ['Presentes', 'Ausentes'], datasets: [{ data: [totalPresentes, totalAusentes], backgroundColor: ['#10B981', '#F43F5E'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%' } });
-            charts.labDetalle = new Chart(document.getElementById('chartLabDetalle').getContext('2d'), { type: 'bar', data: { labels: uniqueCapsList, datasets: [{ label: 'Turnos Otorgados', data: uniqueCapsList.map(c => capsStats[c].otorgados), backgroundColor: '#6366F1', borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            
+            const kpiContainer = document.getElementById('irab-kpi-container');
+            kpiContainer.innerHTML = `
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="baby" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Niños Externados</h4><span class="text-lg md:text-2xl font-bold text-white">${totalExternados}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="footprints" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Visitas Realizadas</h4><span class="text-lg md:text-2xl font-bold text-white">${totalVisitas}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="pill" class="text-orange-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Entrega Medicación</h4><span class="text-lg md:text-2xl font-bold text-white">${totalMedicacion}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="alert-triangle" class="text-red-500 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Reinternaciones</h4><span class="text-lg md:text-2xl font-bold text-white">${totalReinternacion}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center sm:col-span-1 md:col-span-1 col-span-2"><i data-lucide="calendar-check" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Programados</h4><span class="text-lg md:text-2xl font-bold text-white">${totalTurnos}</span></div>
+            `;
+            if(window.lucide) window.lucide.createIcons();
+            
+            if(charts.irabEvolucion) charts.irabEvolucion.destroy(); 
+            if(charts.irabMedicacion) charts.irabMedicacion.destroy(); 
+            if(charts.irabTurnos) charts.irabTurnos.destroy(); 
+            
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+            
+            charts.irabEvolucion = new Chart(document.getElementById('chartIrabEvolucion').getContext('2d'), { 
+                type: 'line', 
+                data: { labels: semanas, datasets: [ { label: 'Niños Externados', data: dataExternados, borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4 }, { label: 'Visitas Realizadas', data: dataVisitas, borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 } ] }, 
+                options: { responsive: true, maintainAspectRatio: false } 
+            });
+            
+            const topMedicamentos = Object.entries(medicacionesTotales).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            charts.irabMedicacion = new Chart(document.getElementById('chartIrabMedicacion').getContext('2d'), { 
+                type: 'bar', indexAxis: 'y', 
+                data: { labels: topMedicamentos.length > 0 ? topMedicamentos.map(m => m[0]) : ['Total General Entregado'], datasets: [{ label: 'Unidades', data: topMedicamentos.length > 0 ? topMedicamentos.map(m => m[1]) : [totalMedicacion], backgroundColor: '#10B981', borderRadius: 4 }] }, 
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
+            });
+            
+            charts.irabTurnos = new Chart(document.getElementById('chartIrabTurnos').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: semanas, datasets: [{ label: 'Turnos Programados', data: dataTurnos, backgroundColor: '#A855F7', borderRadius: 4 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
+            });
         }
 
-        /* ----- HSI ----- */
-        function initHsiFilters() {
-            const selectAnio = document.getElementById('filter-anio-hsi'); const selectMes = document.getElementById('filter-mes-hsi'); const selectCaps = document.getElementById('filter-caps-hsi'); if (!selectAnio || !selectMes || !selectCaps) return;
+        /* ==================== LABORATORIO ==================== */
+        function initLaboratorioFilters() {
+            const containerAnio = document.getElementById('checklist-anio-lab'); 
+            const containerMes = document.getElementById('checklist-mes-lab'); 
+            const containerCaps = document.getElementById('checklist-caps-lab'); 
+            if (!containerAnio || !containerMes || !containerCaps) return;
+            
+            containerAnio.innerHTML = ''; containerMes.innerHTML = ''; containerCaps.innerHTML = ''; 
             let anios = new Set(), meses = new Set(), capsSet = new Set();
-            hsiData.forEach(row => { for (let key in row) { let k = key.toUpperCase(); if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') anios.add(val); } if (k.includes('MES') || k.includes('PERIODO')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') meses.add(val); } if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') capsSet.add(val); } } });
-            [...anios].sort().forEach(anio => { let opt = document.createElement('option'); opt.value = anio; opt.textContent = anio; selectAnio.appendChild(opt); }); allMonths.forEach(m => { if ([...meses].map(x => x.toUpperCase()).includes(m)) { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt); } }); [...meses].sort().forEach(m => { let mUp = m.toUpperCase(); if (!allMonths.includes(mUp)) { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt); } }); [...capsSet].sort().forEach(c => { let opt = document.createElement('option'); opt.value = c; opt.textContent = c; selectCaps.appendChild(opt); });
+            
+            laboratorioData.forEach(row => { 
+                for (let key in row) { 
+                    let k = key.toUpperCase(); 
+                    if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') anios.add(val); } 
+                    if (k.includes('MES') || k.includes('PERIODO')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') meses.add(val); } 
+                    if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') capsSet.add(val); } 
+                } 
+            });
+            
+            [...anios].sort().forEach(anio => { containerAnio.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${anio}" checked onchange="processLaboratorioData()" class="chk-anio-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${anio}</span></label>`; });
+            
+            allMonths.forEach(m => { 
+                if ([...meses].map(x => x.toUpperCase()).includes(m)) { 
+                    containerMes.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${m}" checked onchange="processLaboratorioData()" class="chk-mes-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${m}</span></label>`; 
+                } 
+            });
+            [...meses].sort().forEach(m => { 
+                let mUp = m.toUpperCase(); 
+                if (!allMonths.includes(mUp)) { 
+                    containerMes.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${m}" checked onchange="processLaboratorioData()" class="chk-mes-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${m}</span></label>`; 
+                } 
+            });
+            
+            [...capsSet].sort().forEach(c => { containerCaps.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${c}" checked onchange="processLaboratorioData()" class="chk-caps-lab rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${c}</span></label>`; });
         }
-        function processHsiData() {
-            const kpiContainer = document.getElementById('hsi-kpi-container'); if (!kpiContainer) return;
-            if (!URL_HSI || hsiData.length === 0) { kpiContainer.innerHTML = `<div class="col-span-4 glass-card p-6 text-center text-amber-400 text-sm font-medium">Pega el enlace web (/exec) de tu script en la variable URL_HSI de este código para visualizar tus datos de Historia de Salud Integrada.</div>`; return; }
-            const sAnio = document.getElementById('filter-anio-hsi').value; const sMes = document.getElementById('filter-mes-hsi').value; const sCaps = document.getElementById('filter-caps-hsi').value;
-            let totalVolumen = 0; let labelsRow = [], dataVolumen = [];
-            hsiData.forEach((row, i) => {
-                let matchAnio = true, matchMes = true, matchCaps = true;
-                if (sAnio !== 'TODOS') { matchAnio = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('AÑO') || k.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) matchAnio = true; } }
-                if (sMes !== 'TODOS') { matchMes = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('MES') || k.includes('PERIODO')) && String(row[key]).trim().toUpperCase() === sMes) matchMes = true; } }
-                if (sCaps !== 'TODOS') { matchCaps = false; for (let key in row) { let k = key.toUpperCase(); if ((k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) && String(row[key]).trim().toUpperCase() === sCaps) matchCaps = true; } }
+
+        function processLaboratorioData() {
+            const kpiContainer = document.getElementById('lab-kpi-container'); 
+            if (!kpiContainer) return;
+            
+            if (laboratorioData.length === 0) { 
+                kpiContainer.innerHTML = `<div class="col-span-4 glass-card p-6 text-center text-amber-400 text-sm font-medium">Sincronizando datos de Laboratorio...</div>`; 
+                return; 
+            }
+            
+            const selectedAnios = Array.from(document.querySelectorAll('.chk-anio-lab:checked')).map(cb => cb.value.toUpperCase()); 
+            const totalAnios = document.querySelectorAll('.chk-anio-lab').length;
+            const selectedMeses = Array.from(document.querySelectorAll('.chk-mes-lab:checked')).map(cb => cb.value.toUpperCase()); 
+            const totalMeses = document.querySelectorAll('.chk-mes-lab').length;
+            const selectedCaps = Array.from(document.querySelectorAll('.chk-caps-lab:checked')).map(cb => cb.value.toUpperCase()); 
+            const totalCaps = document.querySelectorAll('.chk-caps-lab').length;
+            
+            updateMultiSelectLabel('label-anio-lab', selectedAnios, totalAnios, 'Años'); 
+            updateMultiSelectLabel('label-mes-lab', selectedMeses, totalMeses, 'Meses'); 
+            updateMultiSelectLabel('label-caps-lab', selectedCaps, totalCaps, 'CAPS');
+            
+            let totalOtorgados = 0, totalPresentes = 0, totalAusentes = 0; 
+            let capsStats = {}, monthCapsMap = {};
+            
+            const fallbackAnio = totalAnios === 0 || selectedAnios.length === totalAnios;
+            const fallbackMes = totalMeses === 0 || selectedMeses.length === totalMeses;
+            const fallbackCaps = totalCaps === 0 || selectedCaps.length === totalCaps;
+            
+            laboratorioData.forEach((row, i) => {
+                let rowAnio = '', rowMes = '', rowCaps = '';
+                
+                for (let key in row) { 
+                    let k = key.toUpperCase(); 
+                    if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) rowAnio = String(row[key] || '').trim().toUpperCase(); 
+                    if (k.includes('MES') || k.includes('PERIODO')) rowMes = String(row[key] || '').trim().toUpperCase(); 
+                    if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR')) rowCaps = String(row[key] || '').trim().toUpperCase(); 
+                }
+                
+                if (!rowCaps) rowCaps = row['CAPS'] || row['CENTRO'] || row['EFECTOR'] || Object.values(row)[0] || (`Reg ${i+1}`); 
+                if (!rowMes) rowMes = 'GENERAL';
+                
+                const matchAnio = fallbackAnio || selectedAnios.includes(rowAnio); 
+                const matchMes = fallbackMes || selectedMeses.includes(rowMes); 
+                const matchCaps = fallbackCaps || selectedCaps.includes(rowCaps);
+                
                 if (matchAnio && matchMes && matchCaps) {
-                    let label = row['CAPS'] || row['CENTRO'] || row['ESTABLECIMIENTO'] || row['MES'] || Object.values(row)[0] || (`Reg ${i+1}`); let sumaFila = 0;
-                    for (let key in row) { let k = key.toUpperCase(); let val = parseNumberSafe(row[key]); if (!k.includes('ID') && !k.includes('AÑO') && !k.includes('ANIO') && !k.includes('YEAR') && val > 0) sumaFila += val; }
-                    if (sumaFila > 0) { labelsRow.push(String(label).trim()); dataVolumen.push(sumaFila); totalVolumen += sumaFila; }
+                    let otorgados = 0, presentes = 0, ausentes = 0;
+                    
+                    for (let key in row) { 
+                        let k = key.toUpperCase(); 
+                        let val = parseNumberSafe(row[key]); 
+                        if (k.includes('OTORGADO') || k.includes('TURNO')) otorgados += val; 
+                        if (k.includes('PRESENTE') || k.includes('ATENDIDO')) presentes += val; 
+                        if (k.includes('AUSENTE') || k.includes('FALTA')) ausentes += val; 
+                    }
+                    
+                    if (otorgados === 0 && (presentes > 0 || ausentes > 0)) otorgados = presentes + ausentes;
+                    
+                    if (otorgados > 0 || presentes > 0 || ausentes > 0) {
+                        totalOtorgados += otorgados; 
+                        totalPresentes += presentes; 
+                        totalAusentes += ausentes;
+                        
+                        if (!capsStats[rowCaps]) capsStats[rowCaps] = { otorgados: 0, presentes: 0, ausentes: 0 }; 
+                        capsStats[rowCaps].otorgados += otorgados; 
+                        capsStats[rowCaps].presentes += presentes; 
+                        capsStats[rowCaps].ausentes += ausentes;
+                        
+                        if (!monthCapsMap[rowMes]) monthCapsMap[rowMes] = {}; 
+                        if (!monthCapsMap[rowMes][rowCaps]) monthCapsMap[rowMes][rowCaps] = 0; 
+                        monthCapsMap[rowMes][rowCaps] += presentes;
+                    }
                 }
             });
-            let promedio = labelsRow.length > 0 ? Math.round(totalVolumen / labelsRow.length) : 0; let maxIndex = dataVolumen.length > 0 ? dataVolumen.indexOf(Math.max(...dataVolumen)) : 0; let topEfector = labelsRow[maxIndex] || 'N/A';
-            kpiContainer.innerHTML = `<div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="folder-plus" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Volumen HSI Total</h4><span class="text-lg md:text-2xl font-bold text-white">${totalVolumen.toLocaleString('es-AR')}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="bar-chart-2" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Promedio por Registro</h4><span class="text-lg md:text-2xl font-bold text-white">${promedio.toLocaleString('es-AR')}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="award" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Mayor Volumen</h4><span class="text-sm md:text-base font-bold text-white truncate max-w-[140px]" title="${topEfector}">${topEfector}</span></div><div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="building-2" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Registros</h4><span class="text-lg md:text-2xl font-bold text-white">${labelsRow.length}</span></div>`; if(window.lucide) window.lucide.createIcons();
-            if(charts.hsiEvolucion) charts.hsiEvolucion.destroy(); if(charts.hsiEstado) charts.hsiEstado.destroy(); if(charts.hsiDetalle) charts.hsiDetalle.destroy(); Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
-            charts.hsiEvolucion = new Chart(document.getElementById('chartHsiEvolucion').getContext('2d'), { type: 'bar', data: { labels: labelsRow, datasets: [{ label: 'Registros HSI', data: dataVolumen, backgroundColor: '#10B981', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            let topIndices = dataVolumen.map((val, idx) => ({ val, idx })).sort((a,b) => b.val - a.val).slice(0, 5); charts.hsiEstado = new Chart(document.getElementById('chartHsiEstado').getContext('2d'), { type: 'doughnut', data: { labels: topIndices.map(i => labelsRow[i.idx]), datasets: [{ data: topIndices.map(i => i.val), backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#A855F7', '#EC4899'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '60%' } });
-            let sortedAll = dataVolumen.map((val, idx) => ({ label: labelsRow[idx], val })).sort((a,b) => b.val - a.val); charts.hsiDetalle = new Chart(document.getElementById('chartHsiDetalle').getContext('2d'), { type: 'bar', data: { labels: sortedAll.map(i => i.label), datasets: [{ label: 'Registros', data: sortedAll.map(i => i.val), backgroundColor: '#6366F1', borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            
+            let efectividad = totalOtorgados > 0 ? ((totalPresentes / totalOtorgados) * 100).toFixed(1) : '0.0';
+            
+            kpiContainer.innerHTML = `
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="calendar-check" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Turnos Otorgados</h4><span class="text-lg md:text-2xl font-bold text-white">${totalOtorgados.toLocaleString('es-AR')}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="user-check" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Presentes</h4><span class="text-lg md:text-2xl font-bold text-white">${totalPresentes.toLocaleString('es-AR')}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="user-x" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pacientes Ausentes</h4><span class="text-lg md:text-2xl font-bold text-white">${totalAusentes.toLocaleString('es-AR')}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="activity" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">% Asistencia</h4><span class="text-lg md:text-2xl font-bold text-white">${efectividad}%</span></div>
+            `; 
+            if(window.lucide) window.lucide.createIcons();
+            
+            if(charts.labTopMenorAsistencia) charts.labTopMenorAsistencia.destroy(); 
+            if(charts.labEvolucion) charts.labEvolucion.destroy(); 
+            if(charts.labEstado) charts.labEstado.destroy(); 
+            if(charts.labDetalle) charts.labDetalle.destroy(); 
+            
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+            
+            let sortedLowestCaps = Object.entries(capsStats).map(([name, data]) => { 
+                let pct = data.otorgados > 0 ? (data.presentes / data.otorgados) * 100 : 0; 
+                return { name, pct: parseFloat(pct.toFixed(1)), presentes: data.presentes, otorgados: data.otorgados }; 
+            }).sort((a,b) => a.pct - b.pct).slice(0, 10);
+            
+            charts.labTopMenorAsistencia = new Chart(document.getElementById('chartLabTopMenorAsistencia').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: sortedLowestCaps.map(item => item.name), datasets: [{ label: '% Asistencia', data: sortedLowestCaps.map(item => item.pct), backgroundColor: '#F43F5E', borderRadius: 4 }] }, 
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return `Asistencia: ${context.raw}%`; } } } }, scales: { x: { max: 100, ticks: { callback: v => v + '%' } }, y: { ticks: { font: { size: 10 } } } } } 
+            });
+            
+            let uniqueCapsList = Object.keys(capsStats), activeMonths = Object.keys(monthCapsMap); 
+            let datasetsByMonth = activeMonths.map(month => { 
+                return { label: month, data: uniqueCapsList.map(caps => monthCapsMap[month][caps] || 0), backgroundColor: monthColors[month] || '#3B82F6', borderRadius: 3 }; 
+            });
+            
+            charts.labEvolucion = new Chart(document.getElementById('chartLabEvolucion').getContext('2d'), { 
+                type: 'bar', data: { labels: uniqueCapsList, datasets: datasetsByMonth }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 11 } } } } } 
+            });
+            
+            charts.labEstado = new Chart(document.getElementById('chartLabEstado').getContext('2d'), { 
+                type: 'doughnut', data: { labels: ['Presentes', 'Ausentes'], datasets: [{ data: [totalPresentes, totalAusentes], backgroundColor: ['#10B981', '#F43F5E'], borderWidth: 0 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%' } 
+            });
+            
+            charts.labDetalle = new Chart(document.getElementById('chartLabDetalle').getContext('2d'), { 
+                type: 'bar', data: { labels: uniqueCapsList, datasets: [{ label: 'Turnos Otorgados', data: uniqueCapsList.map(c => capsStats[c].otorgados), backgroundColor: '#6366F1', borderRadius: 4 }] }, 
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
+            });
+        }
+
+        /* ==================== HSI ==================== */
+        function initHsiFilters() {
+            const selectAnio = document.getElementById('filter-anio-hsi'); 
+            const selectMes = document.getElementById('filter-mes-hsi'); 
+            const selectCaps = document.getElementById('filter-caps-hsi'); 
+            if (!selectAnio || !selectMes || !selectCaps) return;
+            
+            let anios = new Set(), meses = new Set(), capsSet = new Set();
+            hsiData.forEach(row => { 
+                for (let key in row) { 
+                    let k = key.toUpperCase(); 
+                    if (k.includes('AÑO') || k.includes('ANIO') || k.includes('YEAR')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') anios.add(val); } 
+                    if (k.includes('MES') || k.includes('PERIODO')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') meses.add(val); } 
+                    if (k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) { let val = String(row[key] || '').trim(); if (val && val !== 'UNDEFINED' && val !== 'NULL') capsSet.add(val); } 
+                } 
+            });
+            
+            [...anios].sort().forEach(anio => { let opt = document.createElement('option'); opt.value = anio; opt.textContent = anio; selectAnio.appendChild(opt); }); 
+            allMonths.forEach(m => { if ([...meses].map(x => x.toUpperCase()).includes(m)) { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt); } }); 
+            [...meses].sort().forEach(m => { let mUp = m.toUpperCase(); if (!allMonths.includes(mUp)) { let opt = document.createElement('option'); opt.value = m; opt.textContent = m; selectMes.appendChild(opt); } }); 
+            [...capsSet].sort().forEach(c => { let opt = document.createElement('option'); opt.value = c; opt.textContent = c; selectCaps.appendChild(opt); });
+        }
+
+        function processHsiData() {
+            const kpiContainer = document.getElementById('hsi-kpi-container'); 
+            if (!kpiContainer) return;
+            
+            if (!URL_HSI || hsiData.length === 0) { 
+                kpiContainer.innerHTML = `<div class="col-span-4 glass-card p-6 text-center text-amber-400 text-sm font-medium">Pega el enlace web (/exec) de tu script en la variable URL_HSI de este código para visualizar tus datos de Historia de Salud Integrada.</div>`; 
+                return; 
+            }
+            
+            const sAnio = document.getElementById('filter-anio-hsi').value; 
+            const sMes = document.getElementById('filter-mes-hsi').value; 
+            const sCaps = document.getElementById('filter-caps-hsi').value;
+            
+            let totalVolumen = 0; 
+            let labelsRow = [], dataVolumen = [];
+            
+            hsiData.forEach((row, i) => {
+                let matchAnio = true, matchMes = true, matchCaps = true;
+                
+                if (sAnio !== 'TODOS') { 
+                    matchAnio = false; 
+                    for (let key in row) { let k = key.toUpperCase(); if ((k.includes('AÑO') || k.includes('ANIO')) && String(row[key]).trim().toUpperCase() === sAnio) matchAnio = true; } 
+                }
+                
+                if (sMes !== 'TODOS') { 
+                    matchMes = false; 
+                    for (let key in row) { let k = key.toUpperCase(); if ((k.includes('MES') || k.includes('PERIODO')) && String(row[key]).trim().toUpperCase() === sMes) matchMes = true; } 
+                }
+                
+                if (sCaps !== 'TODOS') { 
+                    matchCaps = false; 
+                    for (let key in row) { let k = key.toUpperCase(); if ((k.includes('CAPS') || k.includes('CENTRO') || k.includes('EFECTOR') || k.includes('ESTABLECIMIENTO')) && String(row[key]).trim().toUpperCase() === sCaps) matchCaps = true; } 
+                }
+                
+                if (matchAnio && matchMes && matchCaps) {
+                    let label = row['CAPS'] || row['CENTRO'] || row['ESTABLECIMIENTO'] || row['MES'] || Object.values(row)[0] || (`Reg ${i+1}`); 
+                    let sumaFila = 0;
+                    
+                    for (let key in row) { 
+                        let k = key.toUpperCase(); 
+                        let val = parseNumberSafe(row[key]); 
+                        if (!k.includes('ID') && !k.includes('AÑO') && !k.includes('ANIO') && !k.includes('YEAR') && val > 0) sumaFila += val; 
+                    }
+                    
+                    if (sumaFila > 0) { 
+                        labelsRow.push(String(label).trim()); 
+                        dataVolumen.push(sumaFila); 
+                        totalVolumen += sumaFila; 
+                    }
+                }
+            });
+            
+            let promedio = labelsRow.length > 0 ? Math.round(totalVolumen / labelsRow.length) : 0; 
+            let maxIndex = dataVolumen.length > 0 ? dataVolumen.indexOf(Math.max(...dataVolumen)) : 0; 
+            let topEfector = labelsRow[maxIndex] || 'N/A';
+            
+            kpiContainer.innerHTML = `
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="folder-plus" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Volumen HSI Total</h4><span class="text-lg md:text-2xl font-bold text-white">${totalVolumen.toLocaleString('es-AR')}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="bar-chart-2" class="text-blue-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Promedio por Registro</h4><span class="text-lg md:text-2xl font-bold text-white">${promedio.toLocaleString('es-AR')}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="award" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Mayor Volumen</h4><span class="text-sm md:text-base font-bold text-white truncate max-w-[140px]" title="${topEfector}">${topEfector}</span></div>
+                <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="building-2" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total Registros</h4><span class="text-lg md:text-2xl font-bold text-white">${labelsRow.length}</span></div>
+            `; 
+            if(window.lucide) window.lucide.createIcons();
+            
+            if(charts.hsiEvolucion) charts.hsiEvolucion.destroy(); 
+            if(charts.hsiEstado) charts.hsiEstado.destroy(); 
+            if(charts.hsiDetalle) charts.hsiDetalle.destroy(); 
+            
+            Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
+            
+            charts.hsiEvolucion = new Chart(document.getElementById('chartHsiEvolucion').getContext('2d'), { 
+                type: 'bar', data: { labels: labelsRow, datasets: [{ label: 'Registros HSI', data: dataVolumen, backgroundColor: '#10B981', borderRadius: 6 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
+            });
+            
+            let topIndices = dataVolumen.map((val, idx) => ({ val, idx })).sort((a,b) => b.val - a.val).slice(0, 5); 
+            charts.hsiEstado = new Chart(document.getElementById('chartHsiEstado').getContext('2d'), { 
+                type: 'doughnut', data: { labels: topIndices.map(i => labelsRow[i.idx]), datasets: [{ data: topIndices.map(i => i.val), backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#A855F7', '#EC4899'], borderWidth: 0 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, cutout: '60%' } 
+            });
+            
+            let sortedAll = dataVolumen.map((val, idx) => ({ label: labelsRow[idx], val })).sort((a,b) => b.val - a.val); 
+            charts.hsiDetalle = new Chart(document.getElementById('chartHsiDetalle').getContext('2d'), { 
+                type: 'bar', data: { labels: sortedAll.map(i => i.label), datasets: [{ label: 'Registros', data: sortedAll.map(i => i.val), backgroundColor: '#6366F1', borderRadius: 4 }] }, 
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
+            });
         }
 
         lucide.createIcons();
