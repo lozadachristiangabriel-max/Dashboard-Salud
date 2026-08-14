@@ -50,7 +50,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748B; }
 
         .pdf-export-mode { background-color: #0B1121 !important; padding: 20px !important; }
-        .pdf-export-mode .max-h-[19rem], .pdf-export-mode .max-h-[24rem], .pdf-export-mode .max-h-60 {
+        .pdf-export-mode .max-h-[19rem], .pdf-export-mode .max-h-[24rem], .pdf-export-mode .max-h-64 {
             max-height: none !important;
             overflow: visible !important;
         }
@@ -106,7 +106,7 @@
                     <i data-lucide="chevron-up" id="icon-territorio" class="w-4 h-4 transition-transform duration-300"></i>
                 </button>
                 <div id="submenu-territorio" class="pl-4 pr-1 space-y-1 mt-2">
-                    <button onclick="switchView('operativos')" id="btn-operativos" class="nav-item active w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                    <button onclick="switchView('operativos')" id="btn-operativos" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                         <i data-lucide="map-pin" class="w-4 h-4"></i> Operativos
                     </button>
                     <button onclick="switchView('bloqueos')" id="btn-bloqueos" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
@@ -130,7 +130,6 @@
                 </div>
             </div>
 
-            <!-- NUEVO SUBMENÚ HSI / CONECTIVIDAD -->
             <div class="border-b border-slate-800/60 mb-2 pb-2">
                 <button onclick="toggleSubmenu('submenu-sistemas', 'icon-sistemas')" class="w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-bold tracking-wide text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors">
                     <div class="flex items-center gap-3"><i data-lucide="monitor" class="w-5 h-5 text-cyan-500/80"></i><span>SISTEMAS</span></div>
@@ -140,7 +139,7 @@
                     <button onclick="switchView('hsi')" id="btn-hsi" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                         <i data-lucide="folder-plus" class="w-4 h-4"></i> Historia de Salud (HSI)
                     </button>
-                    <button onclick="switchView('conectividad')" id="btn-conectividad" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                    <button onclick="switchView('conectividad')" id="btn-conectividad" class="nav-item active w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                         <i data-lucide="wifi" class="w-4 h-4"></i> Conectividad
                     </button>
                 </div>
@@ -182,7 +181,7 @@
             <p class="text-slate-400 text-sm">Sincronizando bases de datos...</p>
         </div>
 
-        <!-- ======================= VISTA OPERATIVOS ======================= -->
+        <!-- VISTA OPERATIVOS -->
         <section id="view-operativos" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 relative z-40">
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Año</label><select id="filter-anio-op" onchange="processOperativosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select></div>
@@ -203,7 +202,7 @@
             <div class="glass-card p-4 md:p-6 mt-6 mb-8"><div class="h-72 md:h-80 relative"><canvas id="chartAnual"></canvas></div></div>
         </section>
 
-        <!-- ======================= VISTA BLOQUEOS ======================= -->
+        <!-- VISTA BLOQUEOS -->
         <section id="view-bloqueos" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 relative z-40">
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Año</label><select id="filter-anio-bloq" onchange="processBloqueosData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select></div>
@@ -223,7 +222,7 @@
             </div>
         </section>
 
-        <!-- ======================= VISTA AUSENTISMO ======================= -->
+        <!-- VISTA AUSENTISMO -->
         <section id="view-ausentismo" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-40 overflow-visible">
                 <div class="relative multi-select-container z-50">
@@ -244,7 +243,7 @@
             </div>
         </section>
 
-        <!-- ======================= VISTA LICENCIAS ======================= -->
+        <!-- VISTA LICENCIAS -->
         <section id="view-licencias" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 relative z-40 overflow-visible">
                 <div class="relative multi-select-container z-50">
@@ -252,46 +251,33 @@
                     <button type="button" onclick="toggleMultiSelect('dropdown-agente-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all"><span id="label-agente-lic" class="truncate font-medium">Todos los Agentes</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i></button>
                     <div id="dropdown-agente-lic" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar"><div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400"><button type="button" onclick="selectAllLicencias('agente', true)" class="hover:underline">Seleccionar Todos</button><button type="button" onclick="selectAllLicencias('agente', false)" class="hover:underline text-rose-400">Ninguno</button></div><div id="checklist-agente-lic" class="space-y-1.5 text-xs text-slate-200"></div></div>
                 </div>
-
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Tipo de Licencia</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-tipo-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all"><span id="label-tipo-lic" class="truncate font-medium">Todos los Tipos</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i></button>
                     <div id="dropdown-tipo-lic" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar"><div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400"><button type="button" onclick="selectAllLicencias('tipo', true)" class="hover:underline">Seleccionar Todos</button><button type="button" onclick="selectAllLicencias('tipo', false)" class="hover:underline text-rose-400">Ninguno</button></div><div id="checklist-tipo-lic" class="space-y-1.5 text-xs text-slate-200"></div></div>
                 </div>
-
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Función</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-funcion-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all"><span id="label-funcion-lic" class="truncate font-medium">Todas las Funciones</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i></button>
                     <div id="dropdown-funcion-lic" class="hidden absolute z-50 w-full mt-1 bg-[#0B1121] border border-slate-600 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-3 max-h-60 overflow-y-auto custom-scrollbar"><div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-semibold text-emerald-400"><button type="button" onclick="selectAllLicencias('funcion', true)" class="hover:underline">Seleccionar Todos</button><button type="button" onclick="selectAllLicencias('funcion', false)" class="hover:underline text-rose-400">Ninguno</button></div><div id="checklist-funcion-lic" class="space-y-1.5 text-xs text-slate-200"></div></div>
                 </div>
-
                 <div class="relative z-40">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Año (Columna AÑO)</label>
                     <select id="filter-anio-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none transition-all"><option value="TODOS">Todos los Años</option></select>
                 </div>
-
                 <div class="relative z-40">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Mes (Usufructo)</label>
                     <select id="filter-mes-lic" onchange="processLicenciasData()" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none transition-all"><option value="TODOS">Todos los Meses</option></select>
                 </div>
             </div>
-            
             <div id="licencias-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 md:gap-4 mb-8 relative z-10"></div>
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 relative z-10">
                 <div class="glass-card p-4 md:p-6 lg:col-span-2 flex flex-col h-full">
                     <h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2"><i data-lucide="list-checks" class="text-purple-400 w-5 h-5"></i>Listado de Personal (Licencias)</h3>
                     <div class="overflow-y-auto max-h-[24rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
                         <table class="w-full text-left text-xs text-slate-300 relative">
                             <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
-                                <tr>
-                                    <th class="px-4 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Agente</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Tipo</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Función</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Inicio</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700">Final</th>
-                                    <th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Días</th>
-                                </tr>
+                                <tr><th class="px-4 py-3 font-semibold border-b border-slate-700 rounded-tl-lg">Agente</th><th class="px-3 py-3 font-semibold border-b border-slate-700">Tipo</th><th class="px-3 py-3 font-semibold border-b border-slate-700">Función</th><th class="px-3 py-3 font-semibold border-b border-slate-700">Inicio</th><th class="px-3 py-3 font-semibold border-b border-slate-700">Final</th><th class="px-3 py-3 font-semibold text-center border-b border-slate-700 text-emerald-400 rounded-tr-lg">Días</th></tr>
                             </thead>
                             <tbody id="tbody-licencias" class="divide-y divide-slate-800/50"></tbody>
                         </table>
@@ -304,7 +290,7 @@
             </div>
         </section>
 
-        <!-- ======================= VISTA IRAB ======================= -->
+        <!-- VISTA IRAB -->
         <section id="view-irab" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40">
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Semana</label><select id="filter-semana-irab" onchange="processIrabData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODAS">Todas las Semanas</option></select></div>
@@ -317,7 +303,7 @@
             </div>
         </section>
 
-        <!-- ======================= VISTA LABORATORIO ======================= -->
+        <!-- VISTA LABORATORIO -->
         <section id="view-laboratorio" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40 overflow-visible">
                 <div class="relative multi-select-container z-50">
@@ -347,7 +333,7 @@
             </div>
         </section>
 
-        <!-- ======================= VISTA HSI ======================= -->
+        <!-- VISTA HSI -->
         <section id="view-hsi" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40">
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año</label><select id="filter-anio-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select></div>
@@ -364,31 +350,66 @@
             </div>
         </section>
 
-        <!-- ======================= VISTA CONECTIVIDAD ======================= -->
+        <!-- VISTA CONECTIVIDAD -->
         <section id="view-conectividad" class="hidden">
-            <div class="glass-card p-8 flex flex-col items-center justify-center text-center mb-8 h-96">
-                <i data-lucide="wifi" class="w-20 h-20 text-cyan-500 mb-6 opacity-60"></i>
-                <h2 class="text-2xl md:text-3xl font-bold text-white mb-3 tracking-wide">Módulo de Conectividad</h2>
-                <p class="text-slate-400 max-w-lg mx-auto text-sm md:text-base leading-relaxed">
-                    Esta sección está lista y esperando para ser configurada. Cuando tengas el archivo de Google Sheets con los datos de conectividad, lo vincularemos aquí para generar los gráficos y las estadísticas.
-                </p>
+            <!-- Filtros -->
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40">
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Área</label><select id="filter-area-con" onchange="processConectividadData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todas las Áreas</option></select></div>
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Centro de Salud (CAPS)</label><select id="filter-caps-con" onchange="processConectividadData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los CAPS</option></select></div>
+                <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Proveedor de Internet</label><select id="filter-prov-con" onchange="processConectividadData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Proveedores</option></select></div>
+            </div>
+            
+            <!-- KPIs -->
+            <div id="con-kpi-container" class="grid grid-cols-2 sm:grid-cols-5 gap-3 md:gap-4 mb-8"></div>
+            
+            <!-- Proveedores por Lugar -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card p-4 md:p-6 lg:col-span-1 flex flex-col">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="text-cyan-400 w-5 h-5"></i>CAPS por Proveedor</h3>
+                    <div class="h-64 relative mt-auto mb-auto"><canvas id="chartConectividadProveedor"></canvas></div>
+                </div>
+                <div class="glass-card p-4 md:p-6 lg:col-span-2 flex flex-col h-full">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="list" class="text-purple-400 w-5 h-5"></i>Listado: Proveedor por Lugar</h3>
+                    <div class="overflow-y-auto max-h-64 pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
+                        <table class="w-full text-left text-xs text-slate-300 relative">
+                            <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold border-b border-slate-700">CAPS / Efector</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 text-cyan-400">Proveedor de Internet</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-proveedores-lugar" class="divide-y divide-slate-800/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Equipamiento vs Faltantes vs Consultorios -->
+            <div class="grid grid-cols-1 gap-6 mb-8">
+                <div class="glass-card p-4 md:p-6">
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="monitor" class="text-emerald-400 w-5 h-5"></i>Equipamiento y Faltantes por CAPS</h3>
+                    <div class="h-96 relative"><canvas id="chartConectividadEquipos"></canvas></div>
+                </div>
             </div>
         </section>
+
     </main>
 
     <script>
-        // AQUÍ ESTÁN TUS ENLACES ACTUALIZADOS CON LA LÓGICA DE ?hoja=
+        // === TUS ENLACES WEB ===
         const URL_OPERATIVOS = 'https://script.google.com/macros/s/AKfycbzCdN8W9GoMIm-GXAD15Mna5grST9fplOdj6WsnZ7ATm26rtRHSwS14asYKGgmLZ7Wd/exec?hoja=OPERATIVOS';
         const URL_BLOQUEOS   = 'https://script.google.com/macros/s/AKfycbzCdN8W9GoMIm-GXAD15Mna5grST9fplOdj6WsnZ7ATm26rtRHSwS14asYKGgmLZ7Wd/exec?hoja=BLOQUEOS';
-        
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbyjzoW-5wEZE1orJwUH7i_wvT0daeKtN2viqcUsOrqI2kJa-ZUQRPy7l14ge8uU8M4PGA/exec';
         const URL_LICENCIAS  = 'https://script.google.com/macros/s/AKfycbx-Tzy_-zZIho5p5IomrHfO9VS7V8lDvytmXJhx51oEhF76g5DNgUSXKWuli6KCIXBq/exec';
         const URL_IRAB       = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
         const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzq7DlkN-FHkHXIlzk1xeHeE_zahNaUvozW62nTfrYmA8k0DnG9IO_D2TnMCUKQludD/exec';
-        const URL_HSI        = ''; // <--- PEGA AQUÍ TU ENLACE PARA HSI
+        const URL_HSI        = ''; 
         
+        // ENLACE ACTUALIZADO PARA CONECTIVIDAD
+        const URL_CONECTIVIDAD = 'https://script.google.com/macros/s/AKfycbwtVIJWp4vBYlugoGmX03Ldoa58RmHwtHmHviQW2s7YhcjR7Z1MKUXsuVu4GGpEfEAu/exec?hoja=CONECTIVIDAD';
+
         let activeTab = 'operativos';
-        let operativosData = [], bloqueosData = [], ausentismoData = [], licenciasData = [], irabData = [], laboratorioData = [], hsiData = [], charts = {};
+        let operativosData = [], bloqueosData = [], ausentismoData = [], licenciasData = [], irabData = [], laboratorioData = [], hsiData = [], conectividadData = [], charts = {};
         
         const kpiConfig = [
             { id: 'MANZ', title: 'MANZANAS', icon: 'map', color: 'text-indigo-400' },
@@ -423,7 +444,6 @@
 
         function switchView(viewId) {
             activeTab = viewId;
-            // ACTUALIZADO CON LA VISTA "conectividad"
             ['operativos', 'bloqueos', 'ausentismo', 'licencias', 'irab', 'laboratorio', 'hsi', 'conectividad'].forEach(v => {
                 const elView = document.getElementById(`view-${v}`);
                 const elBtn = document.getElementById(`btn-${v}`);
@@ -448,6 +468,7 @@
             if(viewId === 'irab' && irabData.length) setTimeout(() => processIrabData(), 50);
             if(viewId === 'laboratorio' && laboratorioData.length) setTimeout(() => processLaboratorioData(), 50);
             if(viewId === 'hsi' && (hsiData.length || !URL_HSI)) setTimeout(() => processHsiData(), 50);
+            if(viewId === 'conectividad' && (conectividadData.length || !URL_CONECTIVIDAD)) setTimeout(() => processConectividadData(), 50);
         }
 
         function exportCurrentViewToPDF() {
@@ -512,7 +533,7 @@
             const label = document.getElementById(labelId);
             if (!label) return;
             let prefix = "Todos los";
-            if (defaultName === 'Funciones' || defaultName === 'Localidades') {
+            if (defaultName === 'Funciones' || defaultName === 'Localidades' || defaultName === 'Áreas') {
                 prefix = "Todas las";
             }
             if (selectedArray.length === totalCount || totalCount === 0) { 
@@ -553,21 +574,21 @@
         // Fetch Principal
         async function fetchAllData() {
             try {
-                const [resO, resB, resA, resLic, resI, resL, resH] = await Promise.all([
+                const [resO, resB, resA, resLic, resI, resL, resH, resC] = await Promise.all([
                     fetch(URL_OPERATIVOS).then(r => r.json()).catch(() => []),
                     URL_BLOQUEOS ? fetch(URL_BLOQUEOS).then(r => r.json()).catch(() => []) : Promise.resolve([]),
                     fetch(URL_AUSENTISMO).then(r => r.json()).catch(() => []),
                     URL_LICENCIAS ? fetch(URL_LICENCIAS).then(r => r.json()).catch(() => []) : Promise.resolve([]),
                     fetch(URL_IRAB).then(r => r.json()).catch(() => []),
                     fetch(URL_LABORATORIO).then(r => r.json()).catch(() => []),
-                    URL_HSI ? fetch(URL_HSI).then(r => r.json()).catch(() => []) : Promise.resolve([])
+                    URL_HSI ? fetch(URL_HSI).then(r => r.json()).catch(() => []) : Promise.resolve([]),
+                    URL_CONECTIVIDAD ? fetch(URL_CONECTIVIDAD).then(r => r.json()).catch(() => []) : Promise.resolve([])
                 ]);
 
                 operativosData  = resO.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
                 bloqueosData    = resB.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 ausentismoData  = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 
-                // === FILTRO DE RENDIMIENTO: SOLO SE CARGARÁ 2025 Y 2026 ===
                 licenciasData = resLic.map(row => { 
                     let c = {}; 
                     for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; 
@@ -580,6 +601,7 @@
                 irabData        = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 laboratorioData = resL.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 hsiData         = resH.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                conectividadData= resC.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
 
                 document.getElementById('loader').classList.add('hidden');
                 switchView('operativos');
@@ -591,6 +613,7 @@
                 initIrabFilters();
                 initLaboratorioFilters();
                 initHsiFilters();
+                initConectividadFilters();
                 
                 processOperativosData();
                 processBloqueosData();
@@ -599,6 +622,8 @@
                 processIrabData();
                 processLaboratorioData();
                 processHsiData();
+                processConectividadData();
+                
             } catch (e) {
                 console.error(e);
                 document.getElementById('loader').innerHTML = `<p class="text-red-500">Error al sincronizar datos.</p>`;
@@ -956,6 +981,232 @@
             charts.hsiEvolucion = new Chart(document.getElementById('chartHsiEvolucion').getContext('2d'), { type: 'bar', data: { labels: labelsRow, datasets: [{ label: 'Registros HSI', data: dataVolumen, backgroundColor: '#10B981', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             let topIndices = dataVolumen.map((val, idx) => ({ val, idx })).sort((a,b) => b.val - a.val).slice(0, 5); charts.hsiEstado = new Chart(document.getElementById('chartHsiEstado').getContext('2d'), { type: 'doughnut', data: { labels: topIndices.map(i => labelsRow[i.idx]), datasets: [{ data: topIndices.map(i => i.val), backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#A855F7', '#EC4899'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '60%' } });
             let sortedAll = dataVolumen.map((val, idx) => ({ label: labelsRow[idx], val })).sort((a,b) => b.val - a.val); charts.hsiDetalle = new Chart(document.getElementById('chartHsiDetalle').getContext('2d'), { type: 'bar', data: { labels: sortedAll.map(i => i.label), datasets: [{ label: 'Registros', data: sortedAll.map(i => i.val), backgroundColor: '#6366F1', borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        }
+
+        /* ==================== CONECTIVIDAD ==================== */
+        function initConectividadFilters() {
+            const selectArea = document.getElementById('filter-area-con');
+            const selectCaps = document.getElementById('filter-caps-con');
+            const selectProv = document.getElementById('filter-prov-con');
+            if (!selectArea || !selectCaps || !selectProv) return;
+
+            let areas = new Set(), capsSet = new Set(), provs = new Set();
+            
+            conectividadData.forEach(row => {
+                let area = String(row['AREA'] || '').trim().toUpperCase();
+                let caps = String(row['COLUMNA 2'] || row['CAPS'] || row['CENTRO'] || '').trim().toUpperCase();
+                let prov = String(row['PROVEEDOR DE INTERNET'] || '').trim().toUpperCase();
+
+                if (area && area !== 'UNDEFINED' && area !== 'NAN') areas.add(area);
+                if (caps && caps !== 'UNDEFINED' && caps !== 'NAN') capsSet.add(caps);
+                if (prov && prov !== 'UNDEFINED' && prov !== 'NAN') provs.add(prov);
+            });
+
+            [...areas].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectArea.appendChild(opt); });
+            [...capsSet].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectCaps.appendChild(opt); });
+            [...provs].sort().forEach(val => { let opt = document.createElement('option'); opt.value = val; opt.textContent = val; selectProv.appendChild(opt); });
+        }
+
+        function processConectividadData() {
+            const kpiContainer = document.getElementById('con-kpi-container');
+            if (!URL_CONECTIVIDAD || conectividadData.length === 0) {
+                if(kpiContainer) kpiContainer.innerHTML = `<div class="col-span-5 glass-card p-6 text-center text-amber-400 text-sm font-medium">Cargando datos de Conectividad...</div>`;
+                return;
+            }
+
+            const sArea = document.getElementById('filter-area-con').value;
+            const sCaps = document.getElementById('filter-caps-con').value;
+            const sProv = document.getElementById('filter-prov-con').value;
+
+            let totalConsultorios = 0, sinPC = 0, totalExo = 0, totalDell = 0, totalCaps = 0;
+            let provCapsCount = {}; 
+            let listProveedores = []; 
+            let capsStats = {}; 
+
+            conectividadData.forEach(row => {
+                let capsName = String(row['COLUMNA 2'] || row['CAPS'] || row['CENTRO'] || '').trim().toUpperCase();
+                if (!capsName || capsName === 'NAN') return;
+
+                let area = String(row['AREA'] || '').trim().toUpperCase();
+                let prov = String(row['PROVEEDOR DE INTERNET'] || '').trim().toUpperCase();
+
+                let matchArea = (sArea === 'TODOS' || area === sArea);
+                let matchCaps = (sCaps === 'TODOS' || capsName === sCaps);
+                let matchProv = (sProv === 'TODOS' || prov === sProv);
+
+                if (matchArea && matchCaps && matchProv) {
+                    totalConsultorios++;
+                    
+                    let pc = String(row['POSEE PC EN CONSULTORIO'] || row['POSEE PC EN CONSULTORIO '] || '').trim().toUpperCase();
+                    let falta = 0;
+                    if (pc === 'NO') {
+                        sinPC++;
+                        falta = 1;
+                    }
+
+                    let e = parseNumberSafe(row['EXO']);
+                    let d = parseNumberSafe(row['DELL']);
+                    let c = parseNumberSafe(row['EQUIPO CAPS']);
+                    
+                    totalExo += e;
+                    totalDell += d;
+                    totalCaps += c;
+
+                    if (!capsStats[capsName]) {
+                        capsStats[capsName] = { exo: 0, dell: 0, caps: 0, faltantes: 0, consultorios: 0 };
+                    }
+                    capsStats[capsName].consultorios++;
+                    capsStats[capsName].exo += e;
+                    capsStats[capsName].dell += d;
+                    capsStats[capsName].caps += c;
+                    capsStats[capsName].faltantes += falta;
+
+                    if (!listProveedores.find(item => item.caps === capsName) && prov && prov !== 'NAN') {
+                        listProveedores.push({ caps: capsName, prov: prov });
+                        provCapsCount[prov] = (provCapsCount[prov] || 0) + 1;
+                    }
+                }
+            });
+
+            // Render KPIs Principales
+            if (kpiContainer) {
+                kpiContainer.innerHTML = `
+                    <div class="glass-card p-4 flex flex-col items-center text-center border border-indigo-500/20 bg-indigo-900/10">
+                        <i data-lucide="door-open" class="text-indigo-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-indigo-400 font-semibold mb-1">Total Consultorios</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalConsultorios}</span>
+                    </div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center border border-rose-500/30 bg-rose-900/10">
+                        <i data-lucide="monitor-x" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-rose-400 font-semibold mb-1">Faltan PC</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${sinPC}</span>
+                    </div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="laptop" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Stock EXO</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalExo}</span>
+                    </div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="pc-case" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Stock DELL</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalDell}</span>
+                    </div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center">
+                        <i data-lucide="cpu" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Equipos CAPS</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalCaps}</span>
+                    </div>
+                `;
+                if(window.lucide) window.lucide.createIcons();
+            }
+
+            // Render Listado de Proveedores
+            const tbody = document.getElementById('tbody-proveedores-lugar');
+            if (tbody) {
+                tbody.innerHTML = '';
+                listProveedores.sort((a,b) => a.caps.localeCompare(b.caps)).forEach(item => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-800/80 transition-colors border-b border-slate-800/50 last:border-0">
+                            <td class="px-4 py-2.5 font-medium text-slate-200">${item.caps}</td>
+                            <td class="px-3 py-2.5 text-cyan-400 font-semibold">${item.prov}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Destruir gráficos anteriores
+            if(charts.conProv) charts.conProv.destroy();
+            if(charts.conEquipos) charts.conEquipos.destroy();
+
+            Chart.defaults.color = '#94A3B8'; 
+            Chart.defaults.font.family = 'Inter';
+
+            // Gráfico 1: Torta de Proveedores
+            const provKeys = Object.keys(provCapsCount).sort((a,b) => provCapsCount[b] - provCapsCount[a]);
+            charts.conProv = new Chart(document.getElementById('chartConectividadProveedor').getContext('2d'), { 
+                type: 'doughnut', 
+                data: { 
+                    labels: provKeys, 
+                    datasets: [{ 
+                        data: provKeys.map(k => provCapsCount[k]), 
+                        backgroundColor: ['#06B6D4', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'], 
+                        borderWidth: 0 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '65%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }
+                    }
+                } 
+            });
+
+            // Gráfico 2: Consultorios vs Stock vs Faltantes (Barras Apiladas + Línea)
+            const sortedCaps = Object.keys(capsStats).sort((a,b) => capsStats[b].consultorios - capsStats[a].consultorios);
+            
+            charts.conEquipos = new Chart(document.getElementById('chartConectividadEquipos').getContext('2d'), { 
+                type: 'bar', 
+                data: { 
+                    labels: sortedCaps, 
+                    datasets: [
+                        { 
+                            label: 'Total Consultorios', 
+                            type: 'line',
+                            data: sortedCaps.map(c => capsStats[c].consultorios), 
+                            borderColor: '#8B5CF6', 
+                            backgroundColor: '#8B5CF6', 
+                            borderWidth: 2,
+                            tension: 0.3,
+                            order: 0
+                        },
+                        { 
+                            label: 'EXO', 
+                            data: sortedCaps.map(c => capsStats[c].exo), 
+                            backgroundColor: '#10B981', 
+                            borderRadius: 2,
+                            stack: 'Equipos',
+                            order: 1
+                        },
+                        { 
+                            label: 'DELL', 
+                            data: sortedCaps.map(c => capsStats[c].dell), 
+                            backgroundColor: '#06B6D4', 
+                            borderRadius: 2,
+                            stack: 'Equipos',
+                            order: 1
+                        },
+                        { 
+                            label: 'EQUIPO CAPS', 
+                            data: sortedCaps.map(c => capsStats[c].caps), 
+                            backgroundColor: '#F59E0B', 
+                            borderRadius: 2,
+                            stack: 'Equipos',
+                            order: 1
+                        },
+                        { 
+                            label: 'Faltan (Consultorios sin PC)', 
+                            data: sortedCaps.map(c => capsStats[c].faltantes), 
+                            backgroundColor: '#F43F5E', 
+                            borderRadius: 4,
+                            stack: 'Faltantes',
+                            order: 1
+                        }
+                    ] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true, ticks: { font: { size: 10 } } }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } }
+                    }
+                } 
+            });
         }
 
         lucide.createIcons();
