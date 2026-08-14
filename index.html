@@ -130,15 +130,29 @@
                 </div>
             </div>
 
+            <!-- NUEVO SUBMENÚ HSI / CONECTIVIDAD -->
+            <div class="border-b border-slate-800/60 mb-2 pb-2">
+                <button onclick="toggleSubmenu('submenu-sistemas', 'icon-sistemas')" class="w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-bold tracking-wide text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors">
+                    <div class="flex items-center gap-3"><i data-lucide="monitor" class="w-5 h-5 text-cyan-500/80"></i><span>SISTEMAS</span></div>
+                    <i data-lucide="chevron-up" id="icon-sistemas" class="w-4 h-4 transition-transform duration-300"></i>
+                </button>
+                <div id="submenu-sistemas" class="pl-4 pr-1 space-y-1 mt-2">
+                    <button onclick="switchView('hsi')" id="btn-hsi" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                        <i data-lucide="folder-plus" class="w-4 h-4"></i> Historia de Salud (HSI)
+                    </button>
+                    <button onclick="switchView('conectividad')" id="btn-conectividad" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
+                        <i data-lucide="wifi" class="w-4 h-4"></i> Conectividad
+                    </button>
+                </div>
+            </div>
+
             <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="thermometer" class="w-5 h-5"></i> IRAB 2026
             </button>
             <button onclick="switchView('laboratorio')" id="btn-laboratorio" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
                 <i data-lucide="flask-conical" class="w-5 h-5"></i> LABORATORIO
             </button>
-            <button onclick="switchView('hsi')" id="btn-hsi" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 text-left border-l-4 border-transparent">
-                <i data-lucide="folder-plus" class="w-5 h-5"></i> HSI (HISTORIA DE SALUD)
-            </button>
+            
         </nav>
         
         <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">SS Recursos y Logística</div>
@@ -233,7 +247,6 @@
         <!-- ======================= VISTA LICENCIAS ======================= -->
         <section id="view-licencias" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 relative z-40 overflow-visible">
-                
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Agente</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-agente-lic')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all"><span id="label-agente-lic" class="truncate font-medium">Todos los Agentes</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i></button>
@@ -350,11 +363,24 @@
                 <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="list-ordered" class="text-purple-400 w-5 h-5"></i>Ranking Detallado HSI</h3><div class="h-80 relative"><canvas id="chartHsiDetalle"></canvas></div></div>
             </div>
         </section>
+
+        <!-- ======================= VISTA CONECTIVIDAD ======================= -->
+        <section id="view-conectividad" class="hidden">
+            <div class="glass-card p-8 flex flex-col items-center justify-center text-center mb-8 h-96">
+                <i data-lucide="wifi" class="w-20 h-20 text-cyan-500 mb-6 opacity-60"></i>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-3 tracking-wide">Módulo de Conectividad</h2>
+                <p class="text-slate-400 max-w-lg mx-auto text-sm md:text-base leading-relaxed">
+                    Esta sección está lista y esperando para ser configurada. Cuando tengas el archivo de Google Sheets con los datos de conectividad, lo vincularemos aquí para generar los gráficos y las estadísticas.
+                </p>
+            </div>
+        </section>
     </main>
 
     <script>
-        const URL_OPERATIVOS = 'https://script.google.com/macros/s/AKfycbyBjTUlBamDze2bBrHmLUl9eaDjjvXzb3S0HMvPFGxwpQ8ZXKQUTThSm4HsiN79zm_6/exec';
-        const URL_BLOQUEOS   = ''; // <--- PEGA AQUÍ TU ENLACE PARA BLOQUEOS
+        // AQUÍ ESTÁN TUS ENLACES ACTUALIZADOS CON LA LÓGICA DE ?hoja=
+        const URL_OPERATIVOS = 'https://script.google.com/macros/s/AKfycbzCdN8W9GoMIm-GXAD15Mna5grST9fplOdj6WsnZ7ATm26rtRHSwS14asYKGgmLZ7Wd/exec?hoja=OPERATIVOS';
+        const URL_BLOQUEOS   = 'https://script.google.com/macros/s/AKfycbzCdN8W9GoMIm-GXAD15Mna5grST9fplOdj6WsnZ7ATm26rtRHSwS14asYKGgmLZ7Wd/exec?hoja=BLOQUEOS';
+        
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbyjzoW-5wEZE1orJwUH7i_wvT0daeKtN2viqcUsOrqI2kJa-ZUQRPy7l14ge8uU8M4PGA/exec';
         const URL_LICENCIAS  = 'https://script.google.com/macros/s/AKfycbx-Tzy_-zZIho5p5IomrHfO9VS7V8lDvytmXJhx51oEhF76g5DNgUSXKWuli6KCIXBq/exec';
         const URL_IRAB       = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec';
@@ -397,7 +423,8 @@
 
         function switchView(viewId) {
             activeTab = viewId;
-            ['operativos', 'bloqueos', 'ausentismo', 'licencias', 'irab', 'laboratorio', 'hsi'].forEach(v => {
+            // ACTUALIZADO CON LA VISTA "conectividad"
+            ['operativos', 'bloqueos', 'ausentismo', 'licencias', 'irab', 'laboratorio', 'hsi', 'conectividad'].forEach(v => {
                 const elView = document.getElementById(`view-${v}`);
                 const elBtn = document.getElementById(`btn-${v}`);
                 if (elView) elView.classList.add('hidden');
