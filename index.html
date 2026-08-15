@@ -49,14 +49,60 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748B; }
 
-        .pdf-export-mode { background-color: #0B1121 !important; padding: 20px !important; }
-        .pdf-export-mode .max-h-[19rem], .pdf-export-mode .max-h-[24rem], .pdf-export-mode .max-h-64, .pdf-export-mode .max-h-96 {
-            max-height: none !important;
-            overflow: visible !important;
+        /* ================= ESTILOS PARA REPORTE PDF (DOCUMENTO FORMAL) ================= */
+        .pdf-export-mode { background-color: #FFFFFF !important; color: #1E293B !important; }
+        
+        .pdf-export-mode main {
+            width: 1400px !important;
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 40px !important;
+            background-color: #FFFFFF !important;
         }
-        .pdf-export-mode .overflow-y-auto {
-            overflow: visible !important;
+
+        /* Ocultar el encabezado oscuro de la web y mostrar el membrete oficial */
+        .pdf-export-mode header:not(#report-header) { display: none !important; }
+        #report-header { display: none; }
+        .pdf-export-mode #report-header {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #16A34A;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
         }
+
+        /* Convertir las tarjetas de cristal oscuro a paneles de papel limpios */
+        .pdf-export-mode .glass-card {
+            background: #F8FAFC !important;
+            border: 1px solid #CBD5E1 !important;
+            box-shadow: none !important;
+            color: #0F172A !important;
+            page-break-inside: avoid;
+        }
+
+        /* Forzar los textos a oscuros para el papel */
+        .pdf-export-mode .text-white, 
+        .pdf-export-mode .text-slate-200, 
+        .pdf-export-mode .text-slate-300,
+        .pdf-export-mode .text-slate-400 {
+            color: #1E293B !important;
+        }
+
+        /* Transformar los filtros en simple texto plano (sin bordes ni flechas) */
+        .pdf-export-mode select { appearance: none; border: none; background: transparent; padding: 0; font-weight: bold; color: #0F172A !important; }
+        .pdf-export-mode .multi-select-container button { border: none; background: transparent; padding: 0; color: #0F172A !important; }
+        .pdf-export-mode .multi-select-container i { display: none; }
+
+        /* Expandir tablas y scrollbars para que se imprima todo completo */
+        .pdf-export-mode .max-h-[19rem], .pdf-export-mode .max-h-[24rem], .pdf-export-mode .max-h-64, .pdf-export-mode .max-h-96,
+        .pdf-export-mode .overflow-y-auto, .pdf-export-mode .overflow-x-auto, .pdf-export-mode .custom-scrollbar {
+            max-height: none !important; overflow: visible !important;
+        }
+
+        /* Tablas estilo documento formal */
+        .pdf-export-mode thead { background-color: #F1F5F9 !important; border-bottom: 2px solid #94A3B8; }
+        .pdf-export-mode tr { border-bottom: 1px solid #E2E8F0 !important; }
     </style>
 </head>
 <body class="flex min-h-screen antialiased flex-col md:flex-row">
@@ -160,6 +206,27 @@
     <!-- ÁREA PRINCIPAL -->
     <main class="md:ml-64 flex-1 p-4 md:p-8 overflow-x-hidden">
         
+        <!-- MEMBRETE OFICIAL PARA PDF (Oculto en versión web) -->
+        <div id="report-header" class="hidden flex-row items-center justify-between border-b-2 border-emerald-600 pb-6 mb-8 w-full">
+            <div class="flex items-center gap-5">
+                <svg class="w-16 h-16" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 75C35 60 10 45 10 20C20 25 30 35 35 45C35 30 25 15 20 5C35 10 45 25 48 40C50 25 50 10 50 5C50 10 50 25 52 40C55 25 65 10 80 5C75 15 65 30 65 45C70 35 80 25 90 20C90 45 65 60 50 75Z" fill="#16A34A"/>
+                    <circle cx="50" cy="55" r="4" fill="#15803D"/>
+                    <circle cx="50" cy="42" r="3" fill="#15803D"/>
+                    <circle cx="50" cy="31" r="2" fill="#15803D"/>
+                </svg>
+                <div class="flex flex-col">
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight leading-none mb-1">MUNICIPALIDAD DE FLORENCIO VARELA</h1>
+                    <h2 class="text-lg font-bold text-emerald-700 leading-none">Subsecretaría de Recursos y Logística</h2>
+                    <p class="text-sm text-slate-600 font-medium mt-1">Reporte Oficial de Gestión y Control Operativo</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-sm font-bold text-slate-800 uppercase tracking-widest" id="pdf-report-title">Módulo: Operativos</p>
+                <p class="text-sm text-slate-500 font-medium mt-1 capitalize" id="pdf-report-date"></p>
+            </div>
+        </div>
+
         <header class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
             <div>
                 <div class="flex items-center gap-3 mb-1">
@@ -522,30 +589,46 @@
         function exportCurrentViewToPDF() {
             const btn = document.getElementById('btn-export-pdf');
             const txt = document.getElementById('txt-export-pdf');
-            const element = document.getElementById(`view-${activeTab}`);
+            const element = document.querySelector('main'); // Tomamos todo el main, incluyendo el membrete nuevo
             
             if (!element) return;
-            btn.disabled = true; 
-            btn.classList.add('opacity-50'); 
-            txt.textContent = 'Generando PDF...';
+            
+            // 1. Configuramos los datos del membrete
+            document.getElementById('pdf-report-title').textContent = `Módulo: ${activeTab.toUpperCase()}`;
+            const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('pdf-report-date').textContent = new Date().toLocaleDateString('es-AR', opcionesFecha);
+
+            // 2. Ocultamos el botón para que no se imprima y activamos el modo claro
+            btn.style.display = 'none'; 
             document.body.classList.add('pdf-export-mode');
 
+            // 3. Configuramos A4 Horizontal con fondo blanco puro y gran nitidez
             const opt = { 
-                margin: 0.3, 
-                filename: `Reporte_Salud_${activeTab.toUpperCase()}_Varela.pdf`, 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0B1121', windowWidth: 1600 }, 
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } 
+                margin:       [0.3, 0.3], 
+                filename:     `Reporte_Salud_${activeTab.toUpperCase()}_Varela.pdf`, 
+                image:        { type: 'jpeg', quality: 1 }, 
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    backgroundColor: '#FFFFFF', // Fondo blanco documento
+                    windowWidth: 1400 // Forzamos el ancho para que no se descentre
+                }, 
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' },
+                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
             
-            html2pdf().set(opt).from(element).save().then(() => {
-                btn.disabled = false; 
-                btn.classList.remove('opacity-50'); 
-                txt.textContent = 'Exportar Hoja a PDF';
-                document.body.classList.remove('pdf-export-mode');
-            }).catch(() => { 
-                document.body.classList.remove('pdf-export-mode'); 
-            });
+            // Damos un pequeño respiro para que el navegador aplique los colores blancos antes de "sacar la foto"
+            setTimeout(() => {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Restauramos el modo oscuro web
+                    btn.style.display = 'inline-flex'; 
+                    document.body.classList.remove('pdf-export-mode');
+                }).catch((err) => { 
+                    console.error("Error al exportar:", err);
+                    btn.style.display = 'inline-flex'; 
+                    document.body.classList.remove('pdf-export-mode'); 
+                });
+            }, 500);
         }
 
         function parseNumberSafe(val) {
