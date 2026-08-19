@@ -456,7 +456,7 @@
             </div>
             
             <!-- KPIs -->
-            <div id="con-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 md:gap-4 mb-8"></div>
+            <div id="con-kpi-container" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 md:gap-4 mb-8"></div>
             
             <!-- Tabla Avanzada de Progreso y Detalle por Consultorio -->
             <div class="grid grid-cols-1 mb-8">
@@ -470,8 +470,8 @@
                             <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500/50 border border-emerald-500"></span> 1 EXO</span>
                             <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-cyan-500/50 border border-cyan-500"></span> 1 DELL</span>
                             <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500/50 border border-amber-500"></span> 1 EQ CAPS</span>
-                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500/50 border border-rose-500"></span> FALTA</span>
-                            <span class="flex items-center gap-1 px-1.5 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/50 shadow-[0_0_5px_rgba(217,70,239,0.4)]">2+ PCs</span>
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500/50 border border-rose-500"></span> FALTA (Médico)</span>
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-500/50 border border-slate-500"></span> FALTA (Soporte)</span>
                         </div>
                     </div>
                     <div class="overflow-x-auto overflow-y-auto max-h-96 custom-scrollbar border border-slate-800 rounded-lg">
@@ -479,10 +479,11 @@
                             <thead class="text-[10px] text-slate-400 uppercase bg-[#0F172A] sticky top-0 z-10 shadow-md">
                                 <tr>
                                     <th class="px-4 py-3 font-semibold border-b border-slate-700 w-48 rounded-tl-lg">CAPS / Efector</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 w-32">Internet</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 w-24 text-center text-indigo-400">Total Cons.</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 w-24 text-center text-rose-400">Faltantes</th>
-                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 w-48 text-center text-cyan-400">Progreso (%)</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 w-28">Internet</th>
+                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 w-20 text-center text-indigo-400" title="Consultorios Médicos">Cons. Méd.</th>
+                                    <th class="px-2 py-3 font-semibold border-b border-slate-700 w-20 text-center text-slate-400" title="Áreas Administrativas y de Soporte">Soporte</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 w-24 text-center text-rose-400">Faltantes (Cons)</th>
+                                    <th class="px-3 py-3 font-semibold border-b border-slate-700 w-32 text-center text-cyan-400">Progreso Cons.</th>
                                     <th class="px-4 py-3 font-semibold border-b border-slate-700 rounded-tr-lg">Especialidad y Equipo</th>
                                 </tr>
                             </thead>
@@ -505,7 +506,7 @@
 
             <div class="grid grid-cols-1 mb-8">
                 <div class="glass-card p-4 md:p-6">
-                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="bar-chart" class="text-purple-400 w-5 h-5"></i>Equipos y Faltantes General por CAPS</h3>
+                    <h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="bar-chart" class="text-purple-400 w-5 h-5"></i>Equipos y Faltantes por CAPS</h3>
                     <div class="h-80 relative"><canvas id="chartConectividadEquipos"></canvas></div>
                 </div>
             </div>
@@ -589,20 +590,17 @@
         function exportCurrentViewToPDF() {
             const btn = document.getElementById('btn-export-pdf');
             const txt = document.getElementById('txt-export-pdf');
-            const element = document.querySelector('main'); // Tomamos todo el main, incluyendo el membrete nuevo
+            const element = document.querySelector('main');
             
             if (!element) return;
             
-            // 1. Configuramos los datos del membrete
             document.getElementById('pdf-report-title').textContent = `Módulo: ${activeTab.toUpperCase()}`;
             const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('pdf-report-date').textContent = new Date().toLocaleDateString('es-AR', opcionesFecha);
 
-            // 2. Ocultamos el botón para que no se imprima y activamos el modo claro
             btn.style.display = 'none'; 
             document.body.classList.add('pdf-export-mode');
 
-            // 3. Configuramos A4 Horizontal con fondo blanco puro y gran nitidez
             const opt = { 
                 margin:       [0.3, 0.3], 
                 filename:     `Reporte_Salud_${activeTab.toUpperCase()}_Varela.pdf`, 
@@ -610,17 +608,15 @@
                 html2canvas:  { 
                     scale: 2, 
                     useCORS: true, 
-                    backgroundColor: '#FFFFFF', // Fondo blanco documento
-                    windowWidth: 1400 // Forzamos el ancho para que no se descentre
+                    backgroundColor: '#FFFFFF',
+                    windowWidth: 1400
                 }, 
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' },
                 pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
             
-            // Damos un pequeño respiro para que el navegador aplique los colores blancos antes de "sacar la foto"
             setTimeout(() => {
                 html2pdf().set(opt).from(element).save().then(() => {
-                    // Restauramos el modo oscuro web
                     btn.style.display = 'inline-flex'; 
                     document.body.classList.remove('pdf-export-mode');
                 }).catch((err) => { 
@@ -1156,7 +1152,9 @@
             updateMultiSelectLabel('label-caps-con', selCaps, totalCapsList, 'CAPS');
             updateMultiSelectLabel('label-prov-con', selProvs, totalProvs, 'Proveedores');
 
-            let totalConsultorios = 0, totalSinPC = 0, totalExo = 0, totalDell = 0, totalCapsStock = 0;
+            let totalConsultorios = 0, totalAdmin = 0;
+            let totalSinPC_Cons = 0, totalSinPC_Admin = 0;
+            let totalExo = 0, totalDell = 0, totalCapsStock = 0;
             let totalConsultoriosMultiples = 0, totalPCsExtra = 0; 
             let provCapsCount = {}; 
             let capsStats = {}; 
@@ -1164,6 +1162,9 @@
             const fallArea = totalAreas === 0 || selAreas.length === totalAreas;
             const fallCaps = totalCapsList === 0 || selCaps.length === totalCapsList;
             const fallProv = totalProvs === 0 || selProvs.length === totalProvs;
+
+            // Palabras clave para separar lo Administrativo de los Consultorios Médicos
+            const keywordsAdmin = ['ADMINISTRACION', 'ADMINISTRACIÓN', 'ADMISION', 'ADMISIÓN', 'FARMACIA', 'ESTADISTICA', 'ESTADÍSTICA', 'DIRECCION', 'DIRECCIÓN', 'RECEPCION', 'RECEPCIÓN', 'ARCHIVO', 'SALA DE ESPERA', 'SUM', 'SECRETARIA', 'SECRETARÍA', 'COORDINACION', 'COORDINACIÓN'];
 
             conectividadData.forEach(row => {
                 let capsName = String(row['COLUMNA 2'] || row['CAPS'] || row['CENTRO'] || '').trim().toUpperCase();
@@ -1177,9 +1178,20 @@
                 let matchProv = fallProv || selProvs.includes(prov);
 
                 if (matchArea && matchCaps && matchProv) {
-                    totalConsultorios++;
+                    let consultorioNombre = String(row['UNIR'] || row['CONSULTORIO'] || row['NUMERO'] || '-').trim().toUpperCase();
                     
-                    let consultorioNombre = String(row['UNIR'] || row['CONSULTORIO'] || row['NUMERO'] || '-').trim();
+                    // Detectar si es un área administrativa/de soporte
+                    let esAdmin = false;
+                    for (let kw of keywordsAdmin) {
+                        if (consultorioNombre.includes(kw)) {
+                            esAdmin = true;
+                            break;
+                        }
+                    }
+
+                    if (esAdmin) totalAdmin++;
+                    else totalConsultorios++;
+                    
                     let e = parseNumberSafe(row['EXO']);
                     let d = parseNumberSafe(row['DELL']);
                     let c = parseNumberSafe(row['EQUIPO CAPS']);
@@ -1200,10 +1212,12 @@
 
                     let falta = (tipoPC === 'FALTA') ? 1 : 0;
                     
+                    if (esAdmin) totalSinPC_Admin += falta;
+                    else totalSinPC_Cons += falta;
+
                     totalExo += e;
                     totalDell += d;
                     totalCapsStock += c;
-                    totalSinPC += falta;
 
                     if (totalPCsEnFila > 1) {
                         totalConsultoriosMultiples++;
@@ -1211,42 +1225,62 @@
                     }
 
                     if (!capsStats[capsName]) {
-                        capsStats[capsName] = { prov: prov, consultorios: 0, conPC: 0, faltantes: 0, detalle: [], exo:0, dell:0, eqcaps:0 };
+                        capsStats[capsName] = { 
+                            prov: prov, 
+                            consultorios: 0, 
+                            admin: 0,
+                            conPC_Cons: 0, 
+                            faltantes_Cons: 0, 
+                            faltantes_Admin: 0,
+                            detalle: [], 
+                            exo:0, dell:0, eqcaps:0 
+                        };
                         if (prov && prov !== 'NAN') provCapsCount[prov] = (provCapsCount[prov] || 0) + 1;
                     }
                     
-                    capsStats[capsName].consultorios++;
-                    if(tipoPC !== 'FALTA') capsStats[capsName].conPC++;
-                    capsStats[capsName].faltantes += falta;
+                    if (esAdmin) {
+                        capsStats[capsName].admin++;
+                        capsStats[capsName].faltantes_Admin += falta;
+                    } else {
+                        capsStats[capsName].consultorios++;
+                        if (tipoPC !== 'FALTA') capsStats[capsName].conPC_Cons++;
+                        capsStats[capsName].faltantes_Cons += falta;
+                    }
+                    
                     capsStats[capsName].exo += e;
                     capsStats[capsName].dell += d;
                     capsStats[capsName].eqcaps += c;
                     
-                    capsStats[capsName].detalle.push({ cons: consultorioNombre, tipo: tipoPC, totalPCs: totalPCsEnFila });
+                    capsStats[capsName].detalle.push({ cons: consultorioNombre, tipo: tipoPC, totalPCs: totalPCsEnFila, esAdmin: esAdmin });
                 }
             });
 
-            let totalEquipados = totalConsultorios - totalSinPC;
+            let totalEquipados_Cons = totalConsultorios - totalSinPC_Cons;
 
             if (kpiContainer) {
-                kpiContainer.className = "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 md:gap-4 mb-8";
+                kpiContainer.className = "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 md:gap-4 mb-8";
                 kpiContainer.innerHTML = `
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center border border-indigo-500/20 bg-indigo-900/10">
-                        <i data-lucide="door-open" class="text-indigo-400 w-5 h-5 md:w-7 md:h-7 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-indigo-400 font-semibold mb-1">Consultorios</h4>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center border border-indigo-500/20 bg-indigo-900/10" title="Solo Consultorios Médicos reales">
+                        <i data-lucide="stethoscope" class="text-indigo-400 w-5 h-5 md:w-7 md:h-7 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-indigo-400 font-semibold mb-1">Cons. Médicos</h4>
                         <span class="text-xl md:text-2xl font-bold text-white">${totalConsultorios}</span>
+                    </div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center border border-slate-500/20 bg-slate-800/50" title="Admisión, Administración, Farmacia, etc.">
+                        <i data-lucide="building" class="text-slate-400 w-5 h-5 md:w-7 md:h-7 mb-2"></i>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Áreas Soporte</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalAdmin}</span>
                     </div>
                     <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center border border-emerald-500/30 bg-emerald-900/10">
                         <i data-lucide="check-circle-2" class="text-emerald-400 w-5 h-5 md:w-7 md:h-7 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-emerald-400 font-semibold mb-1">Equipados</h4>
-                        <span class="text-xl md:text-2xl font-bold text-white">${totalEquipados}</span>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-emerald-400 font-semibold mb-1">Cons. Equipados</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalEquipados_Cons}</span>
                     </div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center border border-rose-500/30 bg-rose-900/10">
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center border border-rose-500/30 bg-rose-900/10" title="Faltantes SOLO en Consultorios Médicos">
                         <i data-lucide="x-circle" class="text-rose-400 w-5 h-5 md:w-7 md:h-7 mb-2"></i>
-                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-rose-400 font-semibold mb-1">Faltan PC</h4>
-                        <span class="text-xl md:text-2xl font-bold text-white">${totalSinPC}</span>
+                        <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-rose-400 font-semibold mb-1">Faltan PC (Médicos)</h4>
+                        <span class="text-xl md:text-2xl font-bold text-white">${totalSinPC_Cons}</span>
                     </div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center border border-fuchsia-500/30 bg-fuchsia-900/10 relative overflow-hidden" title="Hay consultorios con más de 1 equipo">
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center border border-fuchsia-500/30 bg-fuchsia-900/10 relative overflow-hidden" title="Hay espacios con más de 1 equipo">
                         <i data-lucide="monitor-check" class="text-fuchsia-400 w-5 h-5 md:w-7 md:h-7 mb-2"></i>
                         <h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-fuchsia-400 font-semibold mb-1">Total PCs</h4>
                         <span class="text-xl md:text-2xl font-bold text-white">${totalExo + totalDell + totalCapsStock}</span>
@@ -1280,7 +1314,7 @@
                 let sortedCapsArray = Object.entries(capsStats).sort((a,b) => a[0].localeCompare(b[0]));
                 
                 sortedCapsArray.forEach(([name, data]) => {
-                    let progreso = data.consultorios > 0 ? Math.round((data.conPC / data.consultorios) * 100) : 0;
+                    let progreso = data.consultorios > 0 ? Math.round((data.conPC_Cons / data.consultorios) * 100) : 0;
                     
                     let progColor = 'bg-rose-500';
                     if (progreso >= 80) progColor = 'bg-emerald-500';
@@ -1289,6 +1323,8 @@
                     let detalleHtml = `<div class="flex flex-wrap gap-1.5 py-1">`;
                     data.detalle.forEach(item => {
                         let badgeClass = '';
+                        let prefix = item.esAdmin ? '<span class="opacity-70 mr-1">[ADM]</span>' : '';
+                        
                         if (item.totalPCs > 1) {
                             badgeClass = 'bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/50 shadow-[0_0_8px_rgba(217,70,239,0.3)] font-bold';
                         } else if (item.tipo.includes('EXO')) {
@@ -1298,12 +1334,13 @@
                         } else if (item.tipo.includes('EQ CAPS')) {
                             badgeClass = 'bg-amber-500/10 text-amber-400 border-amber-500/30';
                         } else if (item.tipo === 'FALTA') {
-                            badgeClass = 'bg-rose-500/10 text-rose-400 border-rose-500/30';
+                            // Menos alarmante si la PC falta en un área administrativa
+                            badgeClass = item.esAdmin ? 'bg-slate-800/80 text-slate-400 border-slate-700' : 'bg-rose-500/10 text-rose-400 border-rose-500/30';
                         } else {
                             badgeClass = 'bg-slate-700/50 text-slate-300 border-slate-600';
                         }
                         
-                        detalleHtml += `<span class="px-2 py-0.5 rounded border text-[10px] tracking-wide whitespace-nowrap ${badgeClass}">${item.cons} ➔ ${item.tipo}</span>`;
+                        detalleHtml += `<span class="px-2 py-0.5 rounded border text-[10px] tracking-wide whitespace-nowrap ${badgeClass}">${prefix}${item.cons} ➔ ${item.tipo}</span>`;
                     });
                     detalleHtml += `</div>`;
 
@@ -1311,9 +1348,10 @@
                         <tr class="hover:bg-slate-800/80 transition-colors border-b border-slate-800/50 last:border-0">
                             <td class="px-4 py-3 font-semibold text-slate-200">${name}</td>
                             <td class="px-3 py-3 text-cyan-400 text-[11px] font-semibold">${data.prov}</td>
-                            <td class="px-3 py-3 text-center font-bold text-indigo-400 text-base">${data.consultorios}</td>
+                            <td class="px-2 py-3 text-center font-bold text-indigo-400 text-base">${data.consultorios}</td>
+                            <td class="px-2 py-3 text-center font-bold text-slate-400 text-base">${data.admin}</td>
                             <td class="px-3 py-3 text-center">
-                                <span class="text-base font-bold ${data.faltantes > 0 ? 'text-rose-400' : 'text-slate-500'}">${data.faltantes}</span>
+                                <span class="text-base font-bold ${data.faltantes_Cons > 0 ? 'text-rose-400' : 'text-slate-500'}">${data.faltantes_Cons}</span>
                             </td>
                             <td class="px-3 py-3">
                                 <div class="flex flex-col">
@@ -1366,8 +1404,9 @@
                     datasets: [
                         { label: 'EXO', data: capsOrdenados.map(c => capsStats[c].exo), backgroundColor: '#10B981', stack: 'Stack 1' },
                         { label: 'DELL', data: capsOrdenados.map(c => capsStats[c].dell), backgroundColor: '#06B6D4', stack: 'Stack 1' },
-                        { label: 'EQUIPO CAPS', data: capsOrdenados.map(c => capsStats[c].eqcaps), backgroundColor: '#F59E0B', stack: 'Stack 1' },
-                        { label: 'Faltantes', data: capsOrdenados.map(c => capsStats[c].faltantes), backgroundColor: '#F43F5E', stack: 'Stack 1' }
+                        { label: 'EQ CAPS', data: capsOrdenados.map(c => capsStats[c].eqcaps), backgroundColor: '#F59E0B', stack: 'Stack 1' },
+                        { label: 'Faltan (Cons Médicos)', data: capsOrdenados.map(c => capsStats[c].faltantes_Cons), backgroundColor: '#F43F5E', stack: 'Stack 1' },
+                        { label: 'Faltan (Soporte/Admin)', data: capsOrdenados.map(c => capsStats[c].faltantes_Admin), backgroundColor: '#64748B', stack: 'Stack 1' }
                     ] 
                 }, 
                 options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } } } 
