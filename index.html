@@ -637,6 +637,24 @@
             return isNaN(num) ? 0 : num;
         }
 
+        // NUEVA FUNCIÓN PARA AUSENTISMO (Detecta X, ART o números)
+        function parseAusenciaSafe(val) {
+            if (val === undefined || val === null || val === '') return 0;
+            if (typeof val === 'number') return isNaN(val) ? 0 : val;
+            
+            let str = String(val).trim().toUpperCase();
+            if (str === '0' || str === '-' || str === 'NO' || str === 'FALSO' || str === 'FALSE') return 0;
+            
+            // Intenta extraer el número si hay uno válido
+            let num = parseFloat(str.replace(',', '.'));
+            if (!isNaN(num) && num > 0) return num;
+            
+            // Si el casillero no es numérico pero tiene cualquier texto (X, FALTA, ART), suma 1 asistencia caída
+            if (str.length > 0) return 1;
+            
+            return 0;
+        }
+
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.multi-select-container')) {
                 ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic', 'dropdown-funcion-lic', 'dropdown-area-con', 'dropdown-caps-con', 'dropdown-prov-con'].forEach(id => {
@@ -680,7 +698,7 @@
         function selectAllCon(type, state) { document.querySelectorAll(`.chk-${type}-con`).forEach(cb => cb.checked = state); processConectividadData(); }
 
         const getAgenteName = (row) => {
-            const keysPriority = ['AGENTE', 'NOMBRE Y APELLIDO', 'APELLIDO Y NOMBRE', 'PERSONAL', 'EMPLEADO', 'TRABAJADOR'];
+            const keysPriority = ['AGENTE', 'NOMBRE Y APELLIDO', 'APELLIDO Y NOMBRE', 'PERSONAL', 'EMPLEADO', 'TRABAJADOR', 'NOMBRE'];
             for (let pk of keysPriority) {
                 for (let k in row) { 
                     if (k.toUpperCase().trim() === pk) { 
@@ -699,7 +717,7 @@
             return '';
         };
 
-        // Fetch Principal
+        // Fetch Principal Mejorado para Múltiples Hojas
         async function fetchAllData() {
             try {
                 const [resO, resB, resA, resLic, resI, resL, resH, resC] = await Promise.all([
@@ -713,11 +731,16 @@
                     URL_CONECTIVIDAD ? fetch(URL_CONECTIVIDAD).then(r => r.json()).catch(() => []) : Promise.resolve([])
                 ]);
 
-                operativosData  = resO.map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
-                bloqueosData    = resB.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
-                ausentismoData  = resA.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                // Función mágica: si el JSON viene con varias hojas { "Hoja1": [...], "Hoja2": [...] }, las aplana en una sola lista
+                const flattenData = (res) => Array.isArray(res) ? res : (typeof res === 'object' && res !== null ? Object.values(res).flat().filter(x => typeof x === 'object') : []);
+
+                operativosData  = flattenData(resO).map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
+                bloqueosData    = flattenData(resB).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
                 
-                licenciasData = resLic.map(row => { 
+                // Múltiples hojas aplanadas listas para usarse en Ausentismo
+                ausentismoData  = flattenData(resA).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                
+                licenciasData = flattenData(resLic).map(row => { 
                     let c = {}; 
                     for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; 
                     return c; 
@@ -726,10 +749,10 @@
                     return anio === '2025' || anio === '2026';
                 });
                 
-                irabData        = resI.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
-                laboratorioData = resL.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
-                hsiData         = resH.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
-                conectividadData= resC.map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                irabData        = flattenData(resI).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                laboratorioData = flattenData(resL).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                hsiData         = flattenData(resH).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                conectividadData= flattenData(resC).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
 
                 document.getElementById('loader').classList.add('hidden');
                 switchView('operativos');
@@ -861,9 +884,19 @@
 
         /* ==================== AUSENTISMO ==================== */
         function initAusentismoFilters() {
-            const containerAgente = document.getElementById('checklist-agente-aus'); const containerMes = document.getElementById('checklist-mes-aus'); if (!containerAgente || !containerMes) return;
+            const containerAgente = document.getElementById('checklist-agente-aus'); 
+            const containerMes = document.getElementById('checklist-mes-aus'); 
+            if (!containerAgente || !containerMes) return;
+            
             containerAgente.innerHTML = ''; containerMes.innerHTML = '';
-            let agentes = new Set(); ausentismoData.forEach(row => { let ag = getAgenteName(row); if (ag) agentes.add(ag); });
+            
+            let agentes = new Set(); 
+            ausentismoData.forEach(row => { 
+                let ag = getAgenteName(row); 
+                // Filtramos basura visual por si quedaron columnas extrañas
+                if (ag && ag !== 'UNDEFINED' && ag !== 'NAN' && ag !== 'NULL' && ag !== 'SIN AGENTE') agentes.add(ag); 
+            });
+            
             [...agentes].sort().forEach(ag => { containerAgente.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${ag}" checked onchange="processAusentismoData()" class="chk-agente-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium truncate" title="${ag}">${ag}</span></label>`; });
             allMonths.forEach(m => { containerMes.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${m}" checked onchange="processAusentismoData()" class="chk-mes-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${m}</span></label>`; });
         }
@@ -872,21 +905,49 @@
             const checkedAgentes = Array.from(document.querySelectorAll('.chk-agente-aus:checked')).map(cb => cb.value.toUpperCase()); const totalCheckAgentes = document.querySelectorAll('.chk-agente-aus').length;
             const checkedMeses = Array.from(document.querySelectorAll('.chk-mes-aus:checked')).map(cb => cb.value.toUpperCase()); const totalCheckMeses = document.querySelectorAll('.chk-mes-aus').length;
             updateMultiSelectLabel('label-agente-aus', checkedAgentes, totalCheckAgentes, 'Agentes'); updateMultiSelectLabel('label-mes-aus', checkedMeses, totalCheckMeses, 'Meses');
-            let mesesTotales = {}; allMonths.forEach(m => mesesTotales[m] = { ausencias: 0 }); let agentesTotales = {}; 
-            const fallbackAgente = totalCheckAgentes === 0 || checkedAgentes.length === totalCheckAgentes; const fallbackMes = totalCheckMeses === 0 || checkedMeses.length === totalCheckMeses;
+            
+            let mesesTotales = {}; allMonths.forEach(m => mesesTotales[m] = { ausencias: 0 }); 
+            let agentesTotales = {}; 
+            
+            const fallbackAgente = totalCheckAgentes === 0 || checkedAgentes.length === totalCheckAgentes; 
+            const fallbackMes = totalCheckMeses === 0 || checkedMeses.length === totalCheckMeses;
+            
             ausentismoData.forEach(row => {
-                let agenteRow = getAgenteName(row); if (!agenteRow) return;
+                let agenteRow = getAgenteName(row); 
+                if (!agenteRow || agenteRow === 'UNDEFINED' || agenteRow === 'NAN' || agenteRow === 'NULL' || agenteRow === 'SIN AGENTE') return;
+                
                 const matchAgente = fallbackAgente || checkedAgentes.includes(agenteRow);
                 if (matchAgente) {
                     if (!agentesTotales[agenteRow]) agentesTotales[agenteRow] = { ausencias: 0, total: 0 };
                     let mesDeFila = String(row['MES'] || '').trim().toUpperCase();
+                    
                     if (mesDeFila && allMonths.includes(mesDeFila)) {
                         const matchMes = fallbackMes || checkedMeses.includes(mesDeFila);
-                        if (matchMes) { mesesTotales[mesDeFila].ausencias += 1; agentesTotales[agenteRow].ausencias += 1; agentesTotales[agenteRow].total += 1; }
+                        if (matchMes) { 
+                            mesesTotales[mesDeFila].ausencias += 1; 
+                            agentesTotales[agenteRow].ausencias += 1; 
+                            agentesTotales[agenteRow].total += 1; 
+                        }
                     } else {
                         allMonths.forEach(mes => {
                             const matchMes = fallbackMes || checkedMeses.includes(mes);
-                            if (matchMes) { let valMes = 0; for (let k in row) { if (k.toUpperCase().includes(mes)) valMes += parseNumberSafe(row[k]); } mesesTotales[mes].ausencias += valMes; agentesTotales[agenteRow].ausencias += valMes; agentesTotales[agenteRow].total += valMes; }
+                            if (matchMes) { 
+                                let valMes = 0; 
+                                // Si la hoja tiene una columna con el nombre EXACTO del mes (ej: "ENERO")
+                                if (row[mes] !== undefined) {
+                                    valMes = parseAusenciaSafe(row[mes]);
+                                } else {
+                                    // Fallback: Si el mes está metido en otra frase (ej "FALTAS ENERO")
+                                    for (let k in row) { 
+                                        if (k.toUpperCase().includes(mes) && !k.toUpperCase().includes('OBSERV') && !k.toUpperCase().includes('MOTIVO')) {
+                                            valMes += parseAusenciaSafe(row[k]); 
+                                        }
+                                    }
+                                }
+                                mesesTotales[mes].ausencias += valMes; 
+                                agentesTotales[agenteRow].ausencias += valMes; 
+                                agentesTotales[agenteRow].total += valMes; 
+                            }
                         });
                     }
                 }
@@ -981,7 +1042,7 @@
             const kpiContainer = document.getElementById('licencias-kpi-container');
             if (kpiContainer) { 
                 kpiContainer.innerHTML = `
-                    <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="file-check-2" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Licencias Totales</h4><span class="text-xl md:text-2xl font-bold text-white">${filteredLicencias.length}</span></div>
+                    <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="file-check-2" class="textemerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Licencias Totales</h4><span class="text-xl md:text-2xl font-bold text-white">${filteredLicencias.length}</span></div>
                     <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-days" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Otorgados</h4><span class="text-xl md:text-2xl font-bold text-white">${totalDias}</span></div>
                     <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="calendar-check" class="text-purple-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Usufructuados</h4><span class="text-xl md:text-2xl font-bold text-white">${totalUsufructuados}</span></div>
                     <div class="glass-card p-4 flex flex-col items-center text-center"><i data-lucide="clock" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Días Pendientes</h4><span class="text-xl md:text-2xl font-bold text-white">${totalPendientes}</span></div>
