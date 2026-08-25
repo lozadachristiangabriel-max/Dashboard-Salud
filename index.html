@@ -28,7 +28,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748B; }
 
-        /* ESTILOS PARA REPORTE PDF */
+        /* ESTILOS PARA REPORTE PDF - CORRECCIÓN DE CORTES DE TABLAS */
         .pdf-export-mode { background-color: #FFFFFF !important; color: #1E293B !important; }
         .pdf-export-mode main { width: 1400px !important; max-width: 1400px !important; margin: 0 auto !important; padding: 40px !important; background-color: #FFFFFF !important; }
         .pdf-export-mode header:not(#report-header) { display: none !important; }
@@ -39,9 +39,12 @@
         .pdf-export-mode select { appearance: none; border: none; background: transparent; padding: 0; font-weight: bold; color: #0F172A !important; }
         .pdf-export-mode .multi-select-container button { border: none; background: transparent; padding: 0; color: #0F172A !important; }
         .pdf-export-mode .multi-select-container i { display: none; }
-        .pdf-export-mode .max-h-[19rem], .pdf-export-mode .max-h-[24rem], .pdf-export-mode .max-h-64, .pdf-export-mode .max-h-96, .pdf-export-mode .overflow-y-auto, .pdf-export-mode .overflow-x-auto, .pdf-export-mode .custom-scrollbar { max-height: none !important; overflow: visible !important; }
+        
+        /* Aca forzamos a que todo se estire hacia abajo en el PDF para que no corte info */
+        .pdf-export-mode .max-h-[19rem], .pdf-export-mode .max-h-[24rem], .pdf-export-mode .max-h-64, .pdf-export-mode .max-h-96, .pdf-export-mode .overflow-y-auto, .pdf-export-mode .overflow-x-auto, .pdf-export-mode .custom-scrollbar, .pdf-export-mode .overflow-hidden, .pdf-export-mode .h-full, .pdf-export-mode .flex-1 { max-height: none !important; height: auto !important; overflow: visible !important; }
+        
         .pdf-export-mode thead { background-color: #F1F5F9 !important; border-bottom: 2px solid #94A3B8; }
-        .pdf-export-mode tr { border-bottom: 1px solid #E2E8F0 !important; }
+        .pdf-export-mode tr { border-bottom: 1px solid #E2E8F0 !important; page-break-inside: avoid; }
     </style>
 </head>
 <body class="flex min-h-screen antialiased flex-col md:flex-row">
@@ -530,17 +533,28 @@
             return '';
         };
 
+        // NUEVA FUNCIÓN PARA EVITAR EL CACHÉ DEL NAVEGADOR
+        const fetchNoCache = (url) => {
+            if (!url) return Promise.resolve([]);
+            // Le suma los milisegundos de la hora actual al link para que Google no lo reconozca y traiga la data fresca
+            const cacheBuster = url.includes('?') ? `&t=${new Date().getTime()}` : `?t=${new Date().getTime()}`;
+            return fetch(url + cacheBuster, { cache: 'no-store' })
+                .then(r => r.json())
+                .catch(() => []);
+        };
+
         async function fetchAllData() {
             try {
+                // Usamos la nueva función fetchNoCache en vez del fetch normal
                 const [resO, resB, resA, resLic, resI, resL, resH, resC] = await Promise.all([
-                    fetch(URL_OPERATIVOS).then(r => r.json()).catch(() => []),
-                    URL_BLOQUEOS ? fetch(URL_BLOQUEOS).then(r => r.json()).catch(() => []) : Promise.resolve([]),
-                    fetch(URL_AUSENTISMO).then(r => r.json()).catch(() => []),
-                    URL_LICENCIAS ? fetch(URL_LICENCIAS).then(r => r.json()).catch(() => []) : Promise.resolve([]),
-                    fetch(URL_IRAB).then(r => r.json()).catch(() => []),
-                    fetch(URL_LABORATORIO).then(r => r.json()).catch(() => []),
-                    URL_HSI ? fetch(URL_HSI).then(r => r.json()).catch(() => []) : Promise.resolve([]),
-                    URL_CONECTIVIDAD ? fetch(URL_CONECTIVIDAD).then(r => r.json()).catch(() => []) : Promise.resolve([])
+                    fetchNoCache(URL_OPERATIVOS),
+                    fetchNoCache(URL_BLOQUEOS),
+                    fetchNoCache(URL_AUSENTISMO),
+                    fetchNoCache(URL_LICENCIAS),
+                    fetchNoCache(URL_IRAB),
+                    fetchNoCache(URL_LABORATORIO),
+                    fetchNoCache(URL_HSI),
+                    fetchNoCache(URL_CONECTIVIDAD)
                 ]);
 
                 const flattenData = (res) => Array.isArray(res) ? res : (typeof res === 'object' && res !== null ? Object.values(res).flat().filter(x => typeof x === 'object') : []);
