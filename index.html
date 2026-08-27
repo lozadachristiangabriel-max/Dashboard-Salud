@@ -40,7 +40,6 @@
         .pdf-export-mode .multi-select-container button { border: none; background: transparent; padding: 0; color: #0F172A !important; }
         .pdf-export-mode .multi-select-container i { display: none; }
         
-        /* Aca forzamos a que todo se estire hacia abajo en el PDF para que no corte info */
         .pdf-export-mode .max-h-[19rem], .pdf-export-mode .max-h-[24rem], .pdf-export-mode .max-h-64, .pdf-export-mode .max-h-96, .pdf-export-mode .overflow-y-auto, .pdf-export-mode .overflow-x-auto, .pdf-export-mode .custom-scrollbar, .pdf-export-mode .overflow-hidden, .pdf-export-mode .h-full, .pdf-export-mode .flex-1 { max-height: none !important; height: auto !important; overflow: visible !important; }
         
         .pdf-export-mode thead { background-color: #F1F5F9 !important; border-bottom: 2px solid #94A3B8; }
@@ -121,7 +120,7 @@
                 <p class="text-xs md:text-sm text-slate-400">Centro de control y visualización de datos operativos</p>
             </div>
             <button onclick="exportCurrentViewToPDF()" id="btn-export-pdf" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-900/30 transition-all shrink-0">
-                <i data-lucide="file-down" class="w-4 h-4"></i><span id="txt-export-pdf">Exportar Hoja a PDF</span>
+                <i data-lucide="monitor-up" class="w-4 h-4"></i><span id="txt-export-pdf">Capturar Vista</span>
             </button>
         </header>
 
@@ -172,7 +171,30 @@
 
         <!-- AUSENTISMO -->
         <section id="view-ausentismo" class="hidden">
-            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40 overflow-visible">
+            <!-- SECCIÓN DE REPORTE FORMAL MENSUAL -->
+            <div class="glass-card p-5 mb-8 border-l-4 border-emerald-500 relative z-40 bg-gradient-to-r from-emerald-900/20 to-transparent">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-white font-bold text-base flex items-center gap-2 mb-1"><i data-lucide="file-signature" class="text-emerald-400 w-5 h-5"></i> Generador de Reporte Oficial</h3>
+                        <p class="text-xs text-slate-400 max-w-lg">Crea un documento A4 listo para imprimir que agrupa las faltas por agente (Medicina y Comunes) de un mes específico.</p>
+                    </div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <div class="w-full sm:w-48">
+                            <label class="block text-[10px] uppercase text-emerald-400/80 mb-1 ml-1 font-bold">Mes del Reporte</label>
+                            <select id="select-mes-reporte" class="w-full bg-[#0B1121] border border-slate-700 text-white font-medium text-sm rounded-lg py-2 pl-3 pr-8 focus:outline-none focus:border-emerald-500 transition-colors">
+                                <!-- Se llena por JS -->
+                            </select>
+                        </div>
+                        <button onclick="generarReporteMensualPDF(event)" class="mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm px-5 py-2.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 transition-all shrink-0">
+                            <i data-lucide="printer" class="w-4 h-4"></i> Imprimir PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-800 pb-2">Tablero Interactivo General</h2>
+
+            <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-30 overflow-visible">
                 <div class="relative multi-select-container z-50">
                     <label class="block text-xs uppercase text-slate-400 mb-1 ml-1 font-semibold">Seleccionar Personal</label>
                     <button type="button" onclick="toggleMultiSelect('dropdown-agente-aus')" class="w-full bg-[#0F172A] border border-slate-700 hover:border-slate-500 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all"><span id="label-agente-aus" class="truncate font-medium">Todos los Agentes</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i></button>
@@ -196,7 +218,7 @@
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
                 <div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 text-sm md:text-base flex items-center gap-2"><i data-lucide="bar-chart-2" class="text-cyan-400 w-5 h-5"></i>Inasistencias por Mes</h3><div class="h-64 md:h-72 relative"><canvas id="chartAusentismoMensual"></canvas></div></div>
-                <div class="glass-card p-4 md:p-6 flex flex-col h-full"><div class="flex justify-between items-end mb-4"><h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2"><i data-lucide="list" class="text-purple-400 w-5 h-5"></i>Listado Completo por Agente</h3></div>
+                <div class="glass-card p-4 md:p-6 flex flex-col h-full"><div class="flex justify-between items-end mb-4"><h3 class="text-white font-medium text-sm md:text-base flex items-center gap-2"><i data-lucide="list" class="text-purple-400 w-5 h-5"></i>Listado Dinámico por Agente</h3></div>
                 
                 <div class="overflow-y-auto max-h-[19rem] pr-2 custom-scrollbar flex-1 border border-slate-800 rounded-lg">
                     <table class="w-full text-left text-xs text-slate-300 relative">
@@ -249,7 +271,7 @@
             </div>
         </section>
 
-        <!-- IRAB, LABORATORIO, HSI, CONECTIVIDAD -->
+        <!-- IRAB -->
         <section id="view-irab" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40">
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Semana</label><select id="filter-semana-irab" onchange="processIrabData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODAS">Todas las Semanas</option></select></div>
@@ -262,6 +284,7 @@
             </div>
         </section>
 
+        <!-- LABORATORIO -->
         <section id="view-laboratorio" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40 overflow-visible">
                 <div class="relative multi-select-container z-50">
@@ -291,6 +314,7 @@
             </div>
         </section>
 
+        <!-- HSI -->
         <section id="view-hsi" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40">
                 <div><label class="block text-xs uppercase text-slate-400 mb-1 ml-1">Filtrar por Año</label><select id="filter-anio-hsi" onchange="processHsiData()" class="w-full bg-[#0F172A] border border-slate-700 text-slate-200 text-sm rounded-lg py-2.5 pl-3 pr-10 focus:outline-none"><option value="TODOS">Todos los Años</option></select></div>
@@ -307,6 +331,7 @@
             </div>
         </section>
 
+        <!-- CONECTIVIDAD -->
         <section id="view-conectividad" class="hidden">
             <div class="glass-card p-4 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-40 overflow-visible">
                 <div class="relative multi-select-container z-50">
@@ -344,7 +369,7 @@
 
             <div class="grid grid-cols-1 mb-8"><div class="glass-card p-4 md:p-6"><h3 class="text-white font-medium mb-4 flex items-center gap-2"><i data-lucide="bar-chart" class="text-purple-400 w-5 h-5"></i>Equipos y Faltantes por CAPS</h3><div class="h-80 relative"><canvas id="chartConectividadEquipos"></canvas></div></div></div>
 
-            <!-- NUEVO MÓDULO DE DIAGNÓSTICO DE FALTANTES -->
+            <!-- MÓDULO DE DIAGNÓSTICO DE FALTANTES -->
             <div class="border-t border-slate-800/80 my-8 pt-8 relative z-10">
                 <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2"><i data-lucide="clipboard-x" class="text-rose-400"></i> Diagnóstico de Faltantes (Consultorios Médicos)</h2>
                 <div id="con-motivos-kpi" class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6"></div>
@@ -405,12 +430,41 @@
                         </table>
                     </div>
                 </div>
-
             </div>
-
         </section>
 
     </main>
+
+    <!-- PLANTILLA OCULTA PARA EL REPORTE PDF MENSUAL OFICIAL -->
+    <div id="reporte-impresion" style="display: none; background: white; color: black; padding: 40px; width: 800px; max-width: 800px; margin: 0 auto; font-family: Arial, sans-serif;">
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #16A34A; padding-bottom: 20px; margin-bottom: 30px;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <svg style="width: 75px; height: 75px;" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 75C35 60 10 45 10 20C20 25 30 35 35 45C35 30 25 15 20 5C35 10 45 25 48 40C50 25 50 10 50 5C50 10 50 25 52 40C55 25 65 10 80 5C75 15 65 30 65 45C70 35 80 25 90 20C90 45 65 60 50 75Z" fill="#16A34A"/><circle cx="50" cy="55" r="4" fill="#15803D"/><circle cx="50" cy="42" r="3" fill="#15803D"/><circle cx="50" cy="31" r="2" fill="#15803D"/></svg>
+                <div>
+                    <h1 style="font-size: 24px; font-weight: bold; color: #111827; margin: 0 0 4px 0; line-height: 1;">MUNICIPALIDAD DE FLORENCIO VARELA</h1>
+                    <h2 style="font-size: 16px; font-weight: bold; color: #15803D; margin: 0;">Subsecretaría de Recursos y Logística</h2>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <p style="font-size: 16px; font-weight: bold; color: #1F2937; margin: 0 0 4px 0;">REPORTE DE AUSENTISMO</p>
+                <p id="reporte-mes-titulo" style="font-size: 14px; color: #4B5563; font-weight: bold; margin: 0; text-transform: uppercase;">Mes: -</p>
+            </div>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="background-color: #F3F4F6; border-bottom: 2px solid #D1D5DB;">
+                    <th style="padding: 12px 10px; font-size: 12px; text-transform: uppercase; color: #374151; border: 1px solid #E5E7EB;">Agente</th>
+                    <th style="padding: 12px 10px; font-size: 12px; text-transform: uppercase; color: #374151; border: 1px solid #E5E7EB; text-align: center;">Ausencias Comunes</th>
+                    <th style="padding: 12px 10px; font-size: 12px; text-transform: uppercase; color: #374151; border: 1px solid #E5E7EB; text-align: center;">Ausencias Medicina</th>
+                    <th style="padding: 12px 10px; font-size: 12px; text-transform: uppercase; color: #111827; border: 1px solid #E5E7EB; text-align: center; font-weight: bold;">Total General</th>
+                </tr>
+            </thead>
+            <tbody id="reporte-tbody"></tbody>
+        </table>
+        <div style="margin-top: 40px; text-align: center; font-size: 10px; color: #6B7280; border-top: 1px solid #E5E7EB; padding-top: 10px;">
+            Documento generado automáticamente por el Sistema de Control Operativo - Municipalidad de Florencio Varela.
+        </div>
+    </div>
 
     <script>
         const URL_OPERATIVOS = 'https://script.google.com/macros/s/AKfycbzCdN8W9GoMIm-GXAD15Mna5grST9fplOdj6WsnZ7ATm26rtRHSwS14asYKGgmLZ7Wd/exec?hoja=OPERATIVOS';
@@ -533,10 +587,8 @@
             return '';
         };
 
-        // NUEVA FUNCIÓN PARA EVITAR EL CACHÉ DEL NAVEGADOR
         const fetchNoCache = (url) => {
             if (!url) return Promise.resolve([]);
-            // Le suma los milisegundos de la hora actual al link para que Google no lo reconozca y traiga la data fresca
             const cacheBuster = url.includes('?') ? `&t=${new Date().getTime()}` : `?t=${new Date().getTime()}`;
             return fetch(url + cacheBuster, { cache: 'no-store' })
                 .then(r => r.json())
@@ -545,7 +597,6 @@
 
         async function fetchAllData() {
             try {
-                // Usamos la nueva función fetchNoCache en vez del fetch normal
                 const [resO, resB, resA, resLic, resI, resL, resH, resC] = await Promise.all([
                     fetchNoCache(URL_OPERATIVOS),
                     fetchNoCache(URL_BLOQUEOS),
@@ -613,6 +664,106 @@
             [...agentes].sort().forEach(ag => { containerAgente.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${ag}" checked onchange="processAusentismoData()" class="chk-agente-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium truncate" title="${ag}">${ag}</span></label>`; });
             allMonths.forEach(m => { containerMes.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${m}" checked onchange="processAusentismoData()" class="chk-mes-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${m}</span></label>`; });
             [...sectores].sort().forEach(sec => { containerSector.innerHTML += `<label class="flex items-center gap-2 p-1.5 hover:bg-slate-800/80 rounded cursor-pointer"><input type="checkbox" value="${sec}" checked onchange="processAusentismoData()" class="chk-sector-aus rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"><span class="font-medium">${sec}</span></label>`; });
+            
+            const selectReporte = document.getElementById('select-mes-reporte');
+            if (selectReporte) {
+                selectReporte.innerHTML = '';
+                allMonths.forEach(m => {
+                    selectReporte.innerHTML += `<option value="${m}">${m}</option>`;
+                });
+                let currentMonthIdx = new Date().getMonth(); 
+                selectReporte.value = allMonths[currentMonthIdx];
+            }
+        }
+
+        function generarReporteMensualPDF(event) {
+            const mesSelect = document.getElementById('select-mes-reporte').value;
+            if(!mesSelect) return;
+
+            let reporteAgentes = {};
+
+            ausentismoData.forEach(row => {
+                let sec = String(row['SECTOR'] || '').trim().toUpperCase();
+                if ((sec.includes('MEDICINA') || sec.includes('ADM CHOFERES') || sec.includes('PROMOTORES') || sec.includes('AUSENTES')) && !sec.includes('DETALLE')) {
+                    let ag = getAgenteName(row);
+                    if (ag && ag !== 'UNDEFINED' && ag !== 'NAN' && ag !== 'NULL' && ag !== 'SIN AGENTE') {
+                        if (!reporteAgentes[ag]) reporteAgentes[ag] = { medicina: 0, otras: 0, total: 0 };
+
+                        let ausenciasMes = 0;
+                        let mesFila = String(row['MES'] || '').trim().toUpperCase();
+
+                        if (mesFila === mesSelect) {
+                            ausenciasMes = 1;
+                        } else if (!mesFila || !allMonths.includes(mesFila)) {
+                            let colMes = row[mesSelect];
+                            if (colMes !== undefined) {
+                                ausenciasMes = parseAusenciaSafe(colMes);
+                            } else {
+                                for (let k in row) {
+                                    if (k.toUpperCase().includes(mesSelect) && !k.toUpperCase().includes('OBSERV') && !k.toUpperCase().includes('MOTIVO')) {
+                                        ausenciasMes += parseAusenciaSafe(row[k]);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (ausenciasMes > 0) {
+                            if (sec.includes('MEDICINA')) {
+                                reporteAgentes[ag].medicina += ausenciasMes;
+                            } else {
+                                reporteAgentes[ag].otras += ausenciasMes;
+                            }
+                            reporteAgentes[ag].total += ausenciasMes;
+                        }
+                    }
+                }
+            });
+
+            let agentesConFaltas = Object.entries(reporteAgentes)
+                .filter(([nombre, datos]) => datos.total > 0)
+                .sort((a,b) => a[0].localeCompare(b[0]));
+
+            const tbody = document.getElementById('reporte-tbody');
+            tbody.innerHTML = '';
+
+            let totalOtras = 0, totalMedicina = 0, totalGeneral = 0;
+
+            if(agentesConFaltas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #6B7280; font-style: italic;">No se registraron inasistencias en el mes de ${mesSelect}.</td></tr>`;
+            } else {
+                agentesConFaltas.forEach(([nombre, datos]) => {
+                    totalOtras += datos.otras; totalMedicina += datos.medicina; totalGeneral += datos.total;
+                    tbody.innerHTML += `
+                        <tr style="border-bottom: 1px solid #E5E7EB; page-break-inside: avoid;">
+                            <td style="padding: 10px; font-size: 11px; font-weight: bold; color: #1F2937; border-right: 1px solid #E5E7EB;">${nombre}</td>
+                            <td style="padding: 10px; font-size: 12px; text-align: center; color: #4B5563; border-right: 1px solid #E5E7EB;">${datos.otras > 0 ? datos.otras : '-'}</td>
+                            <td style="padding: 10px; font-size: 12px; text-align: center; color: #4B5563; border-right: 1px solid #E5E7EB;">${datos.medicina > 0 ? datos.medicina : '-'}</td>
+                            <td style="padding: 10px; font-size: 12px; text-align: center; font-weight: bold; color: #111827; background-color: #F9FAFB;">${datos.total}</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML += `
+                    <tr style="border-top: 2px solid #374151; background-color: #E5E7EB; page-break-inside: avoid;">
+                        <td style="padding: 12px 10px; font-size: 12px; font-weight: bold; color: #111827; text-align: right; text-transform: uppercase;">Total del Mes:</td>
+                        <td style="padding: 12px 10px; font-size: 14px; text-align: center; font-weight: bold; color: #111827;">${totalOtras}</td>
+                        <td style="padding: 12px 10px; font-size: 14px; text-align: center; font-weight: bold; color: #111827;">${totalMedicina}</td>
+                        <td style="padding: 12px 10px; font-size: 16px; text-align: center; font-weight: bold; color: #111827;">${totalGeneral}</td>
+                    </tr>
+                `;
+            }
+
+            document.getElementById('reporte-mes-titulo').textContent = `Mes: ${mesSelect}`;
+            
+            const container = document.getElementById('reporte-impresion');
+            const btn = event.currentTarget; 
+            const iconOriginal = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Procesando...`;
+            if(window.lucide) lucide.createIcons();
+            
+            container.style.display = 'block'; 
+
+            const opt = { margin: [0.5, 0.5], filename: `Reporte_Mensual_Ausentismo_${mesSelect}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#FFFFFF' }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+            setTimeout(() => { html2pdf().set(opt).from(container).save().then(() => { container.style.display = 'none'; btn.innerHTML = iconOriginal; if(window.lucide) lucide.createIcons(); }).catch(err => { console.error(err); container.style.display = 'none'; btn.innerHTML = iconOriginal; }); }, 300);
         }
 
         function processAusentismoData() {
@@ -626,7 +777,6 @@
             
             let mesesTotales = {}; allMonths.forEach(m => mesesTotales[m] = { ausencias: 0 }); 
             let agentesTotales = {}; 
-            
             let faltasMedicina = 0, faltasAusentes = 0, totalAusencias = 0;
 
             const fallbackAgente = totalCheckAgentes === 0 || checkedAgentes.length === totalCheckAgentes; 
@@ -652,12 +802,8 @@
                     if (mesDeFila && allMonths.includes(mesDeFila)) {
                         const matchMes = fallbackMes || checkedMeses.includes(mesDeFila);
                         if (matchMes) { 
-                            mesesTotales[mesDeFila].ausencias += 1; 
-                            agentesTotales[key].ausencias += 1; 
-                            agentesTotales[key].total += 1; 
-                            
-                            if (sectorDeFila.includes('MEDICINA')) faltasMedicina += 1;
-                            else faltasAusentes += 1;
+                            mesesTotales[mesDeFila].ausencias += 1; agentesTotales[key].ausencias += 1; agentesTotales[key].total += 1; 
+                            if (sectorDeFila.includes('MEDICINA')) faltasMedicina += 1; else faltasAusentes += 1;
                             totalAusencias += 1;
                         }
                     } else {
@@ -665,22 +811,12 @@
                             const matchMes = fallbackMes || checkedMeses.includes(mes);
                             if (matchMes) { 
                                 let valMes = 0; 
-                                if (row[mes] !== undefined) {
-                                    valMes = parseAusenciaSafe(row[mes]);
-                                } else {
-                                    for (let k in row) { 
-                                        if (k.toUpperCase().includes(mes) && !k.toUpperCase().includes('OBSERV') && !k.toUpperCase().includes('MOTIVO')) {
-                                            valMes += parseAusenciaSafe(row[k]); 
-                                        }
-                                    }
+                                if (row[mes] !== undefined) { valMes = parseAusenciaSafe(row[mes]); } else {
+                                    for (let k in row) { if (k.toUpperCase().includes(mes) && !k.toUpperCase().includes('OBSERV') && !k.toUpperCase().includes('MOTIVO')) valMes += parseAusenciaSafe(row[k]); }
                                 }
                                 if (valMes > 0) {
-                                    mesesTotales[mes].ausencias += valMes; 
-                                    agentesTotales[key].ausencias += valMes; 
-                                    agentesTotales[key].total += valMes; 
-                                    
-                                    if (sectorDeFila.includes('MEDICINA')) faltasMedicina += valMes;
-                                    else faltasAusentes += valMes;
+                                    mesesTotales[mes].ausencias += valMes; agentesTotales[key].ausencias += valMes; agentesTotales[key].total += valMes; 
+                                    if (sectorDeFila.includes('MEDICINA')) faltasMedicina += valMes; else faltasAusentes += valMes;
                                     totalAusencias += valMes;
                                 }
                             }
@@ -695,57 +831,23 @@
             const kpiContainer = document.getElementById('ausentismo-kpi-container');
             if (kpiContainer) { 
                 kpiContainer.className = "grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-8 relative z-10";
-                kpiContainer.innerHTML = `
-                <div class="glass-card p-4 flex flex-col items-center text-center bg-amber-900/10 border border-amber-500/20">
-                    <i data-lucide="users" class="text-amber-400 w-7 h-7 md:w-9 md:h-9 mb-3"></i>
-                    <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-amber-400 font-semibold mb-1">Faltas Ausentes</h4>
-                    <span class="text-2xl md:text-4xl font-bold text-white">${faltasAusentes}</span>
-                </div>
-                <div class="glass-card p-4 flex flex-col items-center text-center bg-blue-900/10 border border-blue-500/20">
-                    <i data-lucide="stethoscope" class="text-blue-400 w-7 h-7 md:w-9 md:h-9 mb-3"></i>
-                    <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-blue-400 font-semibold mb-1">Faltas Medicina</h4>
-                    <span class="text-2xl md:text-4xl font-bold text-white">${faltasMedicina}</span>
-                </div>
-                <div class="glass-card p-4 flex flex-col items-center text-center bg-emerald-900/10 border border-emerald-500/20">
-                    <i data-lucide="calculator" class="text-emerald-400 w-7 h-7 md:w-9 md:h-9 mb-3"></i>
-                    <h4 class="text-[10px] md:text-xs uppercase tracking-wider text-emerald-400 font-semibold mb-1">Total Inasistencias</h4>
-                    <span class="text-2xl md:text-4xl font-bold text-white">${totalAusencias}</span>
-                </div>`; 
+                kpiContainer.innerHTML = `<div class="glass-card p-4 flex flex-col items-center text-center bg-amber-900/10 border border-amber-500/20"><i data-lucide="users" class="text-amber-400 w-7 h-7 md:w-9 md:h-9 mb-3"></i><h4 class="text-[10px] md:text-xs uppercase tracking-wider text-amber-400 font-semibold mb-1">Faltas Ausentes</h4><span class="text-2xl md:text-4xl font-bold text-white">${faltasAusentes}</span></div><div class="glass-card p-4 flex flex-col items-center text-center bg-blue-900/10 border border-blue-500/20"><i data-lucide="stethoscope" class="text-blue-400 w-7 h-7 md:w-9 md:h-9 mb-3"></i><h4 class="text-[10px] md:text-xs uppercase tracking-wider text-blue-400 font-semibold mb-1">Faltas Medicina</h4><span class="text-2xl md:text-4xl font-bold text-white">${faltasMedicina}</span></div><div class="glass-card p-4 flex flex-col items-center text-center bg-emerald-900/10 border border-emerald-500/20"><i data-lucide="calculator" class="text-emerald-400 w-7 h-7 md:w-9 md:h-9 mb-3"></i><h4 class="text-[10px] md:text-xs uppercase tracking-wider text-emerald-400 font-semibold mb-1">Total Inasistencias</h4><span class="text-2xl md:text-4xl font-bold text-white">${totalAusencias}</span></div>`; 
                 if(window.lucide) window.lucide.createIcons(); 
             }
-
             if(charts.ausentismoMensual) charts.ausentismoMensual.destroy(); Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
             const mesesAVisibilizar = checkedMeses.length > 0 ? checkedMeses : allMonths;
             charts.ausentismoMensual = new Chart(document.getElementById('chartAusentismoMensual').getContext('2d'), { type: 'bar', data: { labels: mesesAVisibilizar, datasets: [ { label: 'Inasistencias', data: mesesAVisibilizar.map(m => mesesTotales[m].ausencias), backgroundColor: '#F43F5E', borderRadius: 4 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             
             const tbody = document.getElementById('tbody-ausentismo'); tbody.innerHTML = '';
-            
             const sortedAgentes = Object.values(agentesTotales).filter(item => item.total > 0).sort((a, b) => b.total - a.total);
             
             if (sortedAgentes.length === 0) { 
                 tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-500 italic">No hay registros de faltas para el personal, mes o sector seleccionado.</td></tr>`; 
             } else { 
                 sortedAgentes.forEach(item => { 
-                    const nombre = item.nombre; 
-                    const sector = item.sector;
-                    const ausencias = item.ausencias; 
-                    const total = item.total; 
-                    
                     let badgeColor = 'text-slate-400 bg-slate-800 border-slate-700';
-                    if(sector.includes('MEDICINA')) badgeColor = 'text-blue-400 bg-blue-900/30 border-blue-500/30';
-                    else if(sector.includes('PROMOTORES')) badgeColor = 'text-amber-400 bg-amber-900/30 border-amber-500/30';
-                    else if(sector.includes('CHOFERES')) badgeColor = 'text-purple-400 bg-purple-900/30 border-purple-500/30';
-                    else badgeColor = 'text-cyan-400 bg-cyan-900/30 border-cyan-500/30';
-
-                    tbody.innerHTML += `
-                    <tr class="hover:bg-slate-800/80 transition-colors">
-                        <td class="px-4 py-2.5 font-medium text-slate-200">${nombre}</td>
-                        <td class="px-3 py-2.5">
-                            <span class="px-2 py-1 text-[9px] font-bold tracking-wider uppercase border rounded ${badgeColor}">${sector}</span>
-                        </td>
-                        <td class="px-3 py-2.5 text-center text-rose-400 font-medium">${ausencias > 0 ? ausencias : '-'}</td>
-                        <td class="px-3 py-2.5 text-center font-bold text-emerald-400 text-sm">${total}</td>
-                    </tr>`; 
+                    if(item.sector.includes('MEDICINA')) badgeColor = 'text-blue-400 bg-blue-900/30 border-blue-500/30'; else if(item.sector.includes('PROMOTORES')) badgeColor = 'text-amber-400 bg-amber-900/30 border-amber-500/30'; else if(item.sector.includes('CHOFERES')) badgeColor = 'text-purple-400 bg-purple-900/30 border-purple-500/30'; else badgeColor = 'text-cyan-400 bg-cyan-900/30 border-cyan-500/30';
+                    tbody.innerHTML += `<tr class="hover:bg-slate-800/80 transition-colors"><td class="px-4 py-2.5 font-medium text-slate-200">${item.nombre}</td><td class="px-3 py-2.5"><span class="px-2 py-1 text-[9px] font-bold tracking-wider uppercase border rounded ${badgeColor}">${item.sector}</span></td><td class="px-3 py-2.5 text-center text-rose-400 font-medium">${item.ausencias > 0 ? item.ausencias : '-'}</td><td class="px-3 py-2.5 text-center font-bold text-emerald-400 text-sm">${item.total}</td></tr>`; 
                 }); 
             }
         }
@@ -796,7 +898,7 @@
             let totalListos = 0;
 
             let provCapsCount = {}; let capsStats = {}; 
-            let problemasList = []; // <-- ARRAY PARA LA NUEVA TABLA DETALLADA
+            let problemasList = []; 
             
             const fallArea = totalAreas === 0 || selAreas.length === totalAreas; 
             const fallCaps = totalCapsList === 0 || selCaps.length === totalCapsList; 
@@ -842,13 +944,11 @@
                     
                     let falta = (tipoPC === 'FALTA') ? 1 : 0; 
 
-                    // LÓGICA DE DIAGNÓSTICO DE FALTANTES (NUEVA TABLA)
                     if (!esAdmin && falta === 1) {
                         let tieneProblemaElect = false;
                         let tieneProblemaNet = false;
                         let tieneProblemaInfra = false;
                         
-                        // 1. Leer directamente los valores exactos de tus columnas
                         let valToma = String(row['TOMA CORRIENTE'] || '').trim().toUpperCase();
                         let valCon = String(row['TIENE CONECTIVIDAD'] || '').trim().toUpperCase();
                         let valWifi = String(row['TIENE ALCANCE WIFI'] || '').trim().toUpperCase();
@@ -856,21 +956,17 @@
                         let valCableado = String(row['POSSE CABLEADO'] || row['POSEE CABLEADO'] || '').trim().toUpperCase();
                         let valCalidad = String(row['CALIDAD DEL ALCANCE WIFI'] || row['CALIDAD DEL ALCANCE WIFI '] || '').trim().toUpperCase();
 
-                        // Marcamos si hay falla comprobada
                         if (valToma === 'NO' || valToma === 'FALTA') tieneProblemaElect = true;
                         if (valCon === 'NO' || valWifi === 'NO' || valRepetidor === 'SI') tieneProblemaNet = true;
 
-                        // 2. Backup: Buscar en el resto de la fila por si hay comentarios
                         for(let key in row) {
                             let k = key.toUpperCase();
                             let v = String(row[key] || '').trim().toUpperCase();
                             
-                            // Backup de columnas alternativas o anotaciones sueltas
                             if ((k.includes('ELEC') || k.includes('ENCHUFE')) && (v === 'NO' || v === 'FALTA' || v === 'SIN')) tieneProblemaElect = true;
                             if ((k.includes('RED') || k.includes('SEÑAL')) && (v === 'NO' || v === 'FALTA' || v === 'SIN' || v.includes('NO LLEGA'))) tieneProblemaNet = true;
                             if ((k.includes('MUEBLE') || k.includes('ESCRITORIO')) && (v === 'NO' || v === 'FALTA' || v === 'SIN')) tieneProblemaInfra = true;
 
-                            // Observaciones generales
                             if (k.includes('OBSERV') || k.includes('MOTIVO') || k.includes('DETALLE') || k.includes('ESTADO')) {
                                 if (v.includes('TOMA') || v.includes('ENCHUFE') || v.includes('ELECTRIC') || v.includes('CORRIENTE')) tieneProblemaElect = true;
                                 if (v.includes('WIFI') || v.includes('WI-FI') || v.includes('INTERNET') || v.includes('RED ') || v.includes('SEÑAL') || v.includes('ALCANCE')) tieneProblemaNet = true;
@@ -878,13 +974,11 @@
                             }
                         }
 
-                        // Si detectamos cualquier falla, lo contamos y guardamos
                         if (tieneProblemaElect || tieneProblemaNet || tieneProblemaInfra || valToma==='NO' || valCon==='NO' || valWifi==='NO' || valRepetidor==='SI') {
                             if (tieneProblemaElect) totalFaltaElect++;
                             else if (tieneProblemaNet) totalFaltaNet++;
                             else totalFaltaOtros++;
                             
-                            // Guardamos la fila entera para la tabla visual
                             problemasList.push({
                                 caps: capsName,
                                 consultorio: consultorioNombre,
@@ -1051,7 +1145,6 @@
                 options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } } } 
             }); 
 
-            // ACTUALIZAR KPI DIAGNÓSTICO
             const kpiMotivos = document.getElementById('con-motivos-kpi');
             if (kpiMotivos) {
                 document.getElementById('txt-listos').textContent = totalListos;
@@ -1063,24 +1156,12 @@
                     type: 'doughnut',
                     data: {
                         labels: ['Listos p/ Equipar', 'Falta Conectividad', 'Falta Electricidad', 'Falta Infra. / Otros'],
-                        datasets: [{
-                            data: [totalListos, totalFaltaNet, totalFaltaElect, totalFaltaOtros],
-                            backgroundColor: ['#10B981', '#F43F5E', '#F59E0B', '#64748B'],
-                            borderWidth: 0
-                        }]
+                        datasets: [{ data: [totalListos, totalFaltaNet, totalFaltaElect, totalFaltaOtros], backgroundColor: ['#10B981', '#F43F5E', '#F59E0B', '#64748B'], borderWidth: 0 }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '65%',
-                        plugins: {
-                            legend: { position: 'right', labels: { color: '#94A3B8', font: { size: 11 } } }
-                        }
-                    }
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { color: '#94A3B8', font: { size: 11 } } } } }
                 });
             }
 
-            // DIBUJAR LA TABLA DETALLADA NUEVA
             const tbodyDiag = document.getElementById('tbody-diagnostico-detalle');
             if (tbodyDiag) {
                 tbodyDiag.innerHTML = '';
@@ -1088,7 +1169,6 @@
                     tbodyDiag.innerHTML = `<tr><td colspan="8" class="px-4 py-6 text-center text-slate-500 italic">No hay consultorios médicos con problemas de infraestructura según los filtros seleccionados.</td></tr>`;
                 } else {
                     problemasList.sort((a,b) => a.caps.localeCompare(b.caps)).forEach(item => {
-                        // Colores condicionales según el valor
                         let badgeToma = item.toma === 'NO' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : (item.toma === 'SI' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-400 bg-slate-800');
                         let badgeCon = item.conectividad === 'NO' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : (item.conectividad === 'SI' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-400 bg-slate-800');
                         let badgeWifi = item.wifi === 'NO' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : (item.wifi === 'SI' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-400 bg-slate-800');
