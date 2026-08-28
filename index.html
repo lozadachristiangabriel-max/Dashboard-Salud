@@ -491,12 +491,15 @@
         const URL_BLOQUEOS   = 'https://script.google.com/macros/s/AKfycbzCdN8W9GoMIm-GXAD15Mna5grST9fplOdj6WsnZ7ATm26rtRHSwS14asYKGgmLZ7Wd/exec?hoja=BLOQUEOS';
         const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbyCD7ldAI3t8X9vX0_IEKIBG6Tfahm314aDvdnWgzD4lwvzXZ2mCC3eh39AMfwC_n7-Uw/exec';
         const URL_LICENCIAS  = 'https://script.google.com/macros/s/AKfycbx-Tzy_-zZIho5p5IomrHfO9VS7V8lDvytmXJhx51oEhF76g5DNgUSXKWuli6KCIXBq/exec';
-        const URL_IRAB_RESUMEN = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec?hoja=RESUMEN_IRAB';
-        const URL_IRAB_CARGA   = 'https://script.google.com/macros/s/AKfycbxh7S2eG5W0M0CqBv4_8Y4IINGMKEHwrPEwgQrvg3aKUsfm6SOhci3btxdRexXlZ9CD/exec?hoja=CARGA';
+        
+        // IRAB (Enlaces corregidos)
+        const URL_IRAB_RESUMEN = 'https://script.google.com/macros/s/AKfycbx21e98ziW3GoG86nGg-L8GFuqpokLrXncgIbcwaly0dALLCxvMHjJnpvwDzrKN2Ac-/exec?hoja=RESUMEN_IRAB';
+        const URL_IRAB_CARGA   = 'https://script.google.com/macros/s/AKfycbx21e98ziW3GoG86nGg-L8GFuqpokLrXncgIbcwaly0dALLCxvMHjJnpvwDzrKN2Ac-/exec?hoja=CARGA';
+        
         const URL_LABORATORIO = 'https://script.google.com/macros/s/AKfycbzq7DlkN-FHkHXIlzk1xeHeE_zahNaUvozW62nTfrYmA8k0DnG9IO_D2TnMCUKQludD/exec';
         
-        // ¡AQUÍ ESTÁ VINCULADA TU NUEVA HOJA HSI!
-        const URL_HSI = 'https://script.google.com/macros/s/AKfycbx21e98ziW3GoG86nGg-L8GFuqpokLrXncgIbcwaly0dALLCxvMHjJnpvwDzrKN2Ac-/exec'; 
+        // HSI (Enlace nuevo que me compartiste)
+        const URL_HSI = 'https://script.google.com/macros/s/AKfycbxnPCG7JM5LjkWqr4x-QkjvOZFK-YIssqG5KVgtOhoMLZXufzogmmrhP9Dsq0R3DQgy/exec'; 
         
         const URL_CONECTIVIDAD = 'https://script.google.com/macros/s/AKfycbwtVIJWp4vBYlugoGmX03Ldoa58RmHwtHmHviQW2s7YhcjR7Z1MKUXsuVu4GGpEfEAu/exec?hoja=CONECTIVIDAD';
 
@@ -981,7 +984,7 @@
             charts.irabTurnos = new Chart(document.getElementById('chartIrabTurnos').getContext('2d'), { type: 'bar', data: { labels: semanas, datasets: [{ label: 'Turnos Programados', data: dataTurnos, backgroundColor: '#A855F7', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } }); 
         }
 
-        // Pestaña 2: General
+        // Pestaña 2: General (Carga) - CLASIFICACIÓN EXACTA
         function processIrabGeneralData() {
             if (irabCargaData.length === 0) {
                 const kpiCont = document.getElementById('irab-gen-kpi-container');
@@ -990,112 +993,130 @@
             }
             
             let totalCargas = 0;
-            let reinternacionesCount = { 'SI': 0, 'NO': 0 };
-            let medicacionCount = { 'SI': 0, 'NO': 0 };
-            let pautasCount = { 'SI': 0, 'NO': 0 };
+            let reinternacionesCount = 0;
+            let medicacionCount = 0;
+            let pautasSiCount = 0;
+            let pautasNoCount = 0;
             
             let edadesCount = { '0 - 3 meses': 0, '4 - 6 meses': 0, '7 - 12 meses': 0, '> 12 meses': 0, 'Sin dato': 0 };
             let escolaridadCount = {};
             let socioAmbCount = {};
             let talInicioCount = {};
             let talFinalCount = {};
-            
-            let checkCol = (row, arr) => {
-                for (let k in row) {
-                    for (let a of arr) {
-                        if (k.toUpperCase().includes(a)) {
-                            let v = String(row[k] || '').trim().toUpperCase();
-                            if (v && v !== 'NAN' && v !== '-') return v;
-                        }
-                    }
-                }
-                return '';
+
+            let esAfirmativo = (val) => {
+                if (!val) return false;
+                let v = String(val).trim().toUpperCase();
+                return v.includes('SI') || v.includes('SÍ') || v === '1' || v.startsWith('SI');
             };
 
-            let cleanTal = (val) => val.replace(/[^0-9]/g, ''); 
+            let cleanTal = (val) => String(val).replace(/[^0-9]/g, ''); 
 
             irabCargaData.forEach(row => {
-                if (Object.keys(row).length < 2) return; 
+                // Validar que la fila realmente tenga datos 
+                if (!row['SE REALIZA LA VISITA'] && !row['DNI'] && !row['EDAD']) return;
+
+                totalCargas++;
+
+                // 1. Reinternaciones
+                if (esAfirmativo(row['SE REINTERNA?'])) reinternacionesCount++;
+
+                // 2. Entrega de Medicación
+                if (esAfirmativo(row['SE ENTREGA MEDICACION'])) medicacionCount++;
+
+                // 3. Pautas de Alarma (Evaluamos si reconoce los cambios de actitud)
+                let evaluaPautasStr = String(row['¿RECONOCE LOS CAMBIOS DE ACTITUD DEL NIÑX SE ENFERMA?'] || '').toUpperCase().trim();
+                if (evaluaPautasStr.includes('SI') || evaluaPautasStr.includes('SÍ')) {
+                     pautasSiCount++;
+                } else if (evaluaPautasStr.includes('NO')) {
+                     pautasNoCount++;
+                }
+
+                // 4. Escolaridad
+                let esc = String(row['NIVEL DE ESCOLARIDAD'] || '').trim().toUpperCase();
+                if (esc === '' || esc === 'NAN' || esc === 'UNDEFINED') esc = 'SIN DATO';
+                escolaridadCount[esc] = (escolaridadCount[esc] || 0) + 1;
+
+                // 5. Edades (Basado en la columna EDAD)
+                let eStr = String(row['EDAD'] || '');
+                let edadNum = parseFloat(eStr);
+                if (!isNaN(edadNum)) {
+                    if (edadNum <= 3) edadesCount['0 - 3 meses']++;
+                    else if (edadNum <= 6) edadesCount['4 - 6 meses']++;
+                    else if (edadNum <= 12) edadesCount['7 - 12 meses']++;
+                    else edadesCount['> 12 meses']++;
+                } else {
+                    edadesCount['Sin dato']++;
+                }
+
+                // 6. TAL
+                let tIni = cleanTal(row['TAL INICIO']);
+                let tFin = cleanTal(row['TAL FINAL']);
+                if (tIni !== '') talInicioCount[tIni] = (talInicioCount[tIni] || 0) + 1;
+                if (tFin !== '') talFinalCount[tFin] = (talFinalCount[tFin] || 0) + 1;
+
+                // 7. CLASIFICACIÓN SOCIO AMBIENTAL AUTOMÁTICA
+                if (esAfirmativo(row['COMPARTE CAMA?'])) {
+                    socioAmbCount['Colecho / Comparte Cama'] = (socioAmbCount['Colecho / Comparte Cama'] || 0) + 1;
+                }
                 
-                let reinterna = checkCol(row, ['SE REINTERNA']);
-                let med = checkCol(row, ['SE ENTREGA MEDICACION', 'ENTREGA DE MEDICACION']);
-                let pautas = checkCol(row, ['RECONOCE LOS CAMBIOS', 'RECONOCE LOS TELEFONOS', 'COMPRENDE EL TRATAMIENTO']);
-                let esc = checkCol(row, ['ESCOLARIDAD', 'NIVEL EDUCATIVO']);
-                let eStr = checkCol(row, ['EDAD DEL NIÑO EN MESES', 'EDAD (MESES)', 'MESES DEL NIÑO']);
-                let tIni = cleanTal(checkCol(row, ['TAL (AL INGRESO)', 'TAL INICIO', 'TAL AL INGRESO']));
-                let tFin = cleanTal(checkCol(row, ['TAL AL EGRESO', 'TAL FINAL']));
-                let socio = checkCol(row, ['FACTORES SOCIO AMBIENTALES', 'SOCIO AMBIENTALES']);
+                let fuma = String(row['FUMAN? ADENTRO / AFUERA'] || row['FUMAN?'] || '').trim().toUpperCase();
+                if (fuma.includes('SI') || fuma.includes('SÍ') || fuma.includes('ADENTRO')) {
+                    socioAmbCount['Tabaquismo intradomiciliario'] = (socioAmbCount['Tabaquismo intradomiciliario'] || 0) + 1;
+                }
+                
+                if (esAfirmativo(row['TIENE PROBLEMAS CON LA LACTANCIA'])) {
+                    socioAmbCount['Dificultades en Lactancia'] = (socioAmbCount['Dificultades en Lactancia'] || 0) + 1;
+                }
+                if (esAfirmativo(row['¿HAY OTRO NIÑX ENFERMO EN LA CASA?'])) {
+                    socioAmbCount['Conviviente Enfermo'] = (socioAmbCount['Conviviente Enfermo'] || 0) + 1;
+                }
+                
+                let calefaccion = String(row['¿CUENTA CON CALEFACCION?'] || '').trim().toUpperCase();
+                if (calefaccion === 'NO') {
+                    socioAmbCount['Sin Calefacción'] = (socioAmbCount['Sin Calefacción'] || 0) + 1;
+                }
 
-                if (reinterna || med || esc || socio || tIni || eStr) {
-                    totalCargas++;
-
-                    if(reinterna === 'SI' || reinterna === 'SI ') reinternacionesCount['SI']++;
-                    else if (reinterna === 'NO') reinternacionesCount['NO']++;
-                    
-                    if(med === 'SI' || med === 'SI ') medicacionCount['SI']++;
-                    else if(med === 'NO') medicacionCount['NO']++;
-                    
-                    if(pautas === 'SI' || pautas === 'SI ') pautasCount['SI']++;
-                    else if(pautas === 'NO') pautasCount['NO']++;
-
-                    if (!esc) esc = 'SIN DATO';
-                    escolaridadCount[esc] = (escolaridadCount[esc] || 0) + 1;
-
-                    let edadNum = parseFloat(eStr);
-                    if (!isNaN(edadNum)) {
-                        if (edadNum <= 3) edadesCount['0 - 3 meses']++;
-                        else if (edadNum <= 6) edadesCount['4 - 6 meses']++;
-                        else if (edadNum <= 12) edadesCount['7 - 12 meses']++;
-                        else edadesCount['> 12 meses']++;
-                    } else {
-                        edadesCount['Sin dato']++;
-                    }
-
-                    if(tIni !== '') talInicioCount[tIni] = (talInicioCount[tIni] || 0) + 1;
-                    if(tFin !== '') talFinalCount[tFin] = (talFinalCount[tFin] || 0) + 1;
-
-                    if (socio) {
-                        let parts = socio.split(/[,.]+/);
-                        parts.forEach(p => {
-                            p = p.trim();
-                            if (p.length > 2) socioAmbCount[p] = (socioAmbCount[p] || 0) + 1;
-                        });
-                    }
+                let techo = String(row['TECHO'] || '').trim().toUpperCase();
+                if (techo.includes('CHAPA') || techo.includes('CARTON') || techo.includes('MADERA') || techo.includes('PRECARI')) {
+                    socioAmbCount['Techo Precario (Chapa/Madera)'] = (socioAmbCount['Techo Precario (Chapa/Madera)'] || 0) + 1;
+                }
+                
+                let piso = String(row['PISO'] || '').trim().toUpperCase();
+                if (piso.includes('TIERRA') || piso.includes('CEMENTO')) {
+                    socioAmbCount['Piso de Tierra/Cemento'] = (socioAmbCount['Piso de Tierra/Cemento'] || 0) + 1;
                 }
             });
 
-            if (totalCargas === 0) {
-                const kpiCont = document.getElementById('irab-gen-kpi-container');
-                if (kpiCont) kpiCont.innerHTML = `<div class="col-span-full glass-card p-6 text-center text-amber-400 text-sm font-medium">No se detectaron datos de carga en la hoja conectada.</div>`;
-                return;
-            }
-
+            // Renderizado de KPIs
             const kpiContainer = document.getElementById('irab-gen-kpi-container');
-            if(kpiContainer) {
+            if (kpiContainer) {
                 kpiContainer.innerHTML = `
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="clipboard-list" class="text-indigo-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Niños (Carga)</h4><span class="text-lg md:text-2xl font-bold text-white">${totalCargas}</span></div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="alert-triangle" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Reinternaciones</h4><span class="text-lg md:text-2xl font-bold text-white">${reinternacionesCount['SI']}</span></div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="pill" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Entregas Medicación</h4><span class="text-lg md:text-2xl font-bold text-white">${medicacionCount['SI']}</span></div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="check-circle" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Entiende Pautas</h4><span class="text-lg md:text-2xl font-bold text-white">${pautasCount['SI']}</span></div>
-                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="x-circle" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">NO Entiende</h4><span class="text-lg md:text-2xl font-bold text-white">${pautasCount['NO']}</span></div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="clipboard-list" class="text-indigo-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Total de Cargas</h4><span class="text-lg md:text-2xl font-bold text-white">${totalCargas}</span></div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="alert-triangle" class="text-rose-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Reinternaciones</h4><span class="text-lg md:text-2xl font-bold text-white">${reinternacionesCount}</span></div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="pill" class="text-emerald-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Entregas Medicación</h4><span class="text-lg md:text-2xl font-bold text-white">${medicacionCount}</span></div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="check-circle" class="text-cyan-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Entiende Pautas</h4><span class="text-lg md:text-2xl font-bold text-white">${pautasSiCount}</span></div>
+                    <div class="glass-card p-3 md:p-4 flex flex-col items-center text-center"><i data-lucide="x-circle" class="text-amber-400 w-6 h-6 md:w-8 md:h-8 mb-2"></i><h4 class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">NO Entiende</h4><span class="text-lg md:text-2xl font-bold text-white">${pautasNoCount}</span></div>
                 `;
-                if(window.lucide) window.lucide.createIcons();
+                if (window.lucide) window.lucide.createIcons();
             }
 
             Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'Inter';
             
-            if(charts.irabSocio) charts.irabSocio.destroy();
-            let sortSocio = Object.keys(socioAmbCount).sort((a,b)=>socioAmbCount[b]-socioAmbCount[a]).slice(0, 10);
+            // Gráfico Socio Ambientales
+            if (charts.irabSocio) charts.irabSocio.destroy();
+            let sortSocio = Object.keys(socioAmbCount).sort((a,b)=>socioAmbCount[b]-socioAmbCount[a]);
             charts.irabSocio = new Chart(document.getElementById('chartIrabSocio').getContext('2d'), {
                 type: 'bar', indexAxis: 'y',
                 data: {
-                    labels: sortSocio.length > 0 ? sortSocio : ['Sin Datos / En Blanco'],
+                    labels: sortSocio.length > 0 ? sortSocio : ['Sin Datos de Riesgo'],
                     datasets: [{ label: 'Casos', data: sortSocio.length > 0 ? sortSocio.map(k => socioAmbCount[k]) : [0], backgroundColor: '#F59E0B', borderRadius: 4 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
-            if(charts.irabEdades) charts.irabEdades.destroy();
+            // Gráfico Edades
+            if (charts.irabEdades) charts.irabEdades.destroy();
             charts.irabEdades = new Chart(document.getElementById('chartIrabEdades').getContext('2d'), {
                 type: 'bar',
                 data: {
@@ -1105,7 +1126,8 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
-            if(charts.irabTal) charts.irabTal.destroy();
+            // Gráfico TAL
+            if (charts.irabTal) charts.irabTal.destroy();
             let talKeys = Array.from(new Set([...Object.keys(talInicioCount), ...Object.keys(talFinalCount)])).sort();
             charts.irabTal = new Chart(document.getElementById('chartIrabTal').getContext('2d'), {
                 type: 'bar',
@@ -1119,7 +1141,8 @@
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
-            if(charts.irabEscolar) charts.irabEscolar.destroy();
+            // Gráfico Escolaridad
+            if (charts.irabEscolar) charts.irabEscolar.destroy();
             let sortEsc = Object.keys(escolaridadCount).sort((a,b)=>escolaridadCount[b]-escolaridadCount[a]);
             charts.irabEscolar = new Chart(document.getElementById('chartIrabEscolar').getContext('2d'), {
                 type: 'doughnut',
@@ -1130,12 +1153,13 @@
                 options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
             });
 
-            if(charts.irabPautas) charts.irabPautas.destroy();
+            // Gráfico Pautas
+            if (charts.irabPautas) charts.irabPautas.destroy();
             charts.irabPautas = new Chart(document.getElementById('chartIrabPautas').getContext('2d'), {
                 type: 'pie',
                 data: {
-                    labels: ['Sí', 'No'],
-                    datasets: [{ data: [pautasCount['SI'], pautasCount['NO']], backgroundColor: ['#10B981', '#F43F5E'], borderWidth: 0 }]
+                    labels: ['Entiende', 'No Entiende'],
+                    datasets: [{ data: [pautasSiCount, pautasNoCount], backgroundColor: ['#10B981', '#F43F5E'], borderWidth: 0 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false }
             });
