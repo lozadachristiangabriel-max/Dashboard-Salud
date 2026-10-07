@@ -108,23 +108,32 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Estilos PDF */
-        .pdf-export-mode { background-color: #FFFFFF !important; color: #1E293B !important; background-image: none !important; }
-        .pdf-export-mode main { width: 1122px !important; max-width: 1122px !important; margin: 0 auto !important; padding: 25px 35px !important; background-color: #FFFFFF !important; box-sizing: border-box !important; float: none !important; }
+        .pdf-export-mode { display: block !important; background-color: #FFFFFF !important; color: #1E293B !important; background-image: none !important; }
+        .pdf-export-mode #sidebar { display: none !important; }
+        .pdf-export-mode main { width: 100% !important; max-width: 1040px !important; margin: 0 auto !important; margin-left: auto !important; padding: 12px 18px !important; background-color: #FFFFFF !important; box-sizing: border-box !important; float: none !important; overflow: visible !important; }
         .pdf-export-mode * { animation: none !important; transition: none !important; transform: none !important; }
         .pdf-export-mode header:not(#report-header) { display: none !important; }
         #report-header { display: none; }
         .pdf-export-mode #report-header { display: flex !important; align-items: center; justify-content: space-between; border-bottom: 2px solid #16A34A; padding-bottom: 15px; margin-bottom: 20px; background-color: #FFFFFF !important; }
-        .pdf-export-mode .glass-card { background: #F8FAFC !important; border: 1px solid #CBD5E1 !important; box-shadow: none !important; color: #0F172A !important; page-break-inside: avoid; opacity: 1 !important; }
+        .pdf-export-mode .glass-card { background: #F8FAFC !important; border: 1px solid #CBD5E1 !important; box-shadow: none !important; color: #0F172A !important; break-inside: avoid; page-break-inside: avoid; opacity: 1 !important; }
         .pdf-export-mode .text-white, .pdf-export-mode .text-slate-200, .pdf-export-mode .text-slate-300, .pdf-export-mode .text-slate-400 { color: #1E293B !important; }
         .pdf-export-mode select, .pdf-export-mode .multi-select-container, .pdf-export-mode button, .pdf-export-mode .hide-on-pdf { display: none !important; }
         .pdf-export-mode thead { background-color: #F1F5F9 !important; border-bottom: 2px solid #94A3B8; }
-        .pdf-export-mode tr { border-bottom: 1px solid #E2E8F0 !important; page-break-inside: avoid; }
-        .pdf-export-mode .print-expand { max-height: none !important; overflow: visible !important; }
+        .pdf-export-mode tr { border-bottom: 1px solid #E2E8F0 !important; break-inside: avoid; page-break-inside: avoid; }
+        .pdf-export-mode .print-expand, .pdf-export-mode .overflow-x-auto, .pdf-export-mode .overflow-hidden { max-height: none !important; height: auto !important; overflow: visible !important; }
+        .pdf-export-mode table { max-width: 100% !important; font-size: 9px !important; }
+        .pdf-export-mode #reporte-impresion { display: block !important; width: 1040px !important; max-width: 1040px !important; min-height: 0 !important; margin: 0 auto !important; padding: 22px 26px !important; box-sizing: border-box !important; overflow: visible !important; }
+        .pdf-export-mode #reporte-header { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr); align-items: center !important; gap: 20px !important; width: 100% !important; box-sizing: border-box !important; }
+        .pdf-export-mode #reporte-header > div { min-width: 0 !important; }
+        .pdf-export-mode #reporte-mes-titulo { display: block !important; max-width: 100% !important; white-space: normal !important; overflow-wrap: anywhere !important; box-sizing: border-box !important; }
+        .pdf-export-mode #reporte-impresion table { width: 100% !important; max-width: 100% !important; table-layout: fixed !important; }
+        .pdf-export-mode #reporte-impresion th, .pdf-export-mode #reporte-impresion td { overflow-wrap: anywhere !important; }
         @media print {
+            @page { size: A4 landscape; margin: 8mm; }
             body.printing-con-plan > :not(#print-plan-con) { display: none !important; }
-            body.printing-con-plan #print-plan-con { display: block !important; width: 100%; color: #111827; background: white; }
-            body.printing-con-plan #print-plan-con table { width: 100%; border-collapse: collapse; font-size: 9pt; }
-            body.printing-con-plan #print-plan-con th, body.printing-con-plan #print-plan-con td { border: 1px solid #cbd5e1; padding: 5px; text-align: left; }
+            body.printing-con-plan #print-plan-con { display: block !important; width: 100%; max-width: 100%; box-sizing: border-box; color: #111827; background: white; overflow: visible; }
+            body.printing-con-plan #print-plan-con table { width: 100%; max-width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 8pt; }
+            body.printing-con-plan #print-plan-con th, body.printing-con-plan #print-plan-con td { border: 1px solid #cbd5e1; padding: 4px; text-align: left; overflow-wrap: anywhere; }
             body.printing-con-plan #print-plan-con th { background: #e2e8f0; }
         }
     </style>
@@ -187,6 +196,7 @@
             </div>
             <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 text-left border-l-4 border-transparent"><i data-lucide="thermometer" class="w-5 h-5 text-rose-400"></i> IRAB 2026</button>
             <button onclick="switchView('laboratorio')" id="btn-laboratorio" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 text-left border-l-4 border-transparent"><i data-lucide="flask-conical" class="w-5 h-5 text-amber-400"></i> LABORATORIO MÓVIL</button>
+            <a href="./choferes.html" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 text-left border-l-4 border-transparent"><i data-lucide="truck" class="w-5 h-5 text-cyan-400"></i> REGISTRO CHOFERES (PRUEBA)</a>
         </nav>
         <div class="p-4 border-t border-slate-800/60 bg-slate-900/30 text-[10px] text-slate-500 font-medium text-center uppercase tracking-widest">
             SS Recursos y Logística
@@ -297,20 +307,28 @@
         <!-- AUSENTISMO -->
         <section id="view-ausentismo" class="hidden fade-in">
              <div class="glass-card hide-on-pdf p-6 mb-8 border-l-4 border-emerald-500 relative z-40 bg-gradient-to-r from-emerald-900/30 to-transparent">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                <div class="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-6">
                     <div>
                         <h3 class="text-white font-bold text-lg flex items-center gap-2 mb-2"><i data-lucide="file-signature" class="text-emerald-400 w-6 h-6"></i> Generador de Reporte Oficial (A4 Horizontal)</h3>
-                        <p class="text-sm text-slate-400 max-w-lg">Unifica ausencias y licencias por agente y mes, con impresión A4. Para licencias usa los días usufructuados informados en la hoja Licencias.</p>
+                        <p class="text-sm text-slate-400 max-w-lg">Unifica ausencias y licencias por agente y mes, con impresión A4. Para cada licencia muestra los días otorgados y los usufructuados informados en la hoja Licencias.</p>
+                        <p id="ausentismo-origen-status" class="text-xs mt-2 text-slate-400"></p>
                         <div class="inline-flex items-center gap-2 mt-3 px-3 py-2 rounded-xl border border-emerald-400/20 bg-emerald-400/5 text-xs text-slate-300"><i data-lucide="calendar-check" class="w-4 h-4 text-emerald-300"></i><span>Días de licencia del mes</span><strong id="reporte-dias-licencia" class="text-emerald-300 text-sm">0</strong><span>usufructuados</span></div>
                     </div>
-                    <div class="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full sm:w-auto bg-[#0B1121]/50 p-4 rounded-xl border border-slate-700/50">
-                        <div class="w-full sm:w-32"><label class="block text-[10px] font-bold uppercase tracking-widest text-emerald-400/80 mb-1.5 ml-1">Año</label><select id="select-anio-reporte" onchange="refreshReportLicenseKpi()" class="w-full text-white font-medium text-sm rounded-lg py-2.5 pl-4 pr-4"></select></div>
-                        <div class="w-full sm:w-56">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full 2xl:w-auto bg-[#0B1121]/50 p-4 rounded-xl border border-slate-700/50">
+                        <div class="w-full"><label class="block text-[10px] font-bold uppercase tracking-widest text-emerald-400/80 mb-1.5 ml-1">Año</label><select id="select-anio-reporte" onchange="refreshReportLicenseKpi()" class="w-full text-white font-medium text-sm rounded-lg py-2.5 pl-4 pr-4"></select></div>
+                        <div class="w-full">
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-emerald-400/80 mb-1.5 ml-1">Función / sector</label>
+                            <div class="relative multi-select-container">
+                                <button type="button" onclick="toggleMultiSelect('dropdown-funcion-reporte-aus')" class="w-full border border-slate-700/80 hover:border-emerald-500/50 text-slate-200 text-sm rounded-lg py-2.5 px-3 text-left flex justify-between items-center focus:outline-none transition-all shadow-inner"><span id="label-funcion-reporte-aus" class="truncate font-medium">Todas las funciones</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i></button>
+                                <div id="dropdown-funcion-reporte-aus" class="hidden absolute z-50 w-full mt-2 bg-[#0B1121]/95 backdrop-blur-xl border border-slate-600 rounded-xl shadow-[0_15px_50px_rgba(0,0,0,0.9)] p-3 max-h-60 overflow-y-auto custom-scrollbar"><div class="flex justify-between border-b border-slate-700/80 pb-3 mb-3 text-xs font-bold uppercase tracking-wider text-emerald-400"><button type="button" onclick="selectAllReportFunctions(true)" class="hover:text-white transition-colors">Seleccionar todas</button><button type="button" onclick="selectAllReportFunctions(false)" class="hover:text-white text-rose-400 transition-colors">Ninguna</button></div><div id="checklist-funcion-reporte-aus" class="space-y-1.5 text-sm text-slate-200"></div></div>
+                            </div>
+                        </div>
+                        <div class="w-full">
                             <label class="block text-[10px] font-bold uppercase tracking-widest text-emerald-400/80 mb-1.5 ml-1">Mes del Reporte</label>
                             <select id="select-mes-reporte" onchange="refreshReportLicenseKpi()" class="w-full text-white font-medium text-sm rounded-lg py-2.5 pl-4 pr-10 focus:outline-none focus:border-emerald-500 transition-colors">
                             </select>
                         </div>
-                        <button onclick="generarReporteMensualPDF(event)" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-sm px-6 py-2.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 transform hover:-translate-y-0.5 transition-all shrink-0">
+                        <button onclick="generarReporteMensualPDF(event)" class="w-full bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-sm px-4 py-2.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 transform hover:-translate-y-0.5 transition-all">
                             <i data-lucide="printer" class="w-4 h-4"></i> Imprimir PDF A4
                         </button>
                     </div>
@@ -470,6 +488,7 @@
                     <div id="ot-connection-status" class="text-xs text-amber-300 lg:max-w-md">Conexión pendiente con la hoja VIA DE CONTACTO.</div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5" id="ot-kpis"></div>
+                <div id="ot-channel-kpis" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 mb-5"></div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5 hide-on-pdf">
                     <label class="text-[10px] uppercase tracking-wider text-slate-400">Año de solicitud<select id="ot-filter-year" class="block w-full mt-1 rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-slate-100" onchange="processOrdenesTrabajo()"><option value="">Todos los años</option></select></label>
                     <label class="text-[10px] uppercase tracking-wider text-slate-400">Mes de solicitud<select id="ot-filter-month" class="block w-full mt-1 rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-slate-100" onchange="processOrdenesTrabajo()"><option value="">Todos los meses</option></select></label>
@@ -480,6 +499,7 @@
                     <div class="glass-card p-4"><h4 class="text-sm font-semibold text-white mb-3">Solicitudes por mes</h4><div class="h-64 relative"><canvas id="chartOrdenesMes"></canvas></div></div>
                     <div class="glass-card p-4"><h4 class="text-sm font-semibold text-white mb-3">Procedimientos más solicitados</h4><div class="h-64 relative"><canvas id="chartOrdenesProcedimientos"></canvas></div></div>
                 </div>
+                <div class="glass-card p-4 mb-5"><h4 class="text-sm font-semibold text-white mb-3">Solicitudes finalizadas por mes y vía de contacto</h4><p class="text-xs text-slate-400 mb-3">Con “Todas las vías” se comparan las vías; al elegir una, se ve su evolución mensual.</p><div class="h-72 relative"><canvas id="chartOrdenesResueltasPorVia"></canvas></div></div>
                 <div class="glass-card p-4"><div class="flex justify-between items-center gap-3 mb-3"><h4 class="text-sm font-semibold text-white">Detalle de solicitudes</h4><span id="ot-result-count" class="text-xs text-slate-400"></span></div><div class="overflow-x-auto max-h-[28rem]"><table class="w-full min-w-[1000px] text-left text-xs text-slate-300"><thead class="sticky top-0 text-[10px] uppercase bg-slate-900 text-slate-400"><tr><th class="px-3 py-3">Vía de contacto</th><th class="px-3 py-3">Personal solicitante</th><th class="px-3 py-3">Área / sector</th><th class="px-3 py-3">CAPS / lugar</th><th class="px-3 py-3">Fecha</th><th class="px-3 py-3">Procedimientos</th><th class="px-3 py-3">Estado</th><th class="px-3 py-3">Fecha reporte semanal</th><th class="px-3 py-3">Observación</th></tr></thead><tbody id="tbody-ordenes-trabajo" class="divide-y divide-slate-800/60"></tbody></table></div></div>
             </div>
             <div class="glass-card p-5 md:p-6 mb-8"><div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4"><div><h3 class="text-white font-semibold">CAPS con profesionales pendientes</h3><p class="text-slate-400 text-xs mt-1">Efectores de salud, excluye el área central. El listado respeta los filtros de Área y CAPS.</p></div><span id="hsi-pendientes-resumen" class="text-xs text-amber-300"></span></div><div class="overflow-x-auto"><table class="w-full min-w-[850px] text-left text-sm text-slate-300"><thead class="text-[10px] uppercase bg-slate-900 text-slate-400"><tr><th class="px-3 py-3">Área</th><th class="px-3 py-3">CAPS</th><th class="px-3 py-3 text-right">Administrativos capacitados</th><th class="px-3 py-3 text-right">Profesionales capacitados</th><th class="px-3 py-3 text-right">Total capacitados</th><th class="px-3 py-3 text-right">Profesionales pendientes</th><th class="px-3 py-3 text-right">Total pendientes</th></tr></thead><tbody id="tbody-hsi-pendientes" class="divide-y divide-slate-800/60"></tbody></table></div></div>
@@ -507,7 +527,7 @@
     <div id="print-plan-con" style="display:none;padding:24px;font-family:Arial,sans-serif;color:#111827;background:white"><h1 style="font-size:20px;margin:0 0 4px">Plan de colocación de PC para HSI</h1><p id="print-con-date" style="font-size:11px;color:#475569;margin:0 0 14px"></p><div id="print-con-summary" style="margin-bottom:14px;font-size:11px"></div><div id="print-con-table"></div><p style="font-size:9px;color:#475569;margin-top:12px">Listado generado desde la hoja de Conectividad y los filtros activos del tablero. Los datos de infraestructura reflejan el último relevamiento disponible.</p></div>
 
     <div id="reporte-impresion" style="display: none; background: white; color: #1e293b; padding: 25px 35px; width: 1122px; min-height: 794px; margin: 0 auto; font-family: 'Inter', Arial, sans-serif; box-sizing: border-box;">
-        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #16A34A; padding-bottom: 18px; margin-bottom: 25px;">
+        <div id="reporte-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #16A34A; padding-bottom: 18px; margin-bottom: 25px;">
             <div style="display: flex; align-items: center; gap: 16px;">
                 <svg style="width: 60px; height: 60px;" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 75C35 60 10 45 10 20C20 25 30 35 35 45C35 30 25 15 20 5C35 10 45 25 48 40C50 25 50 10 50 5C50 10 50 25 52 40C55 25 65 10 80 5C75 15 65 30 65 45C70 35 80 25 90 20C90 45 65 60 50 75Z" fill="#16A34A"/><circle cx="50" cy="55" r="4" fill="#15803D"/><circle cx="50" cy="42" r="3" fill="#15803D"/><circle cx="50" cy="31" r="2" fill="#15803D"/></svg>
                 <div>
@@ -527,7 +547,7 @@
                     <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; width: 30%;">AGENTE / PERSONAL</th>
                     <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 15%;">AUSENCIAS</th>
                     <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 15%;">MEDICINA</th>
-                    <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 25%;">LICENCIAS (TIPO / DÍAS HÁBILES USUFRUCTUADOS)</th>
+                    <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 25%;">LICENCIAS (TIPO / DÍAS OTORGADOS Y USUFRUCTUADOS)</th>
                     <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 15%; background-color: #E2E8F0; color: #0F172A;">TOTAL DÍAS</th>
                 </tr>
             </thead>
@@ -543,7 +563,7 @@
     <script>
         const URL_OPERATIVOS = 'https://script.google.com/macros/s/AKfycbzCdN8W9GoMIm-GXAD15Mna5grST9fplOdj6WsnZ7ATm26rtRHSwS14asYKGgmLZ7Wd/exec?hoja=OPERATIVOS';
         const URL_BLOQUEOS   = 'https://script.google.com/macros/s/AKfycbzCdN8W9GoMIm-GXAD15Mna5grST9fplOdj6WsnZ7ATm26rtRHSwS14asYKGgmLZ7Wd/exec?hoja=BLOQUEOS';
-        const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbyCD7ldAI3t8X9vX0_IEKIBG6Tfahm314aDvdnWgzD4lwvzXZ2mCC3eh39AMfwC_n7-Uw/exec';
+        const URL_AUSENTISMO = 'https://script.google.com/macros/s/AKfycbx_MQfsGSNhDGDa4bTxQaz8OULdZX9jrKBWo520wAtqX1YllxN6g6KLMWMeJ31uNxNhFA/exec';
         const URL_LICENCIAS  = 'https://script.google.com/macros/s/AKfycbw9tMtKOgsv5Jj2TEg1PmucYlw3LDIosDGqKk1-PS2ov10s0loQji453My4dLg0IiNU/exec?hoja=LICENCIAS';
         const URL_CONECTIVIDAD = 'https://script.google.com/macros/s/AKfycbwtVIJWp4vBYlugoGmX03Ldoa58RmHwtHmHviQW2s7YhcjR7Z1MKUXsuVu4GGpEfEAu/exec?hoja=CONECTIVIDAD';
         const URL_IRAB_RESUMEN = 'https://script.google.com/macros/s/AKfycbx21e98ziW3GoG86nGg-L8GFuqpokLrXncgIbcwaly0dALLCxvMHjJnpvwDzrKN2Ac-/exec?hoja=RESUMEN_IRAB';
@@ -554,7 +574,7 @@
         const URL_ORDENES_TRABAJO = 'https://script.google.com/macros/s/AKfycbyvuH1WRMsEtyGdInKn1UiK_k5lSEL5kWOi2cTLgQkEXiJICay46utemJKncK5RT1sC/exec?hoja=ORDEN%20DE%20TRABAJO';
 
         let activeTab = 'resumen'; // Ahora arranca por defecto en el Dashboard Ejecutivo
-        let operativosData = [], bloqueosData = [], ausentismoData = [], licenciasData = [], ordenesTrabajoData = [];
+        let operativosData = [], bloqueosData = [], ausentismoData = [], ausentismoDetalleData = [], ausentismoSourceWarnings = [], licenciasData = [], ordenesTrabajoData = [];
         let irabData = [], irabCargaData = [], laboratorioData = [], hsiData = [], conectividadData = [], charts = {};
 
         const kpiConfig = [
@@ -642,7 +662,7 @@
             if (!element) return;
             document.getElementById('pdf-report-title').textContent = `Módulo: ${activeTab.toUpperCase()}`; const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; document.getElementById('pdf-report-date').textContent = new Date().toLocaleDateString('es-AR', opcionesFecha);
             btn.style.display = 'none'; document.body.classList.add('pdf-export-mode');
-            const opt = { margin: [0.3, 0.3], filename: `Reporte_Salud_${activeTab.toUpperCase()}_Varela.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#FFFFFF', windowWidth: 1400 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } };
+            const opt = { margin: [0.25, 0.25], filename: `Reporte_Salud_${activeTab.toUpperCase()}_Varela.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 1.5, useCORS: true, backgroundColor: '#FFFFFF', windowWidth: 1100 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }, pagebreak: { mode: ['css', 'legacy'] } };
             setTimeout(() => { html2pdf().set(opt).from(element).save().then(() => { btn.style.display = 'inline-flex'; document.body.classList.remove('pdf-export-mode'); }).catch(() => { btn.style.display = 'inline-flex'; document.body.classList.remove('pdf-export-mode'); }); }, 500);
         }
 
@@ -666,12 +686,12 @@
         }
 
         document.addEventListener('click', function(e) {
-            if (!e.target.closest('.multi-select-container')) { ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-sector-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic', 'dropdown-funcion-lic', 'dropdown-area-con', 'dropdown-caps-con', 'dropdown-tipo-con', 'dropdown-consultorio-con', 'dropdown-anio-res', 'dropdown-anio-op', 'dropdown-mes-op', 'dropdown-tipo-op', 'dropdown-localidad-op', 'dropdown-barrio-op', 'dropdown-mapa-anio-op'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); }); }
+            if (!e.target.closest('.multi-select-container')) { ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-sector-aus', 'dropdown-funcion-reporte-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic', 'dropdown-funcion-lic', 'dropdown-area-con', 'dropdown-caps-con', 'dropdown-tipo-con', 'dropdown-consultorio-con', 'dropdown-anio-res', 'dropdown-anio-op', 'dropdown-mes-op', 'dropdown-tipo-op', 'dropdown-localidad-op', 'dropdown-barrio-op', 'dropdown-mapa-anio-op'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); }); }
         });
 
         function toggleMultiSelect(dropdownId) {
             const dropdown = document.getElementById(dropdownId); const isHidden = dropdown.classList.contains('hidden');
-            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-sector-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic', 'dropdown-funcion-lic', 'dropdown-area-con', 'dropdown-caps-con', 'dropdown-tipo-con', 'dropdown-consultorio-con', 'dropdown-anio-res', 'dropdown-anio-op', 'dropdown-mes-op', 'dropdown-tipo-op', 'dropdown-localidad-op', 'dropdown-barrio-op', 'dropdown-mapa-anio-op'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+            ['dropdown-anio-lab', 'dropdown-mes-lab', 'dropdown-caps-lab', 'dropdown-agente-aus', 'dropdown-mes-aus', 'dropdown-sector-aus', 'dropdown-funcion-reporte-aus', 'dropdown-agente-lic', 'dropdown-tipo-lic', 'dropdown-funcion-lic', 'dropdown-area-con', 'dropdown-caps-con', 'dropdown-tipo-con', 'dropdown-consultorio-con', 'dropdown-anio-res', 'dropdown-anio-op', 'dropdown-mes-op', 'dropdown-tipo-op', 'dropdown-localidad-op', 'dropdown-barrio-op', 'dropdown-mapa-anio-op'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
             if (isHidden) dropdown.classList.remove('hidden');
         }
 
@@ -684,6 +704,78 @@
         function selectAllOp(type,state) { document.querySelectorAll(`.chk-${type}-op`).forEach(cb => cb.checked = state); processOperativosData(); }
         function selectAllLab(type, state) { document.querySelectorAll(`.chk-${type}-lab`).forEach(cb => cb.checked = state); processLaboratorioData(); }
         function selectAllAusentismo(type, state) { document.querySelectorAll(`.chk-${type}-aus`).forEach(cb => cb.checked = state); processAusentismoData(); }
+        function updateReportFunctionLabel() {
+            const checkboxes=Array.from(document.querySelectorAll('.chk-funcion-reporte-aus')),selected=checkboxes.filter(cb=>cb.checked),label=document.getElementById('label-funcion-reporte-aus');
+            if(!label)return;
+            label.textContent=checkboxes.length===0||selected.length===checkboxes.length?'Todas las funciones':selected.length===0?'Ninguna':selected.length===1?selected[0].value:`${selected.length} funciones`;
+        }
+        function selectAllReportFunctions(state) {
+            document.querySelectorAll('.chk-funcion-reporte-aus').forEach(cb=>cb.checked=state);
+            updateReportFunctionLabel();refreshReportLicenseKpi();
+        }
+        function getSelectedReportFunctions() {
+            const checkboxes=Array.from(document.querySelectorAll('.chk-funcion-reporte-aus'));
+            return checkboxes.length?checkboxes.filter(cb=>cb.checked).map(cb=>cb.value):null;
+        }
+
+        function normalizePersonalCategoria(value) {
+            const category=cleanStr(value);if(!category||['-','#N/A','N/A','NA','S/D','SIN DATO','SIN CATEGORIA'].includes(category))return '';
+            return category;
+        }
+        const getPersonalFuncion = row => {
+            const keys=new Set(['SECTOR FUNCION','FUNCION','SECTOR','CATEGORIA LABORAL','CARGO','PUESTO']);
+            for(const [key,rawValue] of Object.entries(row||{})){const normalized=cleanStr(key).replace(/[^A-Z0-9]+/g,' ').trim();if(!keys.has(normalized))continue;const value=cleanStr(rawValue);if(value&&value!=='-'&&value!=='#N/A')return value;}
+            return '';
+        };
+        function getPersonalCategoria(row,categoriesByAgent) {
+            const source=cleanStr(row?.__HOJA_ORIGEN||row?.HOJA_ORIGEN||row?.SHEET||row?.TAB);
+            if(source.includes('PROMOTOR'))return 'PROMOTORES AUSENTES';
+            if(source.includes('PERSONAL MEDICINA')||source.includes('DETALLE MEDICINA'))return 'PERSONAL MEDICINA';
+            if(source.includes('PERSONAL ADM CHOFERES AUSENTES'))return 'PERSONAL ADM CHOFERES AUSENTES';
+            if(source.includes('DETALLE AUSENTES')){
+                const role=getPersonalFuncion(row);
+                if(role.includes('PROMOTOR'))return 'PROMOTORES AUSENTES';
+                if(role)return 'PERSONAL ADM CHOFERES AUSENTES';
+                const assigned=categoriesByAgent?.get(getAgenteName(row));
+                if(assigned?.has('PROMOTORES AUSENTES')&&!assigned.has('PERSONAL ADM CHOFERES AUSENTES'))return 'PROMOTORES AUSENTES';
+                if(assigned?.has('PERSONAL ADM CHOFERES AUSENTES'))return 'PERSONAL ADM CHOFERES AUSENTES';
+                return '';
+            }
+            if(source.includes('PERSONAL ADM')||source.includes('CHOFER'))return 'PERSONAL ADM CHOFERES AUSENTES';
+            return '';
+        }
+        function isRegistroMedicina(row,categoriesByAgent) { return getPersonalCategoria(row,categoriesByAgent)==='PERSONAL MEDICINA'; }
+        function flattenAusentismoData(payload, source='') {
+            const normalizeSource=value=>cleanStr(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]+/g,' ').trim();
+            const isSupportedSheet=value=>{const name=normalizeSource(value);return name.includes('PROMOTORES AUSENTES')||name.includes('PERSONAL ADM CHOFERES AUSENTES')||name.includes('PERSONAL MEDICINA')||name.includes('DETALLE AUSENTES')||name.includes('DETALLE MEDICINA');};
+            const looksLikeSheet=value=>/(AUSENTES|MEDICINA|DETALLE)/.test(normalizeSource(value));
+            if(Array.isArray(payload)){
+                if(payload.length&&Array.isArray(payload[0])){
+                    const headers=payload[0].map(value=>String(value??'').trim());
+                    const hasHeader=headers.some(value=>['AGENTE','PERSONAL','NOMBRE Y APELLIDO','SECTOR / FUNCION','SECTOR/FUNCION','SECTOR FUNCION','FECHA','MES'].includes(cleanStr(value)));
+                    if(!hasHeader)return [];
+                    return payload.slice(1).filter(Array.isArray).map(values=>Object.fromEntries(headers.map((header,index)=>[header,values[index]??'']).filter(([header])=>header))).map(row=>({...row,__HOJA_ORIGEN:source}));
+                }
+                return payload.flatMap(item=>flattenAusentismoData(item,source));
+            }
+            if(!payload||typeof payload!=='object')return [];
+            const rowKeys=Object.keys(payload).map(key=>cleanStr(key).replace(/[^A-Z0-9]+/g,' ').trim());
+            if(rowKeys.some(k=>['AGENTE','PERSONAL','NOMBRE Y APELLIDO','SECTOR','SECTOR FUNCION','PERSONAL SOLICITANTE','FECHA'].includes(k))||rowKeys.some(k=>allMonths.includes(k)))return [{...payload,__HOJA_ORIGEN:source||payload.__HOJA_ORIGEN||payload.HOJA_ORIGEN||payload.SHEET||payload.TAB||''}];
+            const declaredSource=payload.__HOJA_ORIGEN||payload.HOJA_ORIGEN||payload.SHEET||payload.TAB||source;
+            const wrapperKeys=['DATA','ROWS','RECORDS','RESULT','ITEMS','VALUES','HOJAS'];
+            const wrapper=Object.keys(payload).find(key=>wrapperKeys.includes(cleanStr(key)));
+            if(wrapper)return flattenAusentismoData(payload[wrapper],isSupportedSheet(declaredSource)?declaredSource:source);
+            return Object.entries(payload).flatMap(([key,value])=>{if(looksLikeSheet(key)&&!isSupportedSheet(key))return [];return flattenAusentismoData(value,isSupportedSheet(key)?key:source);});
+        }
+        function buildAusentismoCategoriaPorAgente() {
+            const categories=new Map();ausentismoData.forEach(row=>{const agent=getAgenteName(row),category=getPersonalCategoria(row);if(!agent||!category)return;if(!categories.has(agent))categories.set(agent,new Set());categories.get(agent).add(category);});return categories;
+        }
+        function buildAusentismoFuncionPorAgente() {
+            const functions=new Map();ausentismoData.forEach(row=>{const agent=getAgenteName(row),funcion=getPersonalFuncion(row);if(!agent||!funcion)return;if(!functions.has(agent))functions.set(agent,new Set());functions.get(agent).add(funcion);});return functions;
+        }
+        function matchesPersonalCategoria(row,selected,functionsByAgent) {
+            if(selected===null||selected===undefined)return true;if(!selected.length)return false;const funcion=getPersonalFuncion(row);if(funcion)return selected.includes(funcion);return [...(functionsByAgent?.get(getAgenteName(row))||[])].some(value=>selected.includes(value));
+        }
         function selectAllLicencias(type, state) { document.querySelectorAll(`.chk-${type}-lic`).forEach(cb => cb.checked = state); processLicenciasData(); }
         function selectAllCon(type, state) { document.querySelectorAll(`.chk-${type}-con`).forEach(cb => cb.checked = state); processConectividadData(); }
 
@@ -724,6 +816,9 @@
                     fetchWithTimeout(URL_HSI).catch(err => { hsiFetchError = err?.message || 'No se pudo conectar con el exec de GENERAL'; return mockFallback.hsi; }),
                     fetchWithTimeout(URL_CONECTIVIDAD).catch(() => mockFallback.conectividad)
                 ]);
+                const mainAusentismoSheets=['PERSONAL ADM CHOFERES AUSENTES','PROMOTORES AUSENTES','PERSONAL MEDICINA'];
+                ausentismoSourceWarnings=Array.isArray(resA?.faltantes)?resA.faltantes.filter(name=>mainAusentismoSheets.includes(cleanStr(name))):[];
+                if(resA?.error)ausentismoSourceWarnings=[String(resA.error)];
 
                                 const flattenData = (res) => Array.isArray(res) ? res : (typeof res === 'object' && res !== null ? Object.values(res).flat().filter(x => typeof x === 'object') : []);
                 const flattenHsiData = (res) => {
@@ -736,7 +831,9 @@
 
                 operativosData  = flattenData(resO).map(row => { let c = {}; for(let k in row) if(k) c[k.trim()] = row[k]; return c; });
                 bloqueosData    = flattenData(resB).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
-                ausentismoData  = flattenData(resA).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; return c; });
+                const rowsAusentismo=flattenAusentismoData(resA).map(row => { let c = {}; for(let k in row) if(k) c[k.trim().toUpperCase()] = row[k]; c.__HOJA_ORIGEN=row.__HOJA_ORIGEN||''; return c; });
+                ausentismoData=rowsAusentismo.filter(row=>{const source=cleanStr(row.__HOJA_ORIGEN);return source.includes('PERSONAL ADM CHOFERES AUSENTES')||source.includes('PROMOTORES AUSENTES')||source.includes('PERSONAL MEDICINA');});
+                ausentismoDetalleData=rowsAusentismo.filter(row=>{const source=cleanStr(row.__HOJA_ORIGEN);return source.includes('DETALLE AUSENTES')||source.includes('DETALLE MEDICINA');});
                 
                 // El filtro y los totales usan el año y el mes de usufructo, no el año de alta de la licencia.
                 if(resLic&&typeof resLic==='object'&&resLic.error)licenciasFetchError=String(resLic.error);
@@ -787,13 +884,14 @@
             ];
             let lines=[],compared=0,up=0,noSeries=[];const fmt=n=>Number(n||0).toLocaleString('es-AR',{maximumFractionDigits:1});
             specs.forEach(spec=>{const ya=spec.rows.filter(r=>yearOf(r)===a),yb=spec.rows.filter(r=>yearOf(r)===b);if(!ya.length||!yb.length){noSeries.push(spec.area);return;}const metrics=spec.metrics.length?spec.metrics:[['Registros con año',null,'neutral']];metrics.forEach(([label,fields,direction])=>{const metricTotal=rows=>spec.metricValue?rows.reduce((s,r)=>s+spec.metricValue(r),0):fields?rows.reduce((s,r)=>s+fieldValue(r,fields),0):rows.length,va=metricTotal(ya),vb=metricTotal(yb);if((fields||spec.metricValue)&&!va&&!vb)return;const delta=vb-va,pct=va?delta/va*100:null;let reading='Variación registrada',tone='text-slate-300';if(delta>0&&direction==='higher'){reading='Más actividad registrada';tone='text-emerald-300';up++;}else if(delta<0&&direction==='higher'){reading='Menor actividad registrada';tone='text-amber-300';}else if(delta===0){reading='Sin variación';tone='text-cyan-300';}else if(delta>0){reading='Aumentó';tone='text-amber-300';}else{reading='Disminuyó';tone='text-emerald-300';}compared++;lines.push(`<tr><td class="px-3 py-3"><span class="text-slate-400">${spec.area}</span><br><strong class="text-white">${label}</strong></td><td class="px-3 py-3 text-right">${fmt(va)}</td><td class="px-3 py-3 text-right">${fmt(vb)}</td><td class="px-3 py-3 text-right font-semibold ${tone}">${delta>0?'+':''}${fmt(delta)}${pct===null?'':` (${delta>0?'+':''}${fmt(pct)}%)`}</td><td class="px-3 py-3 ${tone}">${reading}</td></tr>`);});});
+            const workCount=year=>ordenesTrabajoData.filter(row=>{const date=otDate(otField(row,['FECHA']));return date&&date.getFullYear()===Number(year);}).length,workA=workCount(a),workB=workCount(b);if(ordenesTrabajoData.length){const comparable=workA>0&&workB>0,delta=workB-workA,pct=workA?delta/workA*100:null;let variation,reading,tone;if(comparable){variation=`${delta>0?'+':''}${fmt(delta)}${pct===null?'':` (${delta>0?'+':''}${fmt(pct)}%)`}`;if(delta>0){reading='Más solicitudes registradas';tone='text-emerald-300';up++;}else if(delta<0){reading='Menos solicitudes registradas';tone='text-amber-300';}else{reading='Sin variación';tone='text-cyan-300';}compared++;}else{variation='Sin base anual comparable';reading='El total incluye todas las solicitudes recibidas';tone='text-cyan-300';}lines.push(`<tr><td class="px-3 py-3"><span class="text-slate-400">Órdenes de trabajo HSI</span><br><strong class="text-white">Solicitudes recibidas</strong><br><span class="text-xs text-slate-500">${fmt(ordenesTrabajoData.length)} registros totales</span></td><td class="px-3 py-3 text-right">${workA?fmt(workA):'—'}</td><td class="px-3 py-3 text-right">${workB?fmt(workB):'—'}</td><td class="px-3 py-3 text-right font-semibold ${tone}">${variation}</td><td class="px-3 py-3 ${tone}">${reading}</td></tr>`);}
             body.innerHTML=lines.join('')||`<tr><td colspan="5" class="px-3 py-5 text-center text-slate-400">Las fuentes conectadas todavía no tienen filas identificables tanto en ${a} como en ${b}.</td></tr>`;
             const cards=document.getElementById('autoridades-resumen');if(cards)cards.innerHTML=`<div class="glass-card p-3"><span class="text-[10px] uppercase text-slate-400">Indicadores comparables</span><strong class="block text-2xl text-white">${compared}</strong></div><div class="glass-card p-3"><span class="text-[10px] uppercase text-slate-400">Aumentos de actividad</span><strong class="block text-2xl text-emerald-300">${up}</strong></div><div class="glass-card p-3"><span class="text-[10px] uppercase text-slate-400">Estado actual HSI / Conectividad</span><strong class="block text-lg text-cyan-300">${hsiEffectorRows().length} efectores · ${conectividadData.length} relevamientos</strong></div>`;
-            const note=document.getElementById('autoridades-nota');if(note)note.textContent=`Las comparaciones usan solo filas con año ${a} o ${b} identificable. 2026 puede ser parcial; no se anualizan resultados. Sin serie anual suficiente: ${noSeries.join(', ')||'ninguna de las hojas'}. HSI y Conectividad se muestran como estado actual cuando la hoja no conserva histórico anual.`;
+            const note=document.getElementById('autoridades-nota');if(note)note.textContent=`Las comparaciones usan solo filas con año ${a} o ${b} identificable. 2026 puede ser parcial; no se anualizan resultados. Sin serie anual suficiente: ${noSeries.join(', ')||'ninguna de las hojas'}. HSI y Conectividad se muestran como estado actual cuando la hoja no conserva histórico anual. Órdenes de trabajo se cuenta por año según la fecha de solicitud; si falta una base anual, se muestra como módulo reciente y no se calcula porcentaje de aumento.`;
         }
 
         async function loadOrdenesTrabajo(){
-            if(!URL_ORDENES_TRABAJO){ordenesTrabajoLoaded=true;initOrdenesTrabajoFilters();processOrdenesTrabajo();return;}
+            if(!URL_ORDENES_TRABAJO){ordenesTrabajoLoaded=true;initOrdenesTrabajoFilters();processOrdenesTrabajo();renderReporteAutoridades();return;}
             try{
                 const payload=await fetchWithTimeout(URL_ORDENES_TRABAJO,15000);
                 if(payload&&typeof payload==='object'&&payload.error){const tabs=Array.isArray(payload.pestañasDisponibles)?' Pestañas disponibles: '+payload.pestañasDisponibles.join(', '):'';throw new Error(String(payload.error)+tabs);}
@@ -801,7 +899,7 @@
                 if(rows.length&&Array.isArray(rows[0])){const headers=rows[0].map(v=>String(v??'').trim());rows=rows.slice(1).map(row=>Object.fromEntries(headers.map((h,i)=>[h,row[i]??''])));}
                 ordenesTrabajoData=rows.map(row=>{const c={};for(const k in row)if(k)c[k.trim().toUpperCase()]=row[k];return c;});
             }catch(err){ordenesTrabajoFetchError=err?.message||'No se pudo conectar con la planilla de órdenes';ordenesTrabajoData=[];}
-            ordenesTrabajoLoaded=true;initOrdenesTrabajoFilters();processOrdenesTrabajo();
+            ordenesTrabajoLoaded=true;initOrdenesTrabajoFilters();processOrdenesTrabajo();renderReporteAutoridades();
         }
         function processResumenData() {
             let totalOp = operativosData.length;
@@ -885,7 +983,7 @@
             
             let agentes = new Set(), sectores = new Set();
             ausentismoData.forEach(row => { 
-                let sec = cleanStr(row['SECTOR']);
+                let sec = getPersonalFuncion(row);
                 let ag = getAgenteName(row); 
                 if (ag && ag !== 'UNDEFINED' && ag !== 'NAN' && ag !== 'NULL' && ag !== 'SIN AGENTE') agentes.add(ag); 
                 if (sec) sectores.add(sec);
@@ -894,6 +992,9 @@
             [...agentes].sort().forEach(ag => { containerAgente.innerHTML += `<label class="flex items-center gap-3 p-2 hover:bg-emerald-900/30 rounded-lg cursor-pointer transition-colors"><input type="checkbox" value="${ag}" checked onchange="processAusentismoData()" class="chk-agente-aus rounded border-slate-600 bg-slate-900/50 text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-0 w-4 h-4"><span class="font-medium text-slate-300 truncate" title="${ag}">${ag}</span></label>`; });
             allMonths.forEach(m => { containerMes.innerHTML += `<label class="flex items-center gap-3 p-2 hover:bg-emerald-900/30 rounded-lg cursor-pointer transition-colors"><input type="checkbox" value="${m}" checked onchange="processAusentismoData()" class="chk-mes-aus rounded border-slate-600 bg-slate-900/50 text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-0 w-4 h-4"><span class="font-medium text-slate-300">${m}</span></label>`; });
             [...sectores].sort().forEach(sec => { containerSector.innerHTML += `<label class="flex items-center gap-3 p-2 hover:bg-emerald-900/30 rounded-lg cursor-pointer transition-colors"><input type="checkbox" value="${sec}" checked onchange="processAusentismoData()" class="chk-sector-aus rounded border-slate-600 bg-slate-900/50 text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-0 w-4 h-4"><span class="font-medium text-slate-300">${sec}</span></label>`; });
+
+            const functionChecklist=document.getElementById('checklist-funcion-reporte-aus');if(functionChecklist){functionChecklist.innerHTML='';const functions=[...new Set(ausentismoData.map(getPersonalFuncion).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));functions.forEach(funcion=>{const label=document.createElement('label');label.className='flex items-center gap-3 p-2 hover:bg-emerald-900/30 rounded-lg cursor-pointer transition-colors';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.value=funcion;checkbox.checked=true;checkbox.className='chk-funcion-reporte-aus rounded border-slate-600 bg-slate-900/50 text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-0 w-4 h-4';checkbox.addEventListener('change',()=>{updateReportFunctionLabel();refreshReportLicenseKpi();});const text=document.createElement('span');text.className='font-medium text-slate-300 truncate';text.textContent=funcion;label.append(checkbox,text);functionChecklist.appendChild(label);});updateReportFunctionLabel();}
+            const sourceStatus=document.getElementById('ausentismo-origen-status');if(sourceStatus){const lookup=buildAusentismoCategoriaPorAgente(),counts=[['Administrativos y choferes','PERSONAL ADM CHOFERES AUSENTES'],['Promotores ausentes','PROMOTORES AUSENTES'],['Medicina general','PERSONAL MEDICINA']].map(([label,source])=>({label,count:ausentismoData.filter(row=>getPersonalCategoria(row,lookup)===source).length}));const identified=counts.reduce((sum,item)=>sum+item.count,0);sourceStatus.textContent=ausentismoSourceWarnings.length?`No se pudieron leer todas las hojas principales: ${ausentismoSourceWarnings.join(', ')}`:identified?`Filas resumen leídas: ${counts.map(item=>`${item.label}: ${item.count}`).join(' · ')}`:'No llegaron filas de las hojas resumen principales; revisá el doGet.';sourceStatus.className=identified&&!ausentismoSourceWarnings.length?'text-xs mt-2 text-emerald-300':'text-xs mt-2 text-amber-300';}
             
             const selectReporte = document.getElementById('select-mes-reporte');
             if (selectReporte) {
@@ -911,10 +1012,12 @@
             if (!target) return;
             const month = cleanStr(document.getElementById('select-mes-reporte')?.value);
             const year = String(document.getElementById('select-anio-reporte')?.value || '');
+            const selectedCategory=getSelectedReportFunctions(),functionsByAgent=buildAusentismoFuncionPorAgente();
             const total = licenciasData.reduce((sum, row) => {
                 if (licenciaMonth(row) !== month) return sum;
                 const rowYear = licenciaYear(row);
                 if (/^\d{4}$/.test(rowYear) && rowYear !== year) return sum;
+                if(!matchesPersonalCategoria(row,selectedCategory,functionsByAgent))return sum;
                 return sum + licenciaUsufructDays(row);
             }, 0);
             target.textContent = total.toLocaleString('es-AR');
@@ -923,19 +1026,25 @@
         function generarReporteMensualPDF(event) {
             const mesSelect=document.getElementById('select-mes-reporte')?.value;
             const anioSelect=document.getElementById('select-anio-reporte')?.value||String(new Date().getFullYear());
+            const selectedCategory=getSelectedReportFunctions(),categoriesByAgent=buildAusentismoCategoriaPorAgente(),functionsByAgent=buildAusentismoFuncionPorAgente();
             if(!mesSelect)return;
+            if(ausentismoSourceWarnings.length){window.alert(`No se generó el PDF porque faltan hojas del origen: ${ausentismoSourceWarnings.join(', ')}`);return;}
+            if(!ausentismoData.some(row=>getPersonalCategoria(row,categoriesByAgent))){window.alert('No se generó el PDF: no llegaron filas de las tres hojas resumen principales. Revisá el doGet.');return;}
             const reporteAgentes={};
             const getReportAgent=nombre=>{if(!reporteAgentes[nombre])reporteAgentes[nombre]={medicina:0,otras:0,licencias:{},total:0};return reporteAgentes[nombre];};
+            const parseDate=value=>{if(value instanceof Date&&!isNaN(value))return new Date(value.getFullYear(),value.getMonth(),value.getDate());const s=String(value??'').trim();let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return new Date(+m[1],+m[2]-1,+m[3]);m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/);if(m){let year=+m[3];if(year<100)year+=2000;return new Date(year,+m[2]-1,+m[1]);}return null;};
             ausentismoData.forEach(row=>{
-                const sec=String(row['SECTOR']||'').trim().toUpperCase(),ag=getAgenteName(row);
-                if(!ag||['UNDEFINED','NAN','NULL','SIN AGENTE'].includes(ag))return;
-                const yearInRow=String(row['AÑO']||row['ANIO']||'').trim();if(/^\d{4}$/.test(yearInRow)&&yearInRow!==anioSelect)return;
-                let ausenciasMes=0;const mesFila=String(row['MES']||'').trim().toUpperCase();
-                if(mesFila===mesSelect)ausenciasMes=1;
-                else if(!mesFila||!allMonths.includes(mesFila)){const colMes=row[mesSelect];if(colMes!==undefined)ausenciasMes=parseAusenciaSafe(colMes);else for(const k in row)if(k.toUpperCase().includes(mesSelect)&&!k.toUpperCase().includes('OBSERV')&&!k.toUpperCase().includes('MOTIVO'))ausenciasMes+=parseAusenciaSafe(row[k]);}
-                if(ausenciasMes>0){const d=getReportAgent(ag);if(sec.includes('MEDICINA'))d.medicina+=ausenciasMes;else d.otras+=ausenciasMes;d.total+=ausenciasMes;}
+                const rowCategory=getPersonalCategoria(row,categoriesByAgent),ag=getAgenteName(row);
+                if(!rowCategory||!matchesPersonalCategoria(row,selectedCategory,functionsByAgent))return;
+                const yearInRow=String(row['AÑO']||row['ANIO']||row['AÑO DE AUSENCIA']||'').trim();
+                if(/^\d{4}$/.test(yearInRow)&&yearInRow!==anioSelect)return;
+                const monthInRow=String(row['MES']||row['MES DE AUSENCIA']||row['MES MEDICINA']||'').trim().toUpperCase();
+                let ausenciasMes=0;
+                if(monthInRow&&allMonths.includes(monthInRow)){if(monthInRow!==mesSelect)return;ausenciasMes=1;}
+                else if(row[mesSelect]!==undefined)ausenciasMes=parseAusenciaSafe(row[mesSelect]);
+                else for(const [key,value] of Object.entries(row)){if(cleanStr(key).includes(mesSelect)&&!cleanStr(key).includes('OBSERV')&&!cleanStr(key).includes('MOTIVO'))ausenciasMes+=parseAusenciaSafe(value);}
+                if(ausenciasMes>0){const agentLabel=ag&&!['UNDEFINED','NAN','NULL','SIN AGENTE'].includes(ag)?ag:'SIN AGENTE IDENTIFICADO',d=getReportAgent(agentLabel);if(isRegistroMedicina(row,categoriesByAgent))d.medicina+=ausenciasMes;else d.otras+=ausenciasMes;d.total+=ausenciasMes;}
             });
-            const parseDate=value=>{if(value instanceof Date&&!isNaN(value))return new Date(value.getFullYear(),value.getMonth(),value.getDate());const s=String(value??'').trim();let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return new Date(+m[1],+m[2]-1,+m[3]);m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})/);if(m)return new Date(+m[3],+m[2]-1,+m[1]);return null;};
             const licenseDays=row=>{
                 const usedKey=Object.keys(row).find(k=>cleanStr(k)==='DIAS USUFRUCTUADOS');
                 const month=String(row['MES']||row['MES (USUFRUCTO)']||'').trim().toUpperCase(),year=String(row['AÑO']||row['ANIO']||row['AÑO (COLUMNA AÑO)']||'').trim();
@@ -946,17 +1055,18 @@
                 if(start&&end){const mi=allMonths.indexOf(mesSelect);if(mi<0)return 0;const from=new Date(+anioSelect,mi,1),to=new Date(+anioSelect,mi+1,0);let d=new Date(Math.max(start.getTime(),from.getTime())),last=new Date(Math.min(end.getTime(),to.getTime())),n=0;for(;d<=last;d.setDate(d.getDate()+1))if(d.getDay()!==0&&d.getDay()!==6)n++;return n;}
                 return parseNumberSafe(row['DIAS']);
             };
-            licenciasData.forEach(row=>{const ag=getAgenteName(row);if(!ag||['UNDEFINED','NAN','NULL','SIN AGENTE'].includes(ag))return;const y=String(row['AÑO']||row['ANIO']||'').trim();if(/^\d{4}$/.test(y)&&y!==anioSelect)return;const tipo=cleanStr(row['TIPO LIC']||row['TIPO DE LICENCIA']||'LICENCIA SIN TIPO')||'LICENCIA SIN TIPO',dias=licenseDays(row);if(dias<=0)return;const d=getReportAgent(ag);d.licencias[tipo]=(d.licencias[tipo]||0)+dias;d.total+=dias;});
-            const entries=Object.entries(reporteAgentes).filter(([,d])=>d.total>0).sort((a,b)=>a[0].localeCompare(b[0],'es'));
-            const tbody=document.getElementById('reporte-tbody');let comunes=0,medicina=0,licencias=0,total=0;
+            const licenseMatchesReportPeriod=row=>{const month=licenciaMonth(row),year=licenciaYear(row)||String(row['AÑO']||row['ANIO']||'').trim();if(month&&allMonths.includes(month))return month===mesSelect&&(!/^\d{4}$/.test(year)||year===anioSelect);if(/^\d{4}$/.test(year)&&year!==anioSelect)return false;const start=parseDate(licenciaField(row,['INICIO','FECHA INICIO'])),end=parseDate(licenciaField(row,['FINAL','FECHA FINAL','FECHA FIN']));if(!start||!end)return false;const index=allMonths.indexOf(mesSelect);if(index<0)return false;const from=new Date(+anioSelect,index,1),to=new Date(+anioSelect,index+1,0);return start<=to&&end>=from;};
+            licenciasData.forEach(row=>{const ag=getAgenteName(row);if(!ag||['UNDEFINED','NAN','NULL','SIN AGENTE'].includes(ag))return;if(!matchesPersonalCategoria(row,selectedCategory,functionsByAgent)||!licenseMatchesReportPeriod(row))return;const tipo=cleanStr(licenciaField(row,['TIPO LIC','TIPO DE LICENCIA'])||'LICENCIA SIN TIPO')||'LICENCIA SIN TIPO',usufructuados=licenseDays(row),otorgados=parseNumberSafe(licenciaField(row,['DIAS','DÍAS']));if(usufructuados<=0&&otorgados<=0)return;const d=getReportAgent(ag);if(!d.licencias[tipo])d.licencias[tipo]={otorgados:0,usufructuados:0};d.licencias[tipo].otorgados+=otorgados;d.licencias[tipo].usufructuados+=usufructuados;d.total+=usufructuados;});
+            const entries=Object.entries(reporteAgentes).filter(([,d])=>d.total>0||Object.values(d.licencias).some(item=>item.otorgados>0)).sort((a,b)=>a[0].localeCompare(b[0],'es'));
+            const tbody=document.getElementById('reporte-tbody');let comunes=0,medicina=0,licenciasOtorgadas=0,licenciasUsufructuadas=0,total=0;
             const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-            tbody.innerHTML=entries.length?entries.map(([nombre,d])=>{const ld=Object.values(d.licencias).reduce((a,b)=>a+b,0);comunes+=d.otras;medicina+=d.medicina;licencias+=ld;total+=d.total;const tipos=Object.entries(d.licencias).map(([t,n])=>`${esc(t)}: ${n}`).join('<br>')||'-';return `<tr style="border-bottom:1px solid #E2E8F0;page-break-inside:avoid"><td style="padding:9px 10px;font-size:10px;font-weight:bold;color:#1E293B;border:1px solid #E2E8F0">${esc(nombre)}</td><td style="padding:9px 10px;text-align:center;border:1px solid #E2E8F0">${d.otras||'-'}</td><td style="padding:9px 10px;text-align:center;border:1px solid #E2E8F0">${d.medicina||'-'}</td><td style="padding:8px;font-size:9px;border:1px solid #E2E8F0">${tipos}</td><td style="padding:9px 10px;text-align:center;font-weight:bold;background:#F8FAFC;border:1px solid #E2E8F0">${d.total}</td></tr>`;}).join(''):`<tr><td colspan="5" style="padding:20px;text-align:center;color:#64748B">No se registraron inasistencias en ${mesSelect} de ${anioSelect}.</td></tr>`;
-            if(entries.length)tbody.innerHTML+=`<tr style="background:#E2E8F0;font-weight:800"><td style="padding:11px;text-align:right;border:1px solid #CBD5E1">TOTAL DEL MES</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${comunes}</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${medicina}</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${licencias} días hábiles usufructuados</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${total}</td></tr>`;
-            document.getElementById('reporte-mes-titulo').textContent=`MES: ${mesSelect} · AÑO: ${anioSelect} · LICENCIAS SEGÚN DÍAS USUFRUCTUADOS`;
+            tbody.innerHTML=entries.length?entries.map(([nombre,d])=>{const ld=Object.values(d.licencias).reduce((a,b)=>a+b.usufructuados,0),lo=Object.values(d.licencias).reduce((a,b)=>a+b.otorgados,0);comunes+=d.otras;medicina+=d.medicina;licenciasOtorgadas+=lo;licenciasUsufructuadas+=ld;total+=d.total;const tipos=Object.entries(d.licencias).map(([t,item])=>`${esc(t)}: ${item.otorgados} días otorgados${item.usufructuados>0?` · ${item.usufructuados} usufructuados`:''}`).join('<br>')||'-';return `<tr style="border-bottom:1px solid #E2E8F0;page-break-inside:avoid"><td style="padding:9px 10px;font-size:10px;font-weight:bold;color:#1E293B;border:1px solid #E2E8F0">${esc(nombre)}</td><td style="padding:9px 10px;text-align:center;border:1px solid #E2E8F0">${d.otras||'-'}</td><td style="padding:9px 10px;text-align:center;border:1px solid #E2E8F0">${d.medicina||'-'}</td><td style="padding:8px;font-size:9px;border:1px solid #E2E8F0">${tipos}</td><td style="padding:9px 10px;text-align:center;font-weight:bold;background:#F8FAFC;border:1px solid #E2E8F0">${d.total}</td></tr>`;}).join(''):`<tr><td colspan="5" style="padding:20px;text-align:center;color:#64748B">No se registraron inasistencias en ${mesSelect} de ${anioSelect}.</td></tr>`;
+            if(entries.length)tbody.innerHTML+=`<tr style="background:#E2E8F0;font-weight:800"><td style="padding:11px;text-align:right;border:1px solid #CBD5E1">TOTAL DEL MES</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${comunes}</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${medicina}</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${licenciasOtorgadas} días otorgados · ${licenciasUsufructuadas} días usufructuados</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${total}</td></tr>`;
+            document.getElementById('reporte-mes-titulo').textContent=`MES: ${mesSelect} · AÑO: ${anioSelect}${selectedCategory?' · FUNCIÓN: '+selectedCategory:''} · LICENCIAS OTORGADAS Y USUFRUCTUADAS`;
             document.getElementById('reporte-fecha-generacion').textContent=`Generado el ${new Date().toLocaleDateString('es-AR')}`;
-            const container=document.getElementById('reporte-impresion'),btn=event.currentTarget,iconOriginal=btn.innerHTML;btn.innerHTML='Procesando…';container.style.display='block';
-            const opt={margin:[0.4,0.4],filename:`Reporte_Mensual_Inasistencias_${mesSelect}_${anioSelect}.pdf`,image:{type:'jpeg',quality:1},html2canvas:{scale:2,useCORS:true,backgroundColor:'#FFFFFF'},jsPDF:{unit:'in',format:'a4',orientation:'landscape'}};
-            setTimeout(()=>{html2pdf().set(opt).from(container).save().then(()=>{container.style.display='none';btn.innerHTML=iconOriginal;}).catch(err=>{console.error(err);container.style.display='none';btn.innerHTML=iconOriginal;});},300);
+            const container=document.getElementById('reporte-impresion'),btn=event.currentTarget,iconOriginal=btn.innerHTML;btn.innerHTML='Procesando…';document.body.classList.add('pdf-export-mode');container.style.display='block';
+            const opt={margin:[0.28,0.28],filename:`Reporte_Mensual_Inasistencias_${mesSelect}_${anioSelect}.pdf`,image:{type:'jpeg',quality:1},html2canvas:{scale:2,useCORS:true,backgroundColor:'#FFFFFF',scrollX:0,scrollY:0},jsPDF:{unit:'in',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}};
+            setTimeout(()=>{html2pdf().set(opt).from(container).save().then(()=>{container.style.display='none';document.body.classList.remove('pdf-export-mode');btn.innerHTML=iconOriginal;}).catch(err=>{console.error(err);container.style.display='none';document.body.classList.remove('pdf-export-mode');btn.innerHTML=iconOriginal;});},300);
         }
 
         function processAusentismoData() {
@@ -973,26 +1083,27 @@
             const fallbackAgente = totalCheckAgentes === 0 || checkedAgentes.length === totalCheckAgentes; const fallbackMes = totalCheckMeses === 0 || checkedMeses.length === totalCheckMeses; const fallbackSector = totalCheckSectores === 0 || checkedSectores.length === totalCheckSectores;
             
             ausentismoData.forEach(row => {
-                let sectorDeFila = cleanStr(row['SECTOR'] || 'GENERAL');
+                let sectorDeFila = getPersonalFuncion(row) || 'GENERAL';
                 let agenteRow = getAgenteName(row); 
-                if (!agenteRow || agenteRow === 'UNDEFINED' || agenteRow === 'NAN' || agenteRow === 'NULL' || agenteRow === 'SIN AGENTE') return;
+                const hasAgent=!!agenteRow&&!['UNDEFINED','NAN','NULL','SIN AGENTE'].includes(agenteRow);
                 
-                const matchAgente = fallbackAgente || checkedAgentes.includes(agenteRow);
+                const matchAgente = fallbackAgente || (hasAgent&&checkedAgentes.includes(agenteRow));
                 const matchSector = fallbackSector || checkedSectores.includes(sectorDeFila);
                 
                 if (matchAgente && matchSector) {
                     let key = agenteRow + '|' + sectorDeFila;
-                    if (!agentesTotales[key]) agentesTotales[key] = { nombre: agenteRow, ausencias: 0, total: 0, sector: sectorDeFila };
+                    if (hasAgent&&!agentesTotales[key]) agentesTotales[key] = { nombre: agenteRow, ausencias: 0, total: 0, sector: sectorDeFila };
+                    const agenteTotal=hasAgent?agentesTotales[key]:null;
                     let mesDeFila = String(row['MES'] || '').trim().toUpperCase();
                     if (mesDeFila && allMonths.includes(mesDeFila)) {
                         const matchMes = fallbackMes || checkedMeses.includes(mesDeFila);
-                        if (matchMes) { mesesTotales[mesDeFila].ausencias += 1; agentesTotales[key].ausencias += 1; agentesTotales[key].total += 1; if (sectorDeFila.includes('MEDICINA')) faltasMedicina += 1; else faltasAusentes += 1; totalAusencias += 1; }
+                        if (matchMes) { mesesTotales[mesDeFila].ausencias += 1; if(agenteTotal){agenteTotal.ausencias += 1;agenteTotal.total += 1;} if (isRegistroMedicina(row)) faltasMedicina += 1; else faltasAusentes += 1; totalAusencias += 1; }
                     } else {
                         allMonths.forEach(mes => {
                             const matchMes = fallbackMes || checkedMeses.includes(mes);
                             if (matchMes) { 
                                 let valMes = 0; if (row[mes] !== undefined) { valMes = parseAusenciaSafe(row[mes]); } else { for (let k in row) { if (k.toUpperCase().includes(mes) && !k.toUpperCase().includes('OBSERV') && !k.toUpperCase().includes('MOTIVO')) valMes += parseAusenciaSafe(row[k]); } }
-                                if (valMes > 0) { mesesTotales[mes].ausencias += valMes; agentesTotales[key].ausencias += valMes; agentesTotales[key].total += valMes; if (sectorDeFila.includes('MEDICINA')) faltasMedicina += valMes; else faltasAusentes += valMes; totalAusencias += valMes; }
+                                if (valMes > 0) { mesesTotales[mes].ausencias += valMes; if(agenteTotal){agenteTotal.ausencias += valMes;agenteTotal.total += valMes;} if (isRegistroMedicina(row)) faltasMedicina += valMes; else faltasAusentes += valMes; totalAusencias += valMes; }
                             }
                         });
                     }
@@ -1014,7 +1125,7 @@
             if (sortedAgentes.length === 0) { tbody.innerHTML = `<tr><td colspan="4" class="px-5 py-6 text-center text-slate-500 italic">No hay registros de faltas para el personal, mes o sector seleccionado.</td></tr>`; } else { 
                 sortedAgentes.forEach(item => { 
                     let badgeColor = 'text-slate-400 bg-slate-800 border-slate-700';
-                    if(item.sector.includes('MEDICINA')) badgeColor = 'text-blue-400 bg-blue-900/30 border-blue-500/30'; else if(item.sector.includes('PROMOTORES')) badgeColor = 'text-amber-400 bg-amber-900/30 border-amber-500/30'; else if(item.sector.includes('CHOFERES')) badgeColor = 'text-purple-400 bg-purple-900/30 border-purple-500/30'; else badgeColor = 'text-cyan-400 bg-cyan-900/30 border-cyan-500/30';
+                    const agentRows=ausentismoData.filter(row=>getAgenteName(row)===item.nombre),medical=agentRows.some(row=>isRegistroMedicina(row)),promoter=agentRows.some(row=>getPersonalCategoria(row)==='PROMOTORES AUSENTES');if(medical)badgeColor='text-blue-400 bg-blue-900/30 border-blue-500/30';else if(promoter)badgeColor='text-amber-400 bg-amber-900/30 border-amber-500/30';else if(item.sector.includes('CHOFER'))badgeColor='text-purple-400 bg-purple-900/30 border-purple-500/30';else badgeColor='text-cyan-400 bg-cyan-900/30 border-cyan-500/30';
                     tbody.innerHTML += `<tr class="hover:bg-slate-800/80 transition-colors"><td class="px-5 py-3.5 font-medium text-slate-200">${item.nombre}</td><td class="px-4 py-3.5"><span class="px-2.5 py-1 text-[9px] font-bold tracking-wider uppercase border rounded ${badgeColor}">${item.sector}</span></td><td class="px-4 py-3.5 text-center text-rose-400 font-semibold">${item.ausencias > 0 ? item.ausencias : '-'}</td><td class="px-4 py-3.5 text-center font-bold text-emerald-400 text-base">${item.total}</td></tr>`; 
                 }); 
             }
@@ -1273,7 +1384,7 @@
         }
         function selectAllConExtra(field,state){document.querySelectorAll('.con-extra-filter').forEach(cb=>{if(cb.dataset.field===field)cb.checked=state;});processConectividadData();}
         const otField = (row, aliases) => { const keys=Object.keys(row||{}), wanted=aliases.map(cleanStr); const key=keys.find(k=>wanted.includes(cleanStr(k))) || keys.find(k=>wanted.some(a=>a&&cleanStr(k).includes(a))); return key ? String(row[key]??'').trim() : ''; };
-        const otDate = value => { if(value instanceof Date&&!isNaN(value))return value; const s=String(value??'').trim(); let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})/); if(m)return new Date(+m[3],+m[2]-1,+m[1]); m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if(m)return new Date(+m[1],+m[2]-1,+m[3]); const d=new Date(s); return isNaN(d)?null:d; };
+        const otDate = value => { if(value instanceof Date&&!isNaN(value))return value; const s=String(value??'').trim(); let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/); if(m){let year=+m[3];if(year<100)year+=2000;return new Date(year,+m[2]-1,+m[1]);} m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if(m)return new Date(+m[1],+m[2]-1,+m[3]); const d=new Date(s); return isNaN(d)?null:d; };
         const otDateLabel = value => { const d=otDate(value); return d?d.toLocaleDateString('es-AR'):(String(value??'').trim()||'—'); };
         function initOrdenesTrabajoFilters(){
             const rows=ordenesTrabajoData, year=document.getElementById('ot-filter-year'), month=document.getElementById('ot-filter-month'), status=document.getElementById('ot-filter-status'), channel=document.getElementById('ot-filter-channel');
@@ -1294,6 +1405,7 @@
             const done=r=>/FINALIZ|COMPLET|RESUELT|CERRAD|REALIZAD|ENTREGAD/.test(cleanStr(otField(r,['ESTADO']))), open=rows.length-rows.filter(done).length;
             const card=(title,value,note,color)=>'<div class="glass-card p-3 text-center"><span class="block text-[9px] uppercase tracking-wider text-slate-400">'+title+'</span><strong class="block text-xl font-black '+color+'">'+Number(value).toLocaleString('es-AR')+'</strong><span class="text-[9px] text-slate-500">'+note+'</span></div>';
             kpis.innerHTML=ordenesTrabajoData.length?[card('Solicitudes',rows.length,'con filtros aplicados','text-white'),card('Finalizadas',rows.filter(done).length,'estado completado','text-emerald-300'),card('En seguimiento',open,'resto de los estados','text-amber-300')].join(''):'';
+            const channelKpis=document.getElementById('ot-channel-kpis');if(channelKpis){const byChannel=new Map();rows.forEach(r=>{const channel=otField(r,['VIA DE CONTACTO'])||'SIN VÍA';if(!byChannel.has(channel))byChannel.set(channel,{total:0,done:0});const summary=byChannel.get(channel);summary.total++;if(done(r))summary.done++;});channelKpis.innerHTML=[...byChannel.entries()].sort((a,b)=>a[0].localeCompare(b[0],'es')).map(([channel,summary])=>card(esc(channel),summary.total,`${summary.done} finalizadas · ${summary.total?Math.round(summary.done/summary.total*100):0}%`,'text-cyan-200')).join('');}
             if(status)status.textContent=ordenesTrabajoFetchError?'No se pudo leer VIA DE CONTACTO: '+ordenesTrabajoFetchError:!ordenesTrabajoLoaded?'Cargando registros de VIA DE CONTACTO…':URL_ORDENES_TRABAJO?'Fuente conectada · '+ordenesTrabajoData.length+' registros leídos':'Para cargar datos reales, falta conectar la URL /exec de la hoja de cálculo «Orden de Trabajo».';
             const count=document.getElementById('ot-result-count');if(count)count.textContent=rows.length+' solicitudes';
             const fields=['VIA DE CONTACTO','PERSONAL SOLICITANTE','AREA/ SECTOR','CAPS/LUGAR','FECHA','PROCEDIMIENTOS','ESTADO','FECHA REPORTE SEMANAL','OBSERVACION'];
@@ -1301,6 +1413,7 @@
             const months=allMonths.map((m,i)=>({m,i,n:rows.filter(r=>otDate(otField(r,['FECHA']))?.getMonth()===i).length}));
             if(window.Chart&&document.getElementById('chartOrdenesMes')){if(charts.ordenesMes)charts.ordenesMes.destroy();charts.ordenesMes=new Chart(document.getElementById('chartOrdenesMes').getContext('2d'),{type:'bar',data:{labels:months.map(x=>x.m[0]+x.m.slice(1).toLowerCase()),datasets:[{data:months.map(x=>x.n),backgroundColor:'#14b8a6',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{precision:0}}}}});
                 const procedures={};rows.forEach(r=>{const p=otField(r,['PROCEDIMIENTOS']);if(p)procedures[p]=(procedures[p]||0)+1;});const top=Object.entries(procedures).sort((a,b)=>b[1]-a[1]).slice(0,8);if(charts.ordenesProcedimientos)charts.ordenesProcedimientos.destroy();charts.ordenesProcedimientos=new Chart(document.getElementById('chartOrdenesProcedimientos').getContext('2d'),{type:'bar',data:{labels:top.map(x=>x[0]),datasets:[{data:top.map(x=>x[1]),backgroundColor:'#818cf8',borderRadius:5}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0}},y:{grid:{display:false}}}}});}
+            if(window.Chart&&document.getElementById('chartOrdenesResueltasPorVia')){const channels=[...new Set(rows.map(r=>otField(r,['VIA DE CONTACTO'])||'SIN VÍA'))].sort((a,b)=>a.localeCompare(b,'es')),colors=['#14b8a6','#818cf8','#f59e0b','#f472b6','#38bdf8','#a3e635','#fb7185'];if(charts.ordenesResueltasPorVia)charts.ordenesResueltasPorVia.destroy();charts.ordenesResueltasPorVia=new Chart(document.getElementById('chartOrdenesResueltasPorVia').getContext('2d'),{type:'bar',data:{labels:allMonths.map(m=>m[0]+m.slice(1).toLowerCase()),datasets:channels.map((channel,index)=>({label:channel,data:allMonths.map((_,monthIndex)=>rows.filter(r=>(otField(r,['VIA DE CONTACTO'])||'SIN VÍA')===channel&&otDate(otField(r,['FECHA']))?.getMonth()===monthIndex&&done(r)).length),backgroundColor:colors[index%colors.length],borderRadius:4}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:context=>`${context.dataset.label}: ${context.raw} finalizadas`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{precision:0},title:{display:true,text:'Solicitudes finalizadas'}}}}});}
             if(window.lucide)window.lucide.createIcons();
         }
         function rowsMatchArea(a,b){return !!a&&!!b&&(a===b||a.includes(b)||b.includes(a));}
@@ -1313,8 +1426,9 @@
             const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const truth=v=>/^(SI|SÍ|TIENE|OK|BUENA|BUENO|ADECUADO|APTO|1|TRUE)$/i.test(cleanStr(v)),negative=v=>/^(NO|SIN|FALTA|0|FALSE)/i.test(cleanStr(v));const rooms=new Map(),details=[];
             conectividadData.forEach(row=>{const area=conValue(row,'AREA')||conValue(row,'ÁREA')||'SIN ÁREA',caps=conValue(row,'CAPS')||'SIN CAPS',room=conRoomLabel(row),type=conRoomType(row);if(!selected('area').includes(area.toUpperCase())||!selected('caps').includes(caps.toUpperCase())||!selected('tipo').includes(type.toUpperCase())||!selected('consultorio').includes(room.toUpperCase()))return;for(const [field,allowed] of extraFilters){if(!allowed.has(conFilterValue(row[field])))return;}if(!room)return;
                 const singular=conValue(row,'CONSULTORIO'),plural=conValue(row,'CONSULTORIOS');let roomCount=1;if(!singular&&plural){if(/^[0-9]+([.,][0-9]+)?$/.test(plural.trim()))roomCount=Math.round(parseNumberSafe(plural));else roomCount=plural.split(/[;\n|]/).map(x=>x.trim()).filter(Boolean).length||1;}if(!Number.isFinite(roomCount)||roomCount<1)roomCount=1;
-                const id=`${cleanStr(area)}|${cleanStr(caps)}|${cleanStr(room)}|${type}`;if(rooms.has(id))return;
-                const numeric=key=>{const n=parseNumberSafe(row[conKey(row,key)]);return Number.isFinite(n)?n:0;};const exo=numeric('EXO'),dell=numeric('DELL'),equipment=numeric('EQUIPO CAPS'),pcUnits=exo+dell+equipment;const pcStatus=cleanStr(conValue(row,'POSEE PC EN CONSULTORIO')),source=conValue(row,'PC DE HSI O DEL CAPS');let pcState='unknown';if(type==='ADMINISTRACIÓN'){pcState='unknown';}else if(/^(NO|FALTA|SIN PC|0)(\b|$)/.test(pcStatus))pcState='missing';else if(/^(SI|SÍ|TIENE|OK|1|TRUE)(\b|$)/.test(pcStatus))pcState='equipped';else if(source&&!/^(NO|N\/A|SIN DATO|-)$/i.test(source.trim()))pcState='equipped';
+                const id=`${cleanStr(area)}|${cleanStr(caps)}|${cleanStr(room)}|${type}`;const numeric=key=>{const n=parseNumberSafe(row[conKey(row,key)]);return Number.isFinite(n)?n:0;};const exo=numeric('EXO'),dell=numeric('DELL'),equipment=numeric('EQUIPO CAPS'),pcUnits=exo+dell+equipment;
+                if(rooms.has(id)){const existing=rooms.get(id);existing.exo+=exo;existing.dell+=dell;existing.equipment+=equipment;existing.pcUnits+=pcUnits;return;}
+                const pcStatus=cleanStr(conValue(row,'POSEE PC EN CONSULTORIO')),source=conValue(row,'PC DE HSI O DEL CAPS');let pcState='unknown';if(type==='ADMINISTRACIÓN'){pcState='unknown';}else if(/^(NO|FALTA|SIN PC|0)(\b|$)/.test(pcStatus))pcState='missing';else if(/^(SI|SÍ|TIENE|OK|1|TRUE)(\b|$)/.test(pcStatus))pcState='equipped';else if(source&&!/^(NO|N\/A|SIN DATO|-)$/i.test(source.trim()))pcState='equipped';
                 const specialties=['ESPECIALIDAD 1','ESPECIALIDAD 2','ESPECIALIDAD 3','ESPECIALIDAD 4'].map(key=>conValue(row,key)).filter(Boolean).join(' / '),internet=conValue(row,'TIENE CONECTIVIDAD'),power=conValue(row,'TOMA CORRIENTE'),cable=conValue(row,'POSSE CABLEADO'),wifi=conValue(row,'TIENE ALCANCE WIFI'),repeater=conValue(row,'NECESITA REPITIDOR');let reason='SIN RELEVAR';if(pcState==='equipped')reason='EQUIPADO';else if(pcState==='missing'){if(negative(power))reason='FALTA TOMA CORRIENTE';else if(negative(internet))reason='FALTA CONECTIVIDAD';else if(truth(repeater)||(negative(cable)&&negative(wifi)))reason='REQUIERE CABLEADO / REPETIDOR';else if(truth(power)&&truth(internet)&&(truth(cable)||truth(wifi)))reason='LISTO PARA EQUIPAR';else reason='FALTA RELEVAR INFRAESTRUCTURA';}
                 const entry={area,caps,provider:conValue(row,'PROVEEDOR DE INTERNET'),room,type,roomCount,pcState,reason,source,specialties,internet,power,cable,wifi,repeater,exo,dell,equipment,pcUnits};rooms.set(id,entry);details.push(entry);
             });
@@ -1329,3 +1443,42 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
