@@ -122,6 +122,9 @@
         .pdf-export-mode tr { border-bottom: 1px solid #E2E8F0 !important; break-inside: avoid; page-break-inside: avoid; }
         .pdf-export-mode .print-expand, .pdf-export-mode .overflow-x-auto, .pdf-export-mode .overflow-hidden { max-height: none !important; height: auto !important; overflow: visible !important; }
         .pdf-export-mode table { max-width: 100% !important; font-size: 9px !important; }
+        .pdf-export-mode #pdf-connectivity-progress, .pdf-export-mode #pdf-connectivity-rooms { width: 100% !important; max-width: 100% !important; break-inside: auto !important; page-break-inside: auto !important; }
+        .pdf-export-mode #pdf-connectivity-progress table, .pdf-export-mode #pdf-connectivity-rooms table { width: 100% !important; min-width: 0 !important; max-width: 100% !important; table-layout: fixed !important; font-size: 7px !important; }
+        .pdf-export-mode #pdf-connectivity-progress th, .pdf-export-mode #pdf-connectivity-progress td, .pdf-export-mode #pdf-connectivity-rooms th, .pdf-export-mode #pdf-connectivity-rooms td { padding: 4px !important; overflow-wrap: anywhere !important; word-break: break-word !important; }
         .pdf-export-mode #reporte-impresion { display: block !important; width: 1040px !important; max-width: 1040px !important; min-height: 0 !important; margin: 0 auto !important; padding: 22px 26px !important; box-sizing: border-box !important; overflow: visible !important; }
         .pdf-export-mode #reporte-header { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr); align-items: center !important; gap: 20px !important; width: 100% !important; box-sizing: border-box !important; }
         .pdf-export-mode #reporte-header > div { min-width: 0 !important; }
@@ -196,7 +199,7 @@
             </div>
             <button onclick="switchView('irab')" id="btn-irab" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 text-left border-l-4 border-transparent"><i data-lucide="thermometer" class="w-5 h-5 text-rose-400"></i> IRAB 2026</button>
             <button onclick="switchView('laboratorio')" id="btn-laboratorio" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 text-left border-l-4 border-transparent"><i data-lucide="flask-conical" class="w-5 h-5 text-amber-400"></i> LABORATORIO MÓVIL</button>
-            <a href="../choferes.html" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 text-left border-l-4 border-transparent"><i data-lucide="truck" class="w-5 h-5 text-cyan-400"></i> REGISTRO CHOFERES (PRUEBA)</a>
+            <a href="./choferes.html" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 text-left border-l-4 border-transparent"><i data-lucide="truck" class="w-5 h-5 text-cyan-400"></i> REGISTRO CHOFERES (PRUEBA)</a>
         </nav>
         <div class="p-4 border-t border-slate-800/60 bg-slate-900/30 text-[10px] text-slate-500 font-medium text-center uppercase tracking-widest">
             SS Recursos y Logística
@@ -517,8 +520,8 @@
             <details class="glass-card hide-on-pdf p-5 mb-6"><summary class="cursor-pointer text-white font-semibold">Filtros adicionales de la planilla</summary><p class="text-xs text-slate-400 mt-2 mb-4">Proveedor, especialidades, disponibilidad de PC, conectividad, electricidad, cableado, Wi-Fi y equipos.</p><div id="con-extra-filters" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[34rem] overflow-y-auto"></div></details>
             <div id="con-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-9 gap-4 mb-8"></div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"><div class="glass-card p-5 md:p-6"><h3 class="text-white font-semibold mb-5">Consultorios por tipo</h3><div class="h-72 relative"><canvas id="chartConectividadTipos"></canvas></div></div><div class="glass-card p-5 md:p-6"><h3 class="text-white font-semibold mb-5">Avance de equipamiento por CAPS</h3><div class="h-72 relative"><canvas id="chartConectividadEquipos"></canvas></div></div></div>
-            <div class="glass-card p-5 md:p-6 mb-8"><h3 class="text-white font-semibold mb-4">Progreso para completar el equipamiento por CAPS</h3><div class="overflow-x-auto"><table class="w-full min-w-[1200px] text-left text-sm text-slate-300"><thead class="text-[10px] text-slate-400 uppercase bg-slate-900"><tr><th class="px-3 py-3">Área</th><th class="px-3 py-3">CAPS</th><th class="px-3 py-3">Proveedor</th><th class="px-3 py-3 text-center">Puestos / consultorios</th><th class="px-3 py-3 text-center">Médicos con PC</th><th class="px-3 py-3 text-center">Enfermería con PC</th><th class="px-3 py-3 text-center">Administración con PC</th><th class="px-3 py-3 text-center">Pendientes médicos / enfermería</th><th class="px-3 py-3">Avance total</th><th class="px-3 py-3 text-center">EXO</th><th class="px-3 py-3 text-center">DELL</th><th class="px-3 py-3 text-center">Equipo CAPS</th></tr></thead><tbody id="tbody-conectividad-detalle" class="divide-y divide-slate-800/60"></tbody></table></div></div>
-            <div class="glass-card p-5 md:p-6 mb-8"><h3 class="text-white font-semibold mb-4">Equipos disponibles por consultorio</h3><p class="text-slate-400 text-xs mb-4">Cantidad registrada como EXO, DELL y Equipo CAPS para cada consultorio y total del filtro actual.</p><div class="overflow-x-auto max-h-[34rem] print-expand"><table class="w-full min-w-[1100px] text-left text-sm text-slate-300"><thead class="sticky top-0 bg-slate-900 text-[10px] uppercase"><tr><th class="px-3 py-3">Área</th><th class="px-3 py-3">CAPS</th><th class="px-3 py-3">Tipo</th><th class="px-3 py-3">Consultorio</th><th class="px-3 py-3">Especialidad</th><th class="px-3 py-3">Estado PC HSI</th><th class="px-3 py-3 text-right">Total PC</th><th class="px-3 py-3 text-right">EXO</th><th class="px-3 py-3 text-right">DELL</th><th class="px-3 py-3 text-right">Equipo CAPS</th></tr></thead><tbody id="tbody-consultorios-con" class="divide-y divide-slate-800/60"></tbody><tfoot id="tfoot-consultorios-con" class="bg-slate-900/80 font-bold text-white"></tfoot></table></div></div>
+            <div id="pdf-connectivity-progress" class="glass-card p-5 md:p-6 mb-8"><div class="flex items-center justify-between gap-3 mb-4"><h3 class="text-white font-semibold mb-0">Progreso para completar el equipamiento por CAPS</h3><button type="button" class="hide-on-pdf inline-flex shrink-0 items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-3 py-2 text-xs font-semibold text-white" onclick="exportConnectivityCardPDF('pdf-connectivity-progress','Progreso_equipamiento_por_CAPS.pdf',this)"><i data-lucide="printer" class="w-4 h-4"></i> PDF A4</button></div><div class="overflow-x-auto"><table class="w-full min-w-[1200px] text-left text-sm text-slate-300"><thead class="text-[10px] text-slate-400 uppercase bg-slate-900"><tr><th class="px-3 py-3">Área</th><th class="px-3 py-3">CAPS</th><th class="px-3 py-3">Proveedor</th><th class="px-3 py-3 text-center">Puestos / consultorios</th><th class="px-3 py-3 text-center">Médicos con PC</th><th class="px-3 py-3 text-center">Enfermería con PC</th><th class="px-3 py-3 text-center">Administración con PC</th><th class="px-3 py-3 text-center">Pendientes médicos / enfermería</th><th class="px-3 py-3">Avance total</th><th class="px-3 py-3 text-center">EXO</th><th class="px-3 py-3 text-center">DELL</th><th class="px-3 py-3 text-center">Equipo CAPS</th></tr></thead><tbody id="tbody-conectividad-detalle" class="divide-y divide-slate-800/60"></tbody></table></div></div>
+            <div id="pdf-connectivity-rooms" class="glass-card p-5 md:p-6 mb-8"><div class="flex items-center justify-between gap-3 mb-2"><h3 class="text-white font-semibold mb-0">Equipos disponibles por consultorio</h3><button type="button" class="hide-on-pdf inline-flex shrink-0 items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-3 py-2 text-xs font-semibold text-white" onclick="exportConnectivityCardPDF('pdf-connectivity-rooms','Equipos_disponibles_por_consultorio.pdf',this)"><i data-lucide="printer" class="w-4 h-4"></i> PDF A4</button></div><p class="text-slate-400 text-xs mb-4">Cantidad registrada como EXO, DELL y Equipo CAPS para cada consultorio y total del filtro actual.</p><div class="overflow-x-auto max-h-[34rem] print-expand"><table class="w-full min-w-[1100px] text-left text-sm text-slate-300"><thead class="sticky top-0 bg-slate-900 text-[10px] uppercase"><tr><th class="px-3 py-3">Área</th><th class="px-3 py-3">CAPS</th><th class="px-3 py-3">Tipo</th><th class="px-3 py-3">Consultorio</th><th class="px-3 py-3">Especialidad</th><th class="px-3 py-3">Estado PC HSI</th><th class="px-3 py-3 text-right">Total PC</th><th class="px-3 py-3 text-right">EXO</th><th class="px-3 py-3 text-right">DELL</th><th class="px-3 py-3 text-right">Equipo CAPS</th></tr></thead><tbody id="tbody-consultorios-con" class="divide-y divide-slate-800/60"></tbody><tfoot id="tfoot-consultorios-con" class="bg-slate-900/80 font-bold text-white"></tfoot></table></div></div>
             <div class="glass-card p-5 md:p-6 mb-8"><div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4"><div><h3 class="text-white font-semibold">Ubicación de consultorios pendientes para HSI</h3><p class="text-slate-400 text-xs mt-1">Listado filtrado por CAPS, tipo y consultorio, listo para imprimir o abrir en una planilla.</p></div><div class="flex gap-2 hide-on-pdf"><button type="button" onclick="printPendingCon()" class="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white">Imprimir pendientes</button><button type="button" onclick="downloadPendingConCsv()" class="rounded-lg border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-200">Descargar planilla CSV</button></div></div><div class="overflow-x-auto max-h-[34rem] print-expand"><table class="w-full min-w-[900px] text-left text-sm text-slate-300"><thead class="sticky top-0 bg-slate-900 text-[10px] uppercase"><tr><th class="px-3 py-3">Área</th><th class="px-3 py-3">CAPS</th><th class="px-3 py-3">Tipo</th><th class="px-3 py-3">Consultorio</th><th class="px-3 py-3">Especialidad</th><th class="px-3 py-3">Estado</th><th class="px-3 py-3">Internet / toma / cableado</th></tr></thead><tbody id="tbody-conectividad-pendientes" class="divide-y divide-slate-800/60"></tbody></table></div></div>
         </section>
 
@@ -666,6 +669,22 @@
             setTimeout(() => { html2pdf().set(opt).from(element).save().then(() => { btn.style.display = 'inline-flex'; document.body.classList.remove('pdf-export-mode'); }).catch(() => { btn.style.display = 'inline-flex'; document.body.classList.remove('pdf-export-mode'); }); }, 500);
         }
 
+        function exportConnectivityCardPDF(cardId, filename, button) {
+            const card = document.getElementById(cardId);
+            if (!card) return;
+            if (typeof html2pdf !== 'function') { window.alert('No se pudo cargar el generador de PDF. Revisá la conexión e intentá de nuevo.'); return; }
+            const original = button.innerHTML;
+            const restore = () => { button.disabled = false; button.innerHTML = original; document.body.classList.remove('pdf-export-mode'); };
+            button.disabled = true;
+            button.innerHTML = 'Generando…';
+            document.body.classList.add('pdf-export-mode');
+            const options = { margin: [0.28, 0.25, 0.28, 0.25], filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#FFFFFF', scrollX: 0, scrollY: 0 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }, pagebreak: { mode: ['css', 'legacy'] } };
+            setTimeout(() => {
+                try { html2pdf().set(options).from(card).save().then(restore).catch(error => { console.error(error); restore(); }); }
+                catch (error) { console.error(error); restore(); }
+            }, 250);
+        }
+
         function parseNumberSafe(val) {
             if (val === undefined || val === null || val === '') return 0;
             if (typeof val === 'number') return isNaN(val) ? 0 : val;
@@ -718,6 +737,10 @@
             return checkboxes.length?checkboxes.filter(cb=>cb.checked).map(cb=>cb.value):null;
         }
 
+        function normalizePersonalCategoria(value) {
+            const category=cleanStr(value);if(!category||['-','#N/A','N/A','NA','S/D','SIN DATO','SIN CATEGORIA'].includes(category))return '';
+            return category;
+        }
         const getPersonalFuncion = row => {
             const keys=new Set(['SECTOR FUNCION','FUNCION','SECTOR','CATEGORIA LABORAL','CARGO','PUESTO']);
             for(const [key,rawValue] of Object.entries(row||{})){const normalized=cleanStr(key).replace(/[^A-Z0-9]+/g,' ').trim();if(!keys.has(normalized))continue;const value=cleanStr(rawValue);if(value&&value!=='-'&&value!=='#N/A')return value;}
@@ -748,7 +771,7 @@
             if(Array.isArray(payload)){
                 if(payload.length&&Array.isArray(payload[0])){
                     const headers=payload[0].map(value=>String(value??'').trim());
-                    const hasHeader=headers.some(value=>['AGENTE','PERSONAL','EMPLEADO','TRABAJADOR','NOMBRE','NOMBRE Y APELLIDO','SECTOR / FUNCION','SECTOR/FUNCION','SECTOR FUNCION','FECHA','MES'].includes(cleanStr(value)));
+                    const hasHeader=headers.some(value=>['AGENTE','PERSONAL','NOMBRE Y APELLIDO','SECTOR / FUNCION','SECTOR/FUNCION','SECTOR FUNCION','FECHA','MES'].includes(cleanStr(value)));
                     if(!hasHeader)return [];
                     return payload.slice(1).filter(Array.isArray).map(values=>Object.fromEntries(headers.map((header,index)=>[header,values[index]??'']).filter(([header])=>header))).map(row=>({...row,__HOJA_ORIGEN:source}));
                 }
@@ -756,7 +779,7 @@
             }
             if(!payload||typeof payload!=='object')return [];
             const rowKeys=Object.keys(payload).map(key=>cleanStr(key).replace(/[^A-Z0-9]+/g,' ').trim());
-            if(rowKeys.some(k=>['AGENTE','PERSONAL','EMPLEADO','TRABAJADOR','NOMBRE','NOMBRE Y APELLIDO','SECTOR','SECTOR FUNCION','PERSONAL SOLICITANTE','FECHA'].includes(k))||rowKeys.some(k=>allMonths.includes(k)))return [{...payload,__HOJA_ORIGEN:source||payload.__HOJA_ORIGEN||payload.HOJA_ORIGEN||payload.SHEET||payload.TAB||''}];
+            if(rowKeys.some(k=>['AGENTE','PERSONAL','NOMBRE Y APELLIDO','SECTOR','SECTOR FUNCION','PERSONAL SOLICITANTE','FECHA'].includes(k))||rowKeys.some(k=>allMonths.includes(k)))return [{...payload,__HOJA_ORIGEN:source||payload.__HOJA_ORIGEN||payload.HOJA_ORIGEN||payload.SHEET||payload.TAB||''}];
             const declaredSource=payload.__HOJA_ORIGEN||payload.HOJA_ORIGEN||payload.SHEET||payload.TAB||source;
             const wrapperKeys=['DATA','ROWS','RECORDS','RESULT','ITEMS','VALUES','HOJAS'];
             const wrapper=Object.keys(payload).find(key=>wrapperKeys.includes(cleanStr(key)));
