@@ -1470,7 +1470,7 @@
         const capsAdendaNames=['KM 26','VILLA DEL PLATA','VILLA ANGELICA','ZEBALLOS II','SAN EDUARDO','SANTO TOMAS','SAN FRANCISCO','CIC EL ROCIO','VILLA HUDSON','PRESIDENTE PERON','LA ESMERALDA'];
         function adendaNameKey(value){return cleanStr(value).replace(/\bCAPS\b/g,'').replace(/[^A-Z0-9]/g,'');}
         function adendaCapsMatch(value,target){const a=adendaNameKey(value),b=adendaNameKey(target);return !!a&&!!b&&(a===b||a.includes(b)||b.includes(a));}
-        function adendaConnectivityRows(name){return conectividadData.filter(row=>conSiteGroup(row)==='EFECTOR'&&Object.entries(row||{}).some(([key,value])=>/(CAPS|EFECTOR|SEDE|ESTABLECIMIENTO|DEPENDENCIA)/.test(cleanStr(key))&&adendaCapsMatch(value,name)));}
+        function adendaConnectivityRows(name){return conectividadData.filter(row=>Object.entries(row||{}).some(([key,value])=>/(CAPS|EFECTOR|SEDE|ESTABLECIMIENTO|DEPENDENCIA)/.test(cleanStr(key))&&adendaCapsMatch(value,name)));}
         function adendaBool(value){const v=cleanStr(value);if(/^(SI|SÍ|TIENE|OK|BUENA|BUENO|ADECUADO|APTO|1|TRUE|CONECTADO|FUNCIONA)/.test(v))return true;if(/^(NO|SIN|FALTA|0|FALSE|MALO|INADECUADO|PENDIENTE|DESCONECTADO)/.test(v))return false;return null;}
         let capsAdendaReportRows=[];
         function renderCapsAdenda(){
