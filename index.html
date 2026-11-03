@@ -361,9 +361,9 @@
                 <div class="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-6">
                     <div>
                         <h3 class="text-white font-bold text-lg flex items-center gap-2 mb-2"><i data-lucide="file-signature" class="text-emerald-400 w-6 h-6"></i> Generador de Reporte Oficial (A4 Horizontal)</h3>
-                        <p class="text-sm text-slate-400 max-w-lg">Unifica ausencias y licencias por agente y mes, con impresión A4. Para cada licencia muestra los días otorgados y los usufructuados informados en la hoja Licencias.</p>
+                        <p class="text-sm text-slate-400 max-w-lg">Resume ausencias y licencias por agente. El mes de licencia se determina con la fecha de INICIO; también muestra cuándo se solicitó y los días informados en la hoja.</p>
                         <p id="ausentismo-origen-status" class="text-xs mt-2 text-slate-400"></p>
-                        <div class="inline-flex items-center gap-2 mt-3 px-3 py-2 rounded-xl border border-emerald-400/20 bg-emerald-400/5 text-xs text-slate-300"><i data-lucide="calendar-check" class="w-4 h-4 text-emerald-300"></i><span>Días usufructuados en licencias solicitadas este mes</span><strong id="reporte-dias-licencia" class="text-emerald-300 text-sm">0</strong></div>
+                        <div class="inline-flex items-center gap-2 mt-3 px-3 py-2 rounded-xl border border-emerald-400/20 bg-emerald-400/5 text-xs text-slate-300"><i data-lucide="calendar-check" class="w-4 h-4 text-emerald-300"></i><span>Días usufructuados en licencias que empiezan este mes</span><strong id="reporte-dias-licencia" class="text-emerald-300 text-sm">0</strong></div>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full 2xl:w-auto bg-[#0B1121]/50 p-4 rounded-xl border border-slate-700/50">
                         <div class="w-full"><label class="block text-[10px] font-bold uppercase tracking-widest text-emerald-400/80 mb-1.5 ml-1">Año</label><select id="select-anio-reporte" onchange="refreshReportLicenseKpi()" class="w-full text-white font-medium text-sm rounded-lg py-2.5 pl-4 pr-4"></select></div>
@@ -375,7 +375,7 @@
                             </div>
                         </div>
                         <div class="w-full">
-                            <label class="block text-[10px] font-bold uppercase tracking-widest text-emerald-400/80 mb-1.5 ml-1">Mes del Reporte</label>
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-emerald-400/80 mb-1.5 ml-1">Mes de inicio de licencia</label>
                             <select id="select-mes-reporte" onchange="refreshReportLicenseKpi()" class="w-full text-white font-medium text-sm rounded-lg py-2.5 pl-4 pr-10 focus:outline-none focus:border-emerald-500 transition-colors">
                             </select>
                         </div>
@@ -632,14 +632,14 @@
                     <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; width: 22%;">AGENTE / PERSONAL</th>
                     <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 14%;">AUSENCIAS</th>
                     <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 14%;">MEDICINA</th>
-                    <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 35%;">LICENCIAS SOLICITADAS ESTE MES · FECHAS DE USUFRUCTO · DÍAS OTORGADOS / USUFRUCTUADOS</th>
-                    <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 15%; background-color: #E2E8F0; color: #0F172A;">TOTAL AUSENCIAS REGISTRADAS</th>
+                    <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 35%;">LICENCIAS QUE INICIAN ESTE MES · MES DE SOLICITUD · FECHAS · DÍAS OTORGADOS / USUFRUCTUADOS</th>
+                    <th style="padding: 10px 12px; font-weight: 700; border: 1px solid #E2E8F0; text-align: center; width: 15%; background-color: #E2E8F0; color: #0F172A;">TOTAL INFORMADO EN PDF<br>(AUSENCIAS + DÍAS USUFRUCTUADOS)</th>
                 </tr>
             </thead>
             <tbody id="reporte-tbody"></tbody>
         </table>
 
-        <p style="margin:12px 0 0;padding:9px 11px;border:1px solid #CBD5E1;background:#F8FAFC;color:#334155;font-size:9px;line-height:1.45"><strong>Lectura del informe:</strong> el mes seleccionado corresponde al mes de solicitud de la licencia. Las fechas muestran el período efectivo de usufructo. Las licencias se informan por separado y no se suman al total de ausencias. Los datos reflejan lo cargado en las hojas; no acreditan presencia ni calculan horas o descuentos salariales. Para liquidar, validar el registro de asistencia y las novedades.</p>
+        <p style="margin:12px 0 0;padding:9px 11px;border:1px solid #CBD5E1;background:#F8FAFC;color:#334155;font-size:9px;line-height:1.45"><strong>Lectura del informe:</strong> las licencias se asignan al mes y año de su fecha de INICIO. El campo MES se muestra como mes de solicitud. En el PDF, el total informado suma ausencias registradas y días efectivamente usufructuados; los días otorgados quedan detallados aparte y no se suman. Es una suma aritmética y no detecta si un mismo día figura en ambas hojas. Si INICIO no contiene una fecha reconocible, la licencia no se asigna a un mes. Los datos no acreditan presencia ni calculan horas o descuentos salariales.</p>
 
         <div style="margin-top: 35px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E2E8F0; padding-top: 15px; font-size: 10px; color: #64748B;">
             <p style="margin: 0;">Sistema Integrado de Control Operativo - Municipalidad de Florencio Varela</p>
@@ -719,6 +719,19 @@
         };
         const licenciaMonth = row => cleanStr(licenciaField(row, ['MES', 'MES (USUFRUCTO)']));
         const licenciaUsufructDays = row => parseNumberSafe(licenciaField(row, ['DIAS USUFRUCTUADOS', 'DÍAS USUFRUCTUADOS']));
+        const parseLicenciaDate = value => {
+            if(value instanceof Date&&!isNaN(value))return new Date(value.getFullYear(),value.getMonth(),value.getDate());
+            const s=String(value??'').trim(); if(!s||/^HASTA\b/i.test(s))return null;
+            let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if(m)return new Date(+m[1],+m[2]-1,+m[3]);
+            m=s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if(m){let year=+m[3];if(year<100)year+=2000;return new Date(year,+m[2]-1,+m[1]);}
+            const repeatedDay=s.match(/^(\d{1,2})\s+Y\s+\d{1,2}[\/.\-](\d{1,2})[\/.\-](\d{2,4})/i);
+            if(repeatedDay){let year=+repeatedDay[3];if(year<100)year+=2000;return new Date(year,+repeatedDay[2]-1,+repeatedDay[1]);}
+            const abbreviatedRange=s.match(/^(\d{1,2})[\/.\-](\d{1,2})\s*(?:A\b|AL\b|[-–])\s*.*?(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/i);
+            if(abbreviatedRange){let year=+abbreviatedRange[5];if(year<100)year+=2000;return new Date(year,+abbreviatedRange[2]-1,+abbreviatedRange[1]);}
+            return null;
+        };
+        const licenciaFechaInicio = row => parseLicenciaDate(licenciaField(row, ['INICIO', 'FECHA INICIO']));
+        const licenciaEmpiezaEn = (row, month, year) => { const start=licenciaFechaInicio(row); return !!start&&String(start.getFullYear())===String(year)&&cleanStr(allMonths[start.getMonth()])===cleanStr(month); };
 
         function toggleMobileMenu() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('mobile-overlay').classList.toggle('hidden'); }
         function toggleSubmenu(menuId, iconId) { document.getElementById(menuId).classList.toggle('hidden'); document.getElementById(iconId).classList.toggle('rotate-180'); }
@@ -1144,7 +1157,7 @@
                 let currentMonthIdx = new Date().getMonth(); 
                 selectReporte.value = allMonths[currentMonthIdx];
             }
-            const yearSelect=document.getElementById('select-anio-reporte');if(yearSelect){const years=new Set([String(new Date().getFullYear())]);[...ausentismoData,...licenciasData].forEach(r=>{const y=String(r['AÑO']||r['ANIO']||'').trim();if(/^\d{4}$/.test(y))years.add(y);});yearSelect.innerHTML=[...years].sort().reverse().map(y=>`<option value="${y}">${y}</option>`).join('');yearSelect.value=String(new Date().getFullYear());}
+            const yearSelect=document.getElementById('select-anio-reporte');if(yearSelect){const years=new Set([String(new Date().getFullYear())]);[...ausentismoData,...licenciasData].forEach(r=>{const y=String(r['AÑO']||r['ANIO']||'').trim();if(/^\d{4}$/.test(y))years.add(y);const start=licenciaFechaInicio(r);if(start)years.add(String(start.getFullYear()));});yearSelect.innerHTML=[...years].sort().reverse().map(y=>`<option value="${y}">${y}</option>`).join('');yearSelect.value=String(new Date().getFullYear());}
             refreshReportLicenseKpi();
         }
 
@@ -1155,9 +1168,7 @@
             const year = String(document.getElementById('select-anio-reporte')?.value || '');
             const selectedCategory=getSelectedReportFunctions(),functionsByAgent=buildAusentismoFuncionPorAgente();
             const total = licenciasData.reduce((sum, row) => {
-                if (licenciaMonth(row) !== month) return sum;
-                const rowYear = licenciaYear(row);
-                if (/^\d{4}$/.test(rowYear) && rowYear !== year) return sum;
+                if (!licenciaEmpiezaEn(row, month, year)) return sum;
                 if(!matchesPersonalCategoria(row,selectedCategory,functionsByAgent))return sum;
                 return sum + licenciaUsufructDays(row);
             }, 0);
@@ -1178,7 +1189,7 @@
                 const rowCategory=getPersonalCategoria(row,categoriesByAgent),ag=getAgenteName(row);
                 if(!rowCategory||!matchesPersonalCategoria(row,selectedCategory,functionsByAgent))return;
                 const yearInRow=String(row['AÑO']||row['ANIO']||row['AÑO DE AUSENCIA']||'').trim();
-                if(/^\d{4}$/.test(yearInRow)&&yearInRow!==anioSelect)return;
+                if(/^\d{4}$/.test(yearInRow)){if(yearInRow!==anioSelect)return;}else if(anioSelect!==String(new Date().getFullYear()))return;
                 const monthInRow=String(row['MES']||row['MES DE AUSENCIA']||row['MES MEDICINA']||'').trim().toUpperCase();
                 let ausenciasMes=0;
                 if(monthInRow&&allMonths.includes(monthInRow)){if(monthInRow!==mesSelect)return;ausenciasMes=1;}
@@ -1186,20 +1197,15 @@
                 else for(const [key,value] of Object.entries(row)){if(cleanStr(key).includes(mesSelect)&&!cleanStr(key).includes('OBSERV')&&!cleanStr(key).includes('MOTIVO'))ausenciasMes+=parseAusenciaSafe(value);}
                 if(ausenciasMes>0){const agentLabel=ag&&!['UNDEFINED','NAN','NULL','SIN AGENTE'].includes(ag)?ag:'SIN AGENTE IDENTIFICADO',d=getReportAgent(agentLabel);if(isRegistroMedicina(row,categoriesByAgent))d.medicina+=ausenciasMes;else d.otras+=ausenciasMes;d.total+=ausenciasMes;}
             });
-            const licenseDays=row=>{
-                const usedKey=Object.keys(row).find(k=>cleanStr(k)==='DIAS USUFRUCTUADOS');
-                const month=String(row['MES']||row['MES (USUFRUCTO)']||'').trim().toUpperCase(),year=String(row['AÑO']||row['ANIO']||row['AÑO (COLUMNA AÑO)']||'').trim();
-                const matchesMonth=month===mesSelect&&(!/^\d{4}$/.test(year)||year===anioSelect);
-                return usedKey!==undefined&&matchesMonth?parseNumberSafe(row[usedKey]):0;
-            };
-            const licenseMatchesReportPeriod=row=>{const month=licenciaMonth(row),year=licenciaYear(row)||String(row['AÑO']||row['ANIO']||'').trim();if(/^\d{4}$/.test(year)&&year!==anioSelect)return false;if(month&&allMonths.includes(month))return month===mesSelect;const start=parseDate(licenciaField(row,['INICIO','FECHA INICIO'])),end=parseDate(licenciaField(row,['FINAL','FECHA FINAL','FECHA FIN']));if(!start||!end)return false;const index=allMonths.indexOf(mesSelect);if(index<0)return false;const from=new Date(+anioSelect,index,1),to=new Date(+anioSelect,index+1,0);return start<=to&&end>=from;};
-            licenciasData.forEach(row=>{const ag=getAgenteName(row);if(!ag||['UNDEFINED','NAN','NULL','SIN AGENTE'].includes(ag))return;if(!matchesPersonalCategoria(row,selectedCategory,functionsByAgent)||!licenseMatchesReportPeriod(row))return;const tipo=cleanStr(licenciaField(row,['TIPO LIC','TIPO DE LICENCIA'])||'LICENCIA SIN TIPO')||'LICENCIA SIN TIPO',periodo=[licenciaField(row,['INICIO','FECHA INICIO']),licenciaField(row,['FINAL','FECHA FINAL','FECHA FIN'])].map(v=>String(v||'').trim()).filter(Boolean).join(' a ')||'Fechas no informadas',key=`${tipo}|${periodo}`,usufructuados=licenseDays(row),otorgados=parseNumberSafe(licenciaField(row,['DIAS','DÍAS']));if(usufructuados<=0&&otorgados<=0)return;const d=getReportAgent(ag);if(!d.licencias[key])d.licencias[key]={tipo,periodo,otorgados:0,usufructuados:0};d.licencias[key].otorgados+=otorgados;d.licencias[key].usufructuados+=usufructuados;});
-            const entries=Object.entries(reporteAgentes).filter(([,d])=>d.total>0||Object.values(d.licencias).some(item=>item.otorgados>0)).sort((a,b)=>a[0].localeCompare(b[0],'es'));
+            const licenseDays=row=>licenciaUsufructDays(row);
+            const licenseMatchesReportPeriod=row=>licenciaEmpiezaEn(row,mesSelect,anioSelect);
+            licenciasData.forEach(row=>{const ag=getAgenteName(row);if(!ag||['UNDEFINED','NAN','NULL','SIN AGENTE'].includes(ag))return;if(!matchesPersonalCategoria(row,selectedCategory,functionsByAgent)||!licenseMatchesReportPeriod(row))return;const tipo=cleanStr(licenciaField(row,['TIPO LIC','TIPO DE LICENCIA'])||'LICENCIA SIN TIPO')||'LICENCIA SIN TIPO',solicitud=licenciaMonth(row)||'MES NO INFORMADO',periodo=[licenciaField(row,['INICIO','FECHA INICIO']),licenciaField(row,['FINAL','FECHA FINAL','FECHA FIN'])].map(v=>String(v||'').trim()).filter(Boolean).join(' a ')||'Fechas no informadas',key=`${tipo}|${solicitud}|${periodo}`,rawUsufructo=licenciaField(row,['DIAS USUFRUCTUADOS','DÍAS USUFRUCTUADOS']),usufructuados=licenseDays(row),otorgados=parseNumberSafe(licenciaField(row,['DIAS','DÍAS']));if(usufructuados<=0&&otorgados<=0)return;const d=getReportAgent(ag);if(!d.licencias[key])d.licencias[key]={tipo,solicitud,periodo,usufructuadosInformados:String(rawUsufructo??'').trim()!=='',otorgados:0,usufructuados:0};d.licencias[key].usufructuadosInformados=d.licencias[key].usufructuadosInformados||String(rawUsufructo??'').trim()!=='';d.licencias[key].otorgados+=otorgados;d.licencias[key].usufructuados+=usufructuados;});
+            const entries=Object.entries(reporteAgentes).filter(([,d])=>d.total>0||Object.values(d.licencias).some(item=>item.usufructuados>0||item.otorgados>0)).sort((a,b)=>a[0].localeCompare(b[0],'es'));
             const tbody=document.getElementById('reporte-tbody');let comunes=0,medicina=0,licenciasOtorgadas=0,licenciasUsufructuadas=0,total=0;
             const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-            tbody.innerHTML=entries.length?entries.map(([nombre,d])=>{const ld=Object.values(d.licencias).reduce((a,b)=>a+b.usufructuados,0),lo=Object.values(d.licencias).reduce((a,b)=>a+b.otorgados,0);comunes+=d.otras;medicina+=d.medicina;licenciasOtorgadas+=lo;licenciasUsufructuadas+=ld;total+=d.total;const tipos=Object.values(d.licencias).map(item=>`${esc(item.tipo)} · ${esc(item.periodo)}<br>${item.otorgados} días otorgados${item.usufructuados>0?` · ${item.usufructuados} usufructuados`:''}`).join('<br><br>')||'-';return `<tr style="border-bottom:1px solid #E2E8F0;page-break-inside:avoid"><td style="padding:9px 10px;font-size:10px;font-weight:bold;color:#1E293B;border:1px solid #E2E8F0">${esc(nombre)}</td><td style="padding:9px 10px;text-align:center;border:1px solid #E2E8F0">${d.otras||'-'}</td><td style="padding:9px 10px;text-align:center;border:1px solid #E2E8F0">${d.medicina||'-'}</td><td style="padding:8px;font-size:9px;border:1px solid #E2E8F0">${tipos}</td><td style="padding:9px 10px;text-align:center;font-weight:bold;background:#F8FAFC;border:1px solid #E2E8F0">${d.total}</td></tr>`;}).join(''):`<tr><td colspan="5" style="padding:20px;text-align:center;color:#64748B">No se registraron inasistencias en ${mesSelect} de ${anioSelect}.</td></tr>`;
-            if(entries.length)tbody.innerHTML+=`<tr style="background:#E2E8F0;font-weight:800"><td style="padding:11px;text-align:right;border:1px solid #CBD5E1">TOTALES SEPARADOS</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${comunes}</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${medicina}</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">Licencias solicitadas: ${licenciasOtorgadas} días otorgados · ${licenciasUsufructuadas} usufructuados</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${total}</td></tr>`;
-            document.getElementById('reporte-mes-titulo').textContent=`MES DE SOLICITUD: ${mesSelect} · AÑO: ${anioSelect}${selectedCategory?' · FUNCIÓN: '+selectedCategory:''}`;
+            tbody.innerHTML=entries.length?entries.map(([nombre,d])=>{const ld=Object.values(d.licencias).reduce((a,b)=>a+b.usufructuados,0),lo=Object.values(d.licencias).reduce((a,b)=>a+b.otorgados,0),totalInformado=d.total+ld;comunes+=d.otras;medicina+=d.medicina;licenciasOtorgadas+=lo;licenciasUsufructuadas+=ld;total+=totalInformado;const tipos=Object.values(d.licencias).map(item=>`${esc(item.tipo)} · Solicitud: ${esc(item.solicitud)} · ${esc(item.periodo)}<br>${item.otorgados} días otorgados · ${item.usufructuadosInformados?`${item.usufructuados} usufructuados`:'usufructo no informado'}`).join('<br><br>')||'-';return `<tr style="border-bottom:1px solid #E2E8F0;page-break-inside:avoid"><td style="padding:9px 10px;font-size:10px;font-weight:bold;color:#1E293B;border:1px solid #E2E8F0">${esc(nombre)}</td><td style="padding:9px 10px;text-align:center;border:1px solid #E2E8F0">${d.otras||'-'}</td><td style="padding:9px 10px;text-align:center;border:1px solid #E2E8F0">${d.medicina||'-'}</td><td style="padding:8px;font-size:9px;border:1px solid #E2E8F0">${tipos}</td><td style="padding:9px 10px;text-align:center;font-weight:bold;background:#F8FAFC;border:1px solid #E2E8F0">${totalInformado}</td></tr>`;}).join(''):`<tr><td colspan="5" style="padding:20px;text-align:center;color:#64748B">No se registraron inasistencias en ${mesSelect} de ${anioSelect}.</td></tr>`;
+            if(entries.length)tbody.innerHTML+=`<tr style="background:#E2E8F0;font-weight:800"><td style="padding:11px;text-align:right;border:1px solid #CBD5E1">TOTALES POR CONCEPTO</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${comunes}</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${medicina}</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">Licencias que inician este mes: ${licenciasOtorgadas} días otorgados · ${licenciasUsufructuadas} usufructuados informados</td><td style="padding:11px;text-align:center;border:1px solid #CBD5E1">${total}</td></tr>`;
+            document.getElementById('reporte-mes-titulo').textContent=`MES DE INICIO DEL USUFRUCTO: ${mesSelect} · AÑO: ${anioSelect}${selectedCategory?' · FUNCIÓN: '+selectedCategory:''}`;
             document.getElementById('reporte-fecha-generacion').textContent=`Generado el ${new Date().toLocaleDateString('es-AR')}`;
             const container=document.getElementById('reporte-impresion'),btn=event.currentTarget,iconOriginal=btn.innerHTML;btn.innerHTML='Procesando…';document.body.classList.add('pdf-export-mode');container.style.display='block';
             const opt={margin:[0.28,0.28],filename:`Reporte_Mensual_Inasistencias_${mesSelect}_${anioSelect}.pdf`,image:{type:'jpeg',quality:1},html2canvas:{scale:2,useCORS:true,backgroundColor:'#FFFFFF',scrollX:0,scrollY:0},jsPDF:{unit:'in',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}};
